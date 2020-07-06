@@ -1,0 +1,9 @@
+; struct st_led size: derived from st_device_io
+.equ SZ_ST_LED					= SZ_ST_DEVICE_IO
+; struct st_led
+.equ ST_LED_DDRX_ADDRESS_OFFSET 		= ST_DEVICE_IO_DDRX_ADDRESS_OFFSET
+.equ ST_LED_PORTX_ADDRESS_OFFSET		= ST_DEVICE_IO_PORTX_ADDRESS_OFFSET
+.equ ST_LED_BIT_MASK_OFFSET			= ST_DEVICE_IO_USED_BIT_MASK_OFFSET
+
+.equ LED_STATE_OFF				= 0x00
+.equ LED_STATE_ON 				= 0x01

@@ -1,0 +1,9 @@
+; struct st_led size
+.equ ST_BUTTON_SIZE				= 0x05
+; struct st_led
+.equ ST_BUTTON_DDRX_ADDRESS_OFFSET 		= 0x00
+.equ ST_BUTTON_PORTX_ADDRESS_OFFSET		= 0x02
+.equ ST_BUTTON_BIT_MASK_OFFSET			= 0x04
+
+.equ BUTTON_NOT_PRESSED				= 0x00
+.equ BUTTON_PRESSED				= 0x01
