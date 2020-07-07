@@ -1,5 +1,4 @@
 ; extensions
-
 .macro m_save_r16_X_registers
 	push r16
 	push XL
@@ -11,6 +10,26 @@
 .macro m_restore_r16_X_registers
 	pop r16
 	out SREG, r16
+	pop XH
+	pop XL
+	pop r16
+.endm
+
+.macro m_save_r16_X_Z_registers
+	push r16
+	push XL
+	push XH
+	push YL
+	push YH
+	in r16, SREG
+	push r16
+.endm
+
+.macro m_restore_r16_X_Z_registers
+	pop r16
+	out SREG, r16
+	pop YH
+	pop YL
 	pop XH
 	pop XL
 	pop r16
@@ -61,7 +80,6 @@
 	pop XL
 	pop r16
 .endm
-
 
 .macro m_save_r16_r17_r18_X_Y_registers
 	push r16
@@ -184,7 +202,6 @@
 	pop r16
 .endm
 
-
 mem_copy:
 	; save registers
 	; push r24
@@ -237,6 +254,21 @@ get_struct_byte_by_X_r16_to_r16:
 
 	ret
 
+get_struct_byte_by_Z_r16_to_r16:
+	; parameters
+	; X - st_address
+	; r16 - offset / result
+	push ZL
+	push ZH
+	add ZL, r16
+	eor r16, r16
+	adc ZH, r16
+	ld r16, Z
+	pop ZH
+	pop ZL
+
+	ret
+
 get_struct_word_by_X_ZL_to_Z:
 	; parameters
 	; X - st_address
@@ -254,6 +286,23 @@ get_struct_word_by_X_ZL_to_Z:
 
 	ret
 
+get_struct_word_by_Z_r16_to_Z:
+	; parameters
+	; Z - [st_*]
+	; r16 - offset
+	; result:
+	; ZL - L
+	; ZH - H
+	; add offset to the [st_*] in Z
+	add ZL, r16
+	eor r16, r16
+	adc ZH, r16
+	; load address to the Z
+	ld r16, Z+
+	ld ZH, Z
+	mov ZL, r16
+	; return (Z contains target address)
+	ret
 
 /*
 mem_copy:
