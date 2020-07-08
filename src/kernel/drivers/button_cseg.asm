@@ -43,7 +43,6 @@ button_get:
 	; returns:
 	;	byte
 	m_save_r16_X_Z_registers
-
 	; set X to the [st_button] address
 	in XL, SPL
 	in XH, SPH
@@ -54,23 +53,21 @@ button_get:
 	; load [st_button] address to Z
 	ld ZH, X+
 	ld ZL, X+
-	; save X (pointer to the return value)
-	push XL
-	push XH
-	; load USED_BIT_MASK into the XL
-	ldi r16, ST_BUTTON_USED_BIT_MASK_OFFSET
-	rcall get_struct_byte_by_Z_r16_to_r16
-	mov XL, r16
-	; load PINx address to the Y & load PINx value into the r16
-	push ZL
+	; call st_device_io_get_pin_byte
+	push r16
+	push r16
 	push ZH
-	ldi r16, ST_BUTTON_PINX_ADDRESS_OFFSET
-	rcall get_struct_word_by_Z_r16_to_Z
-	ld r16, Z
+	push ZL
+	rcall st_device_io_get_pin_byte
+	; release stack space
+	pop ZL
 	pop ZH
-	pop ZH
+	; store return value to the r16
+	pop r16
+	; store USED_BIT_MASK to the ZL
+	pop ZL
 	; detect current state
-	and r16, XL
+	and r16, ZL
 	brne button_get_state_up
 	button_get_state_dows:
 		ldi r16, BUTTON_STATE_DOWN
@@ -78,9 +75,6 @@ button_get:
 	button_get_state_up:
 		ldi r16, BUTTON_STATE_UP
 	button_get_end:
-		; restore X
-		pop XH
-		pop XL
 		; save to return value
 		st X, r16
 		m_restore_r16_X_Z_registers

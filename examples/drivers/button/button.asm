@@ -64,6 +64,10 @@ main_thread:
 
 	main_thread_loop:
 		nop
+		m_led_toggle led1
+		nop
+		m_led_toggle led1
+		nop
 		m_button_get button1, r16
 		cpi r16, BUTTON_STATE_DOWN
 		breq main_thread_loop_button_state_down

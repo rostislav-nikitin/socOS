@@ -161,38 +161,33 @@ led_get:
 	add XL, r17
 	adc XH, r16
 	; load st_led address to Y
-	ld YL, X+
-	ld YH, X+
-	; save X to restore for return value
-	push XL
-	push XH
-	; set X to st_led
-	mov XL, YL
-	mov XH, YH
-
-	; load BITx_MASK
-	ldi r16, ST_LED_BIT_MASK_OFFSET
-	rcall get_struct_byte_by_X_r16_to_r16
-	mov r18, r16
-	; load PORTx address
-	ldi ZL, ST_LED_PORTX_ADDRESS_OFFSET
-	rcall get_struct_word_by_X_ZL_to_Z
-	; restore X
-	pop XH
-	pop XL
-	; load PORTx value
-	ld r17, Z
-	and r17, r18
+	ld ZL, X+
+	ld ZH, X+
+	; call st_device_io_get_pin_byte
+	push r16
+	push r16
+	push ZH
+	push ZL
+	rcall st_device_io_get_port_byte
+	; release stack space
+	pop ZL
+	pop ZH
+	; store return value to the r16
+	pop r16
+	; store USED_BIT_MASK to the ZL
+	pop ZL
+	; compare value
+	and r16, ZL
 	breq led_get_off
 	led_get_on:
-		ldi r17, LED_STATE_ON
-		st X, r17
-		rjmp  led_get_restore_registers
+		ldi r16, LED_STATE_ON
+		rjmp  led_get_set_result
 	led_get_off:
-		ldi r17, LED_STATE_OFF
-		st X, r17
-   	led_get_restore_registers:
-		m_restore_r16_r17_r18_r19_X_Y_Z_registers
+		ldi r16, LED_STATE_OFF
+   	led_get_set_result:
+		st X, r16
+
+	m_restore_r16_r17_r18_r19_X_Y_Z_registers
 
 	ret
 

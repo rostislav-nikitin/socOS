@@ -15,6 +15,24 @@
 	pop r16
 .endm
 
+.macro m_save_r16_r17_X_registers
+	push r16
+	push r17
+	push XL
+	push XH
+	in r16, SREG
+	push r16
+.endm
+
+.macro m_restore_r16_r17_X_registers
+	pop r16
+	out SREG, r16
+	pop XH
+	pop XL
+	pop r17
+	pop r16
+.endm
+
 .macro m_save_r16_X_Z_registers
 	push r16
 	push XL
@@ -56,6 +74,29 @@
 	pop r17
 	pop r16
 .endm
+
+.macro m_save_r16_r17_X_Z_registers
+	push r16
+	push r17
+	push XL
+	push XH
+	push ZL
+	push ZH
+	in r16, SREG
+	push r16
+.endm
+
+.macro m_restore_r16_r17_X_Z_registers
+	pop r16
+	out SREG, r16
+	pop ZH
+	pop ZL
+	pop XH
+	pop XL
+	pop r17
+	pop r16
+.endm
+
 
 .macro m_save_r16_X_Y_Z_registers
 	push r16
@@ -303,7 +344,43 @@ get_struct_word_by_Z_r16_to_Z:
 	mov ZL, r16
 	; return (Z contains target address)
 	ret
+/*
+get_second_param_address_and_st_device_io_address:
+	; input parameters:
+	; return value:
+	;	word	address of the second parameter of the previous procedure
+	;	word	address ot the st_dev
+	m_save_r16_X_Z_registers
+	; set X to the [dev: st_device_io]
+	in XL, SPL
+	in XH, SPH
+	ldi r16, SZ_R16_X_Z_REGISTERS + SZ_RET_ADDRESS + SZ_STACK_PREVIOUS_OFFSET
+	add XL, r16
+	ldi r16, 0x00
+	adc XH, r16
 
+	mov ZL, XL
+	mov ZH, XH
+
+	; set X to the address of the second parameter (after the dev: st_device_io) of the previous procedure
+	ldi r16, (2 * SZ_ADDRESS) + SZ_RET_ADDRESS + SZ_ADDRESS
+	add ZL, r16
+	ldi r16, 0x00
+	adc ZH, r16
+	; first return value
+	st X+, ZL
+	st X+, ZH
+	; get [st_dev: st_device_io]
+	ld r16, Z+
+	ld ZH, Z
+	; second return parameter
+	st X+, r16
+	st X, ZH
+
+	m_restore_r16_X_Z_registers
+
+	ret
+*/
 /*
 mem_copy:
 	; parameters by value (through stack):
