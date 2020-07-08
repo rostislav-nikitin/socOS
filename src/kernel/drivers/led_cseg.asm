@@ -81,51 +81,50 @@ led_set:
 	;	word	st_led
 	;	byte	led_state
 	nop
-	m_save_r16_r17_r18_r19_X_Y_Z_registers
+	m_save_r16_X_Z_registers
 
-	ldi r16, 0x00
 	; set X to the st_led address
 	in XL, SPL
 	in XH, SPH
-	ldi r17, SZ_R16_R17_R18_R19_X_Y_Z_REGISTERS + SZ_RET_ADDRESS + SZ_STACK_PREVIOUS_OFFSET
-	add XL, r17
+	ldi r16, SZ_R16_X_Z_REGISTERS + SZ_RET_ADDRESS + SZ_STACK_PREVIOUS_OFFSET
+	add XL, r16
+	ldi r16, 0x00
 	adc XH, r16
 	; load st_led address to Y
-	ld YL, X+
-	ld YH, X+
+	ld ZL, X+
+	ld ZH, X+
 	; load led_state
-	ld r17, X+
+	ld r16, X
+	; check state to set
+	cpi r16, LED_STATE_ON
+	brne led_set_off
+
+	push ZH
+	push ZL
+	ldi r16, ST_LED_USED_BIT_MASK_OFFSET
+	add ZL, r16
+	ldi r16, 0x00
+	adc ZH, r16
+	ld r16, Z
+	pop ZL
+	pop ZH
+	rjmp led_set_call_st_device_io_set_port_byte
+
+	led_set_off:
+		ldi r16, 0x00
+	led_set_call_st_device_io_set_port_byte:
+		push r16
+		push ZH
+		push ZL 
+		rcall st_device_io_set_port_byte
+		pop ZL
+		pop ZH
+		pop r16
+	;
 	; set X to st_led
-	mov XL, YL
-	mov XH, YH
-	; load BITx
-	ldi r16, ST_LED_BIT_MASK_OFFSET
-	rcall get_struct_byte_by_X_r16_to_r16
-	mov r18, r16
-	; load PORTx address
-	ldi ZL, ST_LED_PORTX_ADDRESS_OFFSET
-	rcall get_struct_word_by_X_ZL_to_Z
+	m_restore_r16_X_Z_registers
 
-	m_led_set_on:
-		cpi r17, LED_STATE_ON
-		brne m_led_set_off
-		; load PORTx value
-		ld YL, Z
-		or YL, r18
-		st Z, YL
-		rjmp m_led_set_restore_registers
-
-	m_led_set_off:
-		; load PORTx value
-		ld YL, Z
-		com r18
-		and YL, r18
-		st Z, YL
-
-	m_led_set_restore_registers:
-		m_restore_r16_r17_r18_r19_X_Y_Z_registers
-
-		ret
+	ret
 
 .macro m_led_get
 	; input parameters:
@@ -151,14 +150,14 @@ led_get:
 	;	word	st_led
 	; returns:
 	;	byte
-	m_save_r16_r17_r18_r19_X_Y_Z_registers
+	m_save_r16_X_Z_registers
 
-	ldi r16, 0x00
 	; set X to the st_led address
 	in XL, SPL
 	in XH, SPH
-	ldi r17, SZ_R16_R17_R18_R19_X_Y_Z_REGISTERS + SZ_RET_ADDRESS + SZ_STACK_PREVIOUS_OFFSET
-	add XL, r17
+	ldi r16, SZ_R16_X_Z_REGISTERS + SZ_RET_ADDRESS + SZ_STACK_PREVIOUS_OFFSET
+	add XL, r16
+	ldi r16, 0x00
 	adc XH, r16
 	; load st_led address to Y
 	ld ZL, X+
@@ -187,7 +186,7 @@ led_get:
    	led_get_set_result:
 		st X, r16
 
-	m_restore_r16_r17_r18_r19_X_Y_Z_registers
+	m_restore_r16_X_Z_registers
 
 	ret
 
@@ -212,50 +211,50 @@ led_get:
 led_toggle:
 	; input parameters:
 	;	word	st_led
-	m_save_r16_r17_r18_X_Y_Z_registers
+	m_save_r16_X_Z_registers
 
-	ldi r16, 0x00
 	; set X to the st_led address
 	in XL, SPL
 	in XH, SPH
-	ldi r17, SZ_R16_R17_R18_X_Y_Z_REGISTERS + SZ_RET_ADDRESS + SZ_STACK_PREVIOUS_OFFSET
-	add XL, r17
+	ldi r16, SZ_R16_X_Z_REGISTERS + SZ_RET_ADDRESS + SZ_STACK_PREVIOUS_OFFSET
+	add XL, r16
+	ldi r16, 0x00
 	adc XH, r16
 	; load st_led address to Y
-	ld YL, X+
-	ld YH, X+
+	ld ZL, X+
+	ld ZH, X+
 	; push space for result
-	push r18
+	push r16
 	; push st_led address
-	push YH
-	push YL
+	push ZH
+	push ZL
 
 	rcall led_get
 
-	pop YL
-	pop YH
+	pop ZL
+	pop ZH
 	; there result
-	pop r18
+	pop r16
 
-	cpi r18, LED_STATE_ON
+	cpi r16, LED_STATE_ON
 	brne led_toggle_led_on
 	led_toggle_led_off:	
-		ldi r18, LED_STATE_OFF 
+		ldi r16, LED_STATE_OFF 
 		rjmp led_toggle_led_set
 	led_toggle_led_on:
-		ldi r18, LED_STATE_ON
+		ldi r16, LED_STATE_ON
 
 	led_toggle_led_set:
-		push r18
-		push YH
-		push YL
+		push r16
+		push ZH
+		push ZL
 
 		rcall led_set
 
-		pop YL
-		pop YH
-		pop r18
+		pop ZL
+		pop ZH
+		pop r16
 
-	m_restore_r16_r17_r18_X_Y_Z_registers
+	m_restore_r16_X_Z_registers
 
 	ret
