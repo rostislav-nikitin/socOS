@@ -54,20 +54,9 @@ button_get:
 	ld ZH, X+
 	ld ZL, X+
 	; call st_device_io_get_pin_byte
-	push r16
-	push r16
-	push ZH
-	push ZL
 	rcall st_device_io_get_pin_byte
-	; release stack space
-	pop ZL
-	pop ZH
-	; store return value to the r16
-	pop r16
-	; store USED_BIT_MASK to the ZL
-	pop ZL
 	; detect current state
-	and r16, ZL
+	and r23, r22
 	brne button_get_state_up
 	button_get_state_dows:
 		ldi r16, BUTTON_STATE_DOWN

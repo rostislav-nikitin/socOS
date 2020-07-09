@@ -158,17 +158,7 @@ st_device_io_get_pin_byte:
 	;	r23	byte	pin
 	;	r22	byte	used_bit_mask
 
-	push ZL
-	push ZH
-
 	ldi r23, ST_DEVICE_IO_PINX_ADDRESS_OFFSET
-	add ZL, r23
-	ldi r23, 0x00
-	adc ZL, r23
-	ld r23, Z
-
-	pop ZL
-	pop ZH
 
 	rcall st_device_io_get_px_byte
 
@@ -181,17 +171,7 @@ st_device_io_get_port_byte:
 	;	byte	port
 	;	byte	used_bit_mask
 
-	push ZL
-	push ZH
-
 	ldi r23, ST_DEVICE_IO_PORTX_ADDRESS_OFFSET
-	add ZL, r23
-	ldi r23, 0x00
-	adc ZL, r23
-	ld r23, Z
-
-	pop ZL
-	pop ZH
 
 	rcall st_device_io_get_px_byte
 

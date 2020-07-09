@@ -151,7 +151,6 @@ led_get:
 	; returns:
 	;	byte
 	m_save_r16_X_Z_registers
-
 	; set X to the st_led address
 	in XL, SPL
 	in XH, SPH
@@ -163,20 +162,9 @@ led_get:
 	ld ZL, X+
 	ld ZH, X+
 	; call st_device_io_get_pin_byte
-	push r16
-	push r16
-	push ZH
-	push ZL
 	rcall st_device_io_get_port_byte
-	; release stack space
-	pop ZL
-	pop ZH
-	; store return value to the r16
-	pop r16
-	; store USED_BIT_MASK to the ZL
-	pop ZL
 	; compare value
-	and r16, ZL
+	and r23, r22
 	breq led_get_off
 	led_get_on:
 		ldi r16, LED_STATE_ON
