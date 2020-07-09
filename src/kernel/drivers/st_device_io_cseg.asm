@@ -3,8 +3,8 @@
 ; 	[address] - pointer to the address
 ;
 ; parameter passing convention:
-; Z, Y, X, r24, r25, r23, r24 	- address parameters
-; r23, r22, r20, r19, r18	- value parameters
+; Z, Y, X, r24, r25		- address parameters
+; r23, r22, r21, r20, r19, r18	- value parameters
 ; r17, r16			- temporary registers
 ; r0 .. r15			- work with data
 
@@ -117,81 +117,60 @@ st_device_io_init:
 	; input parameter:
 	;	@0	word	[st_device_io] or derived
 	; returns:
-	; 	@1	register
-	push @1
-	ldi @1, low(@0)
-	push @1
-	ldi @1, high(@0)
-	push @1
+	; 	@1	register for pin
+	;	@2	register for used_bit_mask
+	; m_save_r23_Z
+	
+	ldi ZL, low(@0)
+	ldi ZH, high(@0)
 
 	rcall device_io_get_pin_byte
 
-	pop @1
-	pop @1
-	pop @1
+	mov @1, r23
+	mov @2, r22
+
+	; m_restore_r23_Z
 .endm
 
 .macro m_device_io_get_port_byte
 	; input parameter:
 	;	@0	word	[st_device_io] or derived
 	; returns:
-	; 	@1	register
-	push @1
-	ldi @1, low(@0)
-	push @1
-	ldi @1, high(@0)
-	push @1
+	; 	@1	register for pin
+	;	@2	register for used_bit_mask
+	; m_save_r23_Z
+	
+	ldi ZL, low(@0)
+	ldi ZH, high(@0)
 
 	rcall device_io_get_port_byte
 
-	pop @1
-	pop @1
-	pop @1
-.endm
+	mov @1, r23
+	mov @2, r22
 
+	; m_restore_r23_Z
+.endm
 
 st_device_io_get_pin_byte:
 	; parameters:
-	;	word	[st_device_io] or derived
+	;	Z	word	[st_device_io] or derived
 	; returns:
-	;	byte	pin
-	;	byte	used_bit_mask
-	m_save_r16_X_Z_registers
+	;	r23	byte	pin
+	;	r22	byte	used_bit_mask
 
-	; set X to the [st_device_io] or derived
-	in XL, SPL
-	in XH, SPH
-	ldi r16, SZ_R16_X_Z_REGISTERS + SZ_RET_ADDRESS + SZ_STACK_PREVIOUS_OFFSET
-	add XL, r16
-	ldi r16, 0x00
-	adc XH, r16
-	; load [st_device_io] address to Z
-	ld ZL, X+
-	ld ZH, X+
-	; push 2 bytes for result
-	push r16
-	push r16
-	ldi r16, ST_DEVICE_IO_PINX_ADDRESS_OFFSET
-	push r16
-	push ZH
 	push ZL
+	push ZH
+
+	ldi r23, ST_DEVICE_IO_PINX_ADDRESS_OFFSET
+	add ZL, r23
+	ldi r23, 0x00
+	adc ZL, r23
+	ld r23, Z
+
+	pop ZL
+	pop ZH
 
 	rcall st_device_io_get_px_byte
-	; release stack from the input parameters
-	pop r16
-	pop r16
-	pop r16
-	; get value
-	pop r16
-	; get bit mask
-	pop ZL
-
-	
-	; save to return value
-	st X+, r16
-	st X+, ZL
-
-	m_restore_r16_X_Z_registers
 
 	ret
 
@@ -201,42 +180,20 @@ st_device_io_get_port_byte:
 	; returns:
 	;	byte	port
 	;	byte	used_bit_mask
-	m_save_r16_X_Z_registers
 
-	; set X to the [st_device_io] or derived
-	in XL, SPL
-	in XH, SPH
-	ldi r16, SZ_R16_X_Z_REGISTERS + SZ_RET_ADDRESS + SZ_STACK_PREVIOUS_OFFSET
-	add XL, r16
-	ldi r16, 0x00
-	adc XH, r16
-	; load [st_device_io] address to Z
-	ld ZL, X+
-	ld ZH, X+
-	; push 2 bytes for result
-	push r16
-	push r16
-	ldi r16, ST_DEVICE_IO_PORTX_ADDRESS_OFFSET
-	push r16
-	push ZH
 	push ZL
+	push ZH
+
+	ldi r23, ST_DEVICE_IO_PORTX_ADDRESS_OFFSET
+	add ZL, r23
+	ldi r23, 0x00
+	adc ZL, r23
+	ld r23, Z
+
+	pop ZL
+	pop ZH
 
 	rcall st_device_io_get_px_byte
-	; release stack from the input parameters
-	pop r16
-	pop r16
-	pop r16
-	; get value
-	pop r16
-	; get bit mask
-	pop ZL
-
-	
-	; save to return value
-	st X+, r16
-	st X+, ZL
-
-	m_restore_r16_X_Z_registers
 
 	ret
 
@@ -247,38 +204,23 @@ st_device_io_get_px_byte:
 	; returns:
 	;	byte	PINx/PORTx value
 	;	byte	USED_BIT_MASK
-	m_save_r16_r17_X_Z_registers
 
 	; set X to the [st_device_io] or derived
-	in XL, SPL
-	in XH, SPH
-	ldi r16, SZ_R16_R17_X_Z_REGISTERS + SZ_RET_ADDRESS + SZ_STACK_PREVIOUS_OFFSET
-	add XL, r16
-	ldi r16, 0x00
-	adc XH, r16
-	; load [st_device_io] address to Z
-	ld ZL, X+
-	ld ZH, X+
-	; load PORT/PIN ADDRESS OFFSET
-	ld r17, X+
 	; save PORT/PIN ADDRESS OFFSET
-	; load USED_BIT_MASK into the r16
-	ldi r16, ST_DEVICE_IO_USED_BIT_MASK_OFFSET
-	rcall get_struct_byte_by_Z_r16_to_r16
-	push r16
-	; load PINx address to the Y & load PINx value into the r16
-	mov r16, r17
-	rcall get_struct_word_by_Z_r16_to_Z
-	ld r16, Z
-	; pop BIT_MASK_OFFSET pushed from r16
-	pop ZL
-	; detect current state
-	and r16, ZL
-	; save to return value
-	st X+, r16
-	st X+, ZL
-
-	m_restore_r16_r17_X_Z_registers
+	mov r17, r23
+	; load USED_BIT_MASK into the r23
+	ldi r23, ST_DEVICE_IO_USED_BIT_MASK_OFFSET
+	rcall get_struct_byte_by_Z_r23_to_r23
+	; set second return value
+	mov r22, r23
+	; set [PINx]/[PORTx] offset
+	mov r23, r17
+	; get [PINx]/[PORTx]
+	rcall get_struct_word_by_Z_r23_to_Z
+	; load [PINx]/[PORTx] value
+	ld r23, Z
+	; detect current state and set it to the first return value
+	and r23, r22
 
 	ret
 
