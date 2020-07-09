@@ -207,19 +207,9 @@ st_device_io_get_px_byte:
 .macro m_device_io_set_port_byte
 	; input parameter:
 	;	@0	word	[st_device_io] or derived
-	; returns:
-	; 	@1	register
-	push @1
-	ldi @1, low(@0)
-	push @1
-	ldi @1, high(@0)
-	push @1
+	;	@1	byte	value to set
 
 	rcall device_io_set_port_byte
-
-	pop @1
-	pop @1
-	pop @1
 .endm
 
 st_device_io_set_port_byte:
@@ -228,35 +218,26 @@ st_device_io_set_port_byte:
 	;	byte	value
 	m_save_r16_r17_X_Z_registers
 
-	; set X to the [[st_device_io]] or derived
-	in XL, SPL
-	in XH, SPH
-	ldi r16, SZ_R16_R17_X_Z_REGISTERS + SZ_RET_ADDRESS + SZ_STACK_PREVIOUS_OFFSET
-	add XL, r16
-	ldi r16, 0x00
-	adc XH, r16
-	; load [st_device_io] address to Z
-	ld ZL, X+
-	ld ZH, X+
-	; load value to set
-	ld r17, X+
-	; load USED_BIT_MASK into the r16
-	ldi r16, ST_DEVICE_IO_USED_BIT_MASK_OFFSET
-	rcall get_struct_byte_by_Z_r16_to_r16
+	; save value to set
+	mov r16, r23
+	; load USED_BIT_MASK into the r23
+	ldi r23, ST_DEVICE_IO_USED_BIT_MASK_OFFSET
+	rcall get_struct_byte_by_Z_r23_to_r23
 	; calculate set value
-	; com r16
-	mov XL, r16
+	mov r17, r23
 	; load PORTx address to the Y & load PORTx value into the r16
-	ldi r16, ST_DEVICE_IO_PORTX_ADDRESS_OFFSET
-	rcall get_struct_word_by_Z_r16_to_Z
-	ld r16, Z
+	ldi r23, ST_DEVICE_IO_PORTX_ADDRESS_OFFSET
+	rcall get_struct_word_by_Z_r23_to_Z
+	ld r23, Z
 	; calculate new value (add caclulated value to the existing value)
-	and r17, XL
-	com XL
-	and r16, XL
-	or r16, r17
+	com r17
+	and r23, r17
+	com r17
+	and r16, r17
 	; save to return value
-	st Z, r16
+	or r23, r16
+
+	st Z, r23
 
 	m_restore_r16_r17_X_Z_registers
 

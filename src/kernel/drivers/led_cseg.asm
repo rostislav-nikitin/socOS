@@ -99,29 +99,16 @@ led_set:
 	cpi r16, LED_STATE_ON
 	brne led_set_off
 
-	push ZH
-	push ZL
-	ldi r16, ST_LED_USED_BIT_MASK_OFFSET
-	add ZL, r16
-	ldi r16, 0x00
-	adc ZH, r16
-	ld r16, Z
-	pop ZL
-	pop ZH
+
+	ldi r23, ST_LED_USED_BIT_MASK_OFFSET
+	rcall get_struct_byte_by_Z_r23_to_r23
 	rjmp led_set_call_st_device_io_set_port_byte
 
 	led_set_off:
-		ldi r16, 0x00
+		ldi r23, 0x00
 	led_set_call_st_device_io_set_port_byte:
-		push r16
-		push ZH
-		push ZL 
 		rcall st_device_io_set_port_byte
-		pop ZL
-		pop ZH
-		pop r16
-	;
-	; set X to st_led
+
 	m_restore_r16_X_Z_registers
 
 	ret
