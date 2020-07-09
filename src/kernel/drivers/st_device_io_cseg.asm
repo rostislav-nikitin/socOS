@@ -25,14 +25,14 @@
 	ldi ZL, low(@0)
 	ldi ZH, high(@0)
 	; set [DDRx] to the second Y parameter
-	ldi YL, low(@1)
-	ldi YH, high(@1)
+	ldi YL, low(@1 + IO_PORTS_OFFSET)
+	ldi YH, high(@1 + IO_PORTS_OFFSET)
 	; set [PINx] to the third X parameter
-	ldi XL, low(@2)
-	ldi XH, high(@2)
+	ldi XL, low(@2 + IO_PORTS_OFFSET)
+	ldi XH, high(@2 + IO_PORTS_OFFSET)
 	; set [PORTx] to the fouth r23, r24 paramter
-	ldi r24, low(@3)
-	ldi r25, high(@3)
+	ldi r24, low(@3 + IO_PORTS_OFFSET)
+	ldi r25, high(@3 + IO_PORTS_OFFSET)
 	; set USED_BIT_MASK to the fifth parameter r23
 	ldi r23, @4
 	; set TYPE_BIT_MASK to the sixth paramerer r22
@@ -60,18 +60,18 @@ st_device_io_init:
 	push ZL
 	push ZH
 	; store [DDRx] into the [st_device_io]
-	ld Z+, YL
-	ld Z+, YH
+	st Z+, YL
+	st Z+, YH
 	; store [PINx] into the [st_device_io]
-	ld Z+, XL
-	ls Z+, XH
+	st Z+, XL
+	st Z+, XH
 	; store [PORTx] into the [st_device_io]
-	ld Z+, r24
-	ld Z+, r25
+	st Z+, r24
+	st Z+, r25
 	; store [USED_BIT_MASK] into the [st_device_io]
-	ld Z+, r23
+	st Z+, r23
 	; stotr [TYPE_BIT_MASK] into the [st_device_io]
-	ld Z, r22
+	st Z, r22
 	; restore Z
 	pop ZH
 	pop ZL
