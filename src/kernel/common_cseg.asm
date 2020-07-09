@@ -1,5 +1,5 @@
 ; extensions
-.macro m_save_r23_r24_X_Y_Z_registers
+.macro m_save_r16_r17_r23_r24_X_Y_Z_registers
         push ZL
         push ZH
         push YL
@@ -13,7 +13,7 @@
         push r24
 .endm
 
-.macro m_restore_r23_r24_X_Y_Z_registers
+.macro m_restore_r16_r17_r23_r24_X_Y_Z_registers
         pop r24
         out SREG, r24
 
