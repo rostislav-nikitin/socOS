@@ -19,7 +19,7 @@
 	;	@5	byte	TYPE_BIT_MASK (0 - Input, 1 - Output)
 	; save registers
 
-	m_save_r23_r24_X_Y_Z_registers
+	m_save_r16_r17_r23_r24_X_Y_Z_registers
 
 	; set [st_device_io] to the first Z parameter
 	ldi ZL, low(@0)
@@ -41,7 +41,7 @@
 	rcall st_device_io_init
 
 	; restore registers
-	m_restore_r23_r24_X_Y_Z_registers
+	m_restore_r16_r17_r23_r24_X_Y_Z_registers
 .endm
 
 st_device_io_init:
@@ -52,7 +52,6 @@ st_device_io_init:
 	;	word	[PORTx]
 	;	byte 	USED_BIT_MASK
 	;	byte	TYPE_BIT_MASK (0 - Input, 1 - Output)	
-	m_save_r16_r17_r18_r19_X_Y_Z_registers
 	; set X to the [st_device_io] address
 
 	ldi r16, 0x00
@@ -111,8 +110,6 @@ st_device_io_init:
 	st Y, r17
 	; store back PORTx
 	st Z, r16
-
-	m_restore_r16_r17_r18_r19_X_Y_Z_registers
 
 	ret
 
