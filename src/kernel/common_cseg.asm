@@ -338,6 +338,21 @@ get_struct_byte_by_Z_r16_to_r16:
 
 	ret
 
+get_struct_byte_by_Z_r23_to_r23:
+	; parameters
+	; X - st_address
+	; r23 - offset / result
+	push ZL
+	push ZH
+	add ZL, r23
+	eor r23, r23
+	adc ZH, r23
+	ld r23, Z
+	pop ZH
+	pop ZL
+
+	ret
+
 get_struct_word_by_X_ZL_to_Z:
 	; parameters
 	; X - st_address
@@ -371,6 +386,29 @@ get_struct_word_by_Z_r16_to_Z:
 	ld ZH, Z
 	mov ZL, r16
 	; return (Z contains target address)
+	ret
+
+get_struct_word_by_Z_r23_to_Z:
+	; parameters
+	; Z - [st_*]
+	; r23 - offset
+	; result:
+	; ZL - L
+	; ZH - H
+	; add offset to the [st_*] in Z
+	push r23
+
+	add ZL, r23
+	eor r23, r23
+	adc ZH, r23
+	; load address to the Z
+	ld r23, Z+
+	ld ZH, Z
+	mov ZL, r23
+	; return (Z contains target address)
+	
+	pop r23
+
 	ret
 /*
 get_second_param_address_and_st_device_io_address:
