@@ -43,19 +43,23 @@
 .endm
 
 .macro m_save_r16_Z_SREG_registers
-	push r16
-	in r16, SREG
+	; save SREG
+	;push r16
+	;in r16, SREG
+	;push r16
+	;pop r16
+	; save other regs
 	push r16
 	push ZL
-	pysh ZH
+	push ZH
 .endm
 
 .macro m_restore_r16_Z_SREG_registers
 	pop ZH
 	pop ZL
 	pop r16
-	out SREG, r16
-	pop r16
+	;out SREG, r16
+	;pop r16
 .endm
 
 .macro m_save_r16_r17_registers
@@ -649,6 +653,7 @@ get_struct_word_by_Z_r23_to_Z:
 	pop r23
 
 	ret
+
 set_struct_byte_by_Z_r16_r17:
 	m_save_r16_Z_SREG_registers
 

@@ -84,7 +84,7 @@ st_encoder_init:
 
 	rcall encoder_detect
 
-	ldi @1, r23
+	mov @1, r23
 
 	m_restore_r23_Z_registers
 
@@ -92,10 +92,10 @@ st_encoder_init:
 
 encoder_detect:
 	; parameters:
-	;	word	[st_encoder]
+	;	Z	word	[st_encoder]
 	; returns:
-	;	byte
-	m_save_r1_r2_r3_r16_r23_SREG_registers
+	;	r23	byte	state
+	m_save_r1_r2_r3_r16_SREG_registers
 
 	; load BIT1x_MASK into the r17
 	ldi r23, ST_ENCODER_BIT1_MASK_OFFSET
@@ -146,6 +146,6 @@ encoder_detect:
 		mov r17, r23
 		rcall set_struct_byte_by_Z_r16_r17
 	encoder_detect_end:
-	i	m_restore_r1_r2_r3_r16_r23_SREG_registers
+		m_restore_r1_r2_r3_r16_SREG_registers
 
 	ret
