@@ -46,7 +46,7 @@
 	push r16
 .endm
 
-.macro m_save_r16_r17_r18_SREG_registers
+.macro m_restore_r16_r17_r18_SREG_registers
 	pop r16
 	out SREG, r16
 	pop r18
@@ -59,6 +59,18 @@
 .endm
 
 .macro m_restore_r23_registers
+	pop r23
+.endm
+
+.macro m_save_r23_SREG_registers
+	push r23
+	push ZL
+	push ZH
+.endm
+
+.macro m_restore_r23_SREG_registers
+	pop ZH
+	pop ZL
 	pop r23
 .endm
 

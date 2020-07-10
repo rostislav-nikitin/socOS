@@ -19,7 +19,7 @@
 	;	@2	word [PORTx]
 	;	@3	word USED_BIT_MASK
 	; save registers
-	m_save_Z_register
+	m_save_Z_registers
 	; init (st_device_io)st_led
 	m_st_device_io_init @0, @1, 0x0000, @2, @3, @3
 	; init led
@@ -28,7 +28,7 @@
 	rcall led_init
 	;release stack from parameters
 	;restore registers
-	m_restore_Z_register
+	m_restore_Z_registers
 .endm
 
 led_init:
@@ -117,11 +117,12 @@ led_get:
 	breq led_get_off
 	led_get_on:
 		ldi r23, LED_STATE_ON
-		rjmp  led_get_set_result
+		rjmp  led_get_end
 	led_get_off:
 		ldi r23, LED_STATE_OFF
 
-	m_restore_r23_SREG_registers
+	led_get_end:
+		m_restore_r23_SREG_registers
 
 	ret
 
