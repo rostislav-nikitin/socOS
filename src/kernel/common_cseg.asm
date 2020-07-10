@@ -12,6 +12,24 @@
 	pop r16
 .endm
 
+.macro m_save_r1_r2_r3_r16_SREG_registers
+	push r1
+	push r2
+	push r3
+	push r16
+	in r16, SREG
+	push r16
+.endm
+
+.macro m_restore_r1_r2_r3_r16_SREG_registers
+	pop r16
+	out SREG, r16
+	pop r16
+	pop r3
+	pop r2
+	pop r1
+.endm
+
 .macro m_save_r16_SREG_registers
 	push r16
 	in r16, SREG
@@ -21,6 +39,32 @@
 .macro m_restore_r16_SREG_registers
 	pop r16
 	out SREG, r16
+	pop r16
+.endm
+
+.macro m_save_r16_Z_SREG_registers
+	push r16
+	in r16, SREG
+	push r16
+	push ZL
+	pysh ZH
+.endm
+
+.macro m_restore_r16_Z_SREG_registers
+	pop ZH
+	pop ZL
+	pop r16
+	out SREG, r16
+	pop r16
+.endm
+
+.macro m_save_r16_r17_registers
+	push r16
+	push r17
+.endm
+
+.macro m_restore_r16_r17_registers
+	pop r17
 	pop r16
 .endm
 
@@ -64,26 +108,62 @@
 
 .macro m_save_r23_SREG_registers
 	push r23
-	push ZL
-	push ZH
+	in r23, SREG
+	push r23
 .endm
 
 .macro m_restore_r23_SREG_registers
-	pop ZH
-	pop ZL
+	pop r23
+	out SREG, r23
 	pop r23
 .endm
 
 .macro m_save_r22_SREG_registers
 	push r22
+	in r22, SREG
+	push r22
+.endm
+
+.macro m_restore_r22_SREG_registers
+	pop r22
+	out SREG, r22
+	pop r22
+.endm
+
+.macro m_save_r21_r22_r23_Z_registers
+	push r21
+	push r22
+	push r23
 	push ZL
 	push ZH
 .endm
 
-.macro m_restore_r22_SREG_registers
+.macro m_restore_r21_r22_r23_Z_registers
 	pop ZH
 	pop ZL
+	pop r23
 	pop r22
+	pop r21
+.endm
+
+.macro m_save_r21_r22_r23_Z_SREG_registers
+	push r21
+	in r21, SREG
+	push r21
+	push r22
+	push r23
+	push ZL
+	push ZH
+.endm
+
+.macro m_restore_r21_r22_r23_Z_SREG_registers
+	pop ZH
+	pop ZL
+	pop r23
+	pop r22
+	pop r21
+	out SREG, r21
+	pop r21
 .endm
 
 .macro m_save_Z_registers
@@ -569,6 +649,18 @@ get_struct_word_by_Z_r23_to_Z:
 	pop r23
 
 	ret
+set_struct_byte_by_Z_r16_r17:
+	m_save_r16_Z_SREG_registers
+
+	add ZL, r16
+	ldi r16, 0x00
+	adc ZH, r16
+	st Z, r17
+
+	m_restore_r16_Z_SREG_registers	
+
+	ret
+
 /*
 get_second_param_address_and_st_device_io_address:
 	; input parameters:
