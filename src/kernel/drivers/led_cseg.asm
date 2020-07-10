@@ -14,54 +14,44 @@
 
 .macro m_led_init
 	; input parameters:
-	;	@0	word st_led
-	;	@1	word DDRx
-	;	@2	word PORTx
+	;	@0	word [st_led:st_device_io]
+	;	@1	word [DDRx]
+	;	@2	word [PORTx]
 	;	@3	word USED_BIT_MASK
 	; save registers
-	push r16
+	m_save_Z_register
 	; init (st_device_io)st_led
 	m_st_device_io_init @0, @1, 0x0000, @2, @3, @3
 	; init led
-	ldi r16, high(@0)
-	push r16
-	ldi r16, low(@0)
-	push r16
+	ldi ZL, low(@0)
+	ldi ZH, high(@0)
 	rcall led_init
 	;release stack from parameters
-	pop r16
-	pop r16
 	;restore registers
-	pop r16
+	m_restore_Z_register
 .endm
 
 led_init:
 	; input parameters:
-	;	word	st_led
+	;	Z	word	[st_led:st_device_io]
 	; currently no additional logic
 	ret
 
 .macro m_led_set
 	; input parameters:
-	;	@0	word	st_led
+	;	@0	word	[st_led:st_device_io]
 	;	@1	byte 	led_state
 	; save registers
-	push r18
+	m_save_r23_Z_registers
 	; push parameters
-	ldi r18, @1
-	push r18
-	ldi r18, high(@0)
-	push r18
-	ldi r18, low(@0)
-	push r18
+	ldi r23, @1
+	ldi ZL, low(@0)
+	ldi ZH, high(@0)
 	; call procedure
 	rcall led_set
 	; release stack from parameters
-	pop r18
-	pop r18
-	pop r18
 	; restore registers
-	pop r18
+	m_restore_r23_Z_registers
 .endm
 
 .macro  m_led_on
@@ -80,25 +70,11 @@ led_set:
 	; input parameters:
 	;	word	st_led
 	;	byte	led_state
-	nop
-	m_save_r16_X_Z_registers
-
-	; set X to the st_led address
-	in XL, SPL
-	in XH, SPH
-	ldi r16, SZ_R16_X_Z_REGISTERS + SZ_RET_ADDRESS + SZ_STACK_PREVIOUS_OFFSET
-	add XL, r16
-	ldi r16, 0x00
-	adc XH, r16
-	; load st_led address to Y
-	ld ZL, X+
-	ld ZH, X+
+	m_save_SREG_registers
 	; load led_state
-	ld r16, X
 	; check state to set
-	cpi r16, LED_STATE_ON
+	cpi r23, LED_STATE_ON
 	brne led_set_off
-
 
 	ldi r23, ST_LED_USED_BIT_MASK_OFFSET
 	rcall get_struct_byte_by_Z_r23_to_r23
@@ -109,127 +85,76 @@ led_set:
 	led_set_call_st_device_io_set_port_byte:
 		rcall st_device_io_set_port_byte
 
-	m_restore_r16_X_Z_registers
+	m_restore_SREG_registers
 
 	ret
 
 .macro m_led_get
 	; input parameters:
-	;	@0	word	st_led
+	;	@0	word	[st_led:st_device_io]
 	; returns:
 	;	@1	register
+	m_save_Z_registers
 
-	push @1
-	ldi @1, high(@0)
-	push @1
-	ldi @1, low(@0)
-	push @1
+	ldi ZL, low(@0)
+	ldi ZH, high(@0)
 
 	rcall led_get
 
-	pop @1
-	pop @1
-	pop @1
+	m_restore_Z_registers
 .endm
 
 led_get:
 	; input parameters:
-	;	word	st_led
+	;	Z	word	[st_led:st_device_io]
 	; returns:
-	;	byte
-	m_save_r16_X_Z_registers
-	; set X to the st_led address
-	in XL, SPL
-	in XH, SPH
-	ldi r16, SZ_R16_X_Z_REGISTERS + SZ_RET_ADDRESS + SZ_STACK_PREVIOUS_OFFSET
-	add XL, r16
-	ldi r16, 0x00
-	adc XH, r16
-	; load st_led address to Y
-	ld ZL, X+
-	ld ZH, X+
+	;	r23	byte	current led state
+	m_save_r23_SREG_registers
 	; call st_device_io_get_pin_byte
 	rcall st_device_io_get_port_byte
 	; compare value
 	and r23, r22
 	breq led_get_off
 	led_get_on:
-		ldi r16, LED_STATE_ON
+		ldi r23, LED_STATE_ON
 		rjmp  led_get_set_result
 	led_get_off:
-		ldi r16, LED_STATE_OFF
-   	led_get_set_result:
-		st X, r16
+		ldi r23, LED_STATE_OFF
 
-	m_restore_r16_X_Z_registers
+	m_restore_r23_SREG_registers
 
 	ret
 
 .macro m_led_toggle
 	; input parameters:
 	; 	@0	word	st_led
-	; save registers
-	push r16
-	; push parameters
-	ldi r16, high(@0)
-	push r16
-	ldi r16, low(@0)
-	push r16
+	m_save_Z_registers
+
+	ldi ZL, low(@0)
+	ldi ZH, high(@0)
+
 	rcall led_toggle
-	; release stack from parameters
-	pop r16
-	pop r16
-	; restore registers
-	pop r16
+
+	m_restore_Z_registers
 .endm
 
 led_toggle:
 	; input parameters:
-	;	word	st_led
+	;	Z	word	[st_led:st_device_io]
 	m_save_r16_X_Z_registers
-
-	; set X to the st_led address
-	in XL, SPL
-	in XH, SPH
-	ldi r16, SZ_R16_X_Z_REGISTERS + SZ_RET_ADDRESS + SZ_STACK_PREVIOUS_OFFSET
-	add XL, r16
-	ldi r16, 0x00
-	adc XH, r16
-	; load st_led address to Y
-	ld ZL, X+
-	ld ZH, X+
-	; push space for result
-	push r16
-	; push st_led address
-	push ZH
-	push ZL
 
 	rcall led_get
 
-	pop ZL
-	pop ZH
-	; there result
-	pop r16
-
-	cpi r16, LED_STATE_ON
+	cpi r23, LED_STATE_ON
 	brne led_toggle_led_on
 	led_toggle_led_off:	
-		ldi r16, LED_STATE_OFF 
+		ldi r23, LED_STATE_OFF 
 		rjmp led_toggle_led_set
 	led_toggle_led_on:
-		ldi r16, LED_STATE_ON
+		ldi r23, LED_STATE_ON
 
 	led_toggle_led_set:
-		push r16
-		push ZH
-		push ZL
-
 		rcall led_set
-
-		pop ZL
-		pop ZH
-		pop r16
-
 	m_restore_r16_X_Z_registers
 
 	ret

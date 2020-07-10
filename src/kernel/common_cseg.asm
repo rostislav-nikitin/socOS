@@ -1,5 +1,17 @@
 ; extensions
 
+.macro m_save_SREG_registers
+	push r16
+	in r16, SREG
+	push r16
+.endm
+
+.macro m_restore_SREG_registers
+	pop r16
+	out SREG, r16
+	pop r16
+.endm
+
 .macro m_save_r16_SREG_registers
 	push r16
 	in r16, SREG
