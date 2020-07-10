@@ -11,7 +11,7 @@
 
 .macro m_button_init
 	; input parameters:
-	;	@0 	word	[st_button]
+	;	@0 	word	[st_button:st_device_io]
 	;	@1	word	[DDRx]
 	;	@2	word 	[PINx]
 	;	@3	word 	[PORTx]
@@ -23,18 +23,15 @@
 	; input parameter:
 	;	@0	word	[st_button]
 	; returns:
-	; 	@1	register
-	push @1
-	ldi @1, low(@0)
-	push @1
-	ldi @1, high(@0)
-	push @1
+	; 	@1	reg
+	m_save_Z_registers
+
+	ldi ZL, low(@0)
+	ldi ZH, high(@0)
 
 	rcall button_get
 
-	pop @1
-	pop @1
-	pop @1
+	m_restore_Z_registers
 .endm
 
 button_get:
@@ -42,30 +39,22 @@ button_get:
 	;	word	[st_button]
 	; returns:
 	;	byte
-	m_save_r16_X_Z_registers
-	; set X to the [st_button] address
-	in XL, SPL
-	in XH, SPH
-	ldi r16, SZ_R16_X_Z_REGISTERS + SZ_RET_ADDRESS + SZ_STACK_PREVIOUS_OFFSET
-	add XL, r16
-	ldi r16, 0x00
-	adc XH, r16
-	; load [st_button] address to Z
-	ld ZH, X+
-	ld ZL, X+
-	; call st_device_io_get_pin_byte
+	m_save_r22_SREG_registers
+	;
 	rcall st_device_io_get_pin_byte
 	; detect current state
 	and r23, r22
+	;
+
 	brne button_get_state_up
 	button_get_state_dows:
-		ldi r16, BUTTON_STATE_DOWN
+		ldi r23, BUTTON_STATE_DOWN
 		rjmp button_get_end
 	button_get_state_up:
-		ldi r16, BUTTON_STATE_UP
+		ldi r23, BUTTON_STATE_UP
+
 	button_get_end:
-		; save to return value
-		st X, r16
-		m_restore_r16_X_Z_registers
+
+	m_restore_r22_SREG_registers
 
 	ret

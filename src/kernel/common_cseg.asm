@@ -74,6 +74,18 @@
 	pop r23
 .endm
 
+.macro m_save_r22_SREG_registers
+	push r22
+	push ZL
+	push ZH
+.endm
+
+.macro m_restore_r22_SREG_registers
+	pop ZH
+	pop ZL
+	pop r22
+.endm
+
 .macro m_save_Z_registers
 	push ZL
 	push ZH

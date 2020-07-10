@@ -156,6 +156,7 @@ led_toggle:
 
 	led_toggle_led_set:
 		rcall led_set
+
 	m_restore_r16_X_Z_registers
 
 	ret
