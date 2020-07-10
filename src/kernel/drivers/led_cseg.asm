@@ -85,6 +85,7 @@ led_set:
 	led_set_call_st_device_io_set_port_byte:
 		rcall st_device_io_set_port_byte
 
+	led_set_end:
 	m_restore_SREG_registers
 
 	ret
@@ -109,7 +110,7 @@ led_get:
 	;	Z	word	[st_led:st_device_io]
 	; returns:
 	;	r23	byte	current led state
-	m_save_r23_SREG_registers
+	m_save_r22_SREG_registers
 	; call st_device_io_get_pin_byte
 	rcall st_device_io_get_port_byte
 	; compare value
@@ -122,7 +123,7 @@ led_get:
 		ldi r23, LED_STATE_OFF
 
 	led_get_end:
-		m_restore_r23_SREG_registers
+		m_restore_r22_SREG_registers
 
 	ret
 
@@ -142,14 +143,15 @@ led_get:
 led_toggle:
 	; input parameters:
 	;	Z	word	[st_led:st_device_io]
-	m_save_r16_X_Z_registers
+	m_save_r23_SREG_registers
 
 	rcall led_get
 
 	cpi r23, LED_STATE_ON
 	brne led_toggle_led_on
+
 	led_toggle_led_off:	
-		ldi r23, LED_STATE_OFF 
+		ldi r23, LED_STATE_OFF
 		rjmp led_toggle_led_set
 	led_toggle_led_on:
 		ldi r23, LED_STATE_ON
@@ -157,6 +159,6 @@ led_toggle:
 	led_toggle_led_set:
 		rcall led_set
 
-	m_restore_r16_X_Z_registers
+	m_restore_r23_SREG_registers
 
 	ret

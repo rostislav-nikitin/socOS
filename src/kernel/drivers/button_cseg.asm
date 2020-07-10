@@ -24,14 +24,16 @@
 	;	@0	word	[st_button]
 	; returns:
 	; 	@1	reg
-	m_save_Z_registers
+	m_save_r23_Z_registers
 
 	ldi ZL, low(@0)
 	ldi ZH, high(@0)
 
 	rcall button_get
 
-	m_restore_Z_registers
+	mov @1, r23
+
+	m_restore_r23_Z_registers
 .endm
 
 button_get:
