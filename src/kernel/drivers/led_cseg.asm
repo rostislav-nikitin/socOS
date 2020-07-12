@@ -77,7 +77,7 @@ led_set:
 	brne led_set_off
 
 	ldi r23, ST_LED_USED_BIT_MASK_OFFSET
-	rcall get_struct_byte_by_Z_r23_to_r23
+	rcall get_struct_byte
 	rjmp led_set_call_st_device_io_set_port_byte
 
 	led_set_off:

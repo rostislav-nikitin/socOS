@@ -51,24 +51,24 @@ st_encoder_init:
 	;	byte	BIT1x_MASK
 	;	byte	BIT2x_MASK
 	;	byte	ENCODER_STATE
-	m_save_r16_r17_registers
 	; set X to the [st_encoder] address
 	; init st_encoder
 	; init st_encoder
+	push r21
+	push r22
+	push r23
 
-	ldi r16, ST_ENCODER_BIT1_MASK_OFFSET
-	mov r17, r23
-	rcall set_struct_byte_by_Z_r16_r17
+	ldi r23, ST_ENCODER_BIT1_MASK_OFFSET
+	pop r22
+	rcall set_struct_byte
 
-	ldi r16, ST_ENCODER_BIT2_MASK_OFFSET
-	mov r17, r22
-	rcall set_struct_byte_by_Z_r16_r17
+	ldi r23, ST_ENCODER_BIT2_MASK_OFFSET
+	pop r22
+	rcall set_struct_byte
 
-	ldi r16, ST_ENCODER_STATE
-	mov r17, r21
-	rcall set_struct_byte_by_Z_r16_r17
-
-	m_restore_r16_r17_registers
+	ldi r23, ST_ENCODER_STATE
+	pop r22
+	rcall set_struct_byte
 
 	ret
 
@@ -99,19 +99,26 @@ encoder_detect:
 
 	; load BIT1x_MASK into the r17
 	ldi r23, ST_ENCODER_BIT1_MASK_OFFSET
-	rcall get_struct_byte_by_Z_r23_to_r23
+	rcall get_struct_byte
 	mov r1, r23 ; r17 -> r1
 	; load BIT2x_MASK into the r18
 	ldi r23, ST_ENCODER_BIT2_MASK_OFFSET
-	rcall get_struct_byte_by_Z_r23_to_r23
+	rcall get_struct_byte
 	mov r2, r23 ; r18 -> r2
 	; load PINx address to the Y & load PINx value into the ZH: r19
+	; save Z
+	push ZL
+	push ZH
+	; load [PINx]
 	ldi r23, ST_ENCODER_PINX_ADDRESS_OFFSET
-	rcall get_struct_word_by_Z_r23_to_Z
+	rcall get_struct_word
+	; load PINx (value)
 	ld r3, Z ; r19 -> r3
-	; load previous state to the ZL
+	pop ZH
+	pop ZL
+	; load previos state
 	ldi r23, ST_ENCODER_STATE
-	rcall get_struct_byte_by_Z_r23_to_r23
+	rcall get_struct_byte
 	; r16 -> r23
 	; prepare mask
 	ldi r16, 0x00
@@ -121,7 +128,7 @@ encoder_detect:
 	and r3, r16
 	encoder_detect_init:
 		brne encoder_detect_acceptable
-		ldi r23, ENCODER_STATE_NONE
+		ldi r22, ENCODER_STATE_NONE
 		rjmp encoder_detect_save
 
 	encoder_detect_acceptable:
@@ -131,20 +138,20 @@ encoder_detect:
 	encoder_detect_backward:
 		cp r3, r1
 		brne encoder_detect_forward
-		ldi r23, ENCODER_STATE_BACKWARD
+		ldi r22, ENCODER_STATE_BACKWARD
 		rjmp encoder_detect_save
 
 	encoder_detect_forward:
 		cp r3, r2
 		brne encoder_detect_end
-		ldi r23, ENCODER_STATE_FORWARD
+		ldi r22, ENCODER_STATE_FORWARD
 		rjmp encoder_detect_save
 
 	encoder_detect_save:
 		; save to previous state
-		ldi r16, ST_ENCODER_STATE
-		mov r17, r23
-		rcall set_struct_byte_by_Z_r16_r17
+		ldi r23, ST_ENCODER_STATE
+		rcall set_struct_byte
+		mov r23, r22
 	encoder_detect_end:
 		m_restore_r1_r2_r3_r16_SREG_registers
 

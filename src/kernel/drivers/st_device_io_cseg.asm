@@ -194,13 +194,13 @@ st_device_io_get_px_byte:
 	mov r16, r23
 	; load USED_BIT_MASK into the r23
 	ldi r23, ST_DEVICE_IO_USED_BIT_MASK_OFFSET
-	rcall get_struct_byte_by_Z_r23_to_r23
+	rcall get_struct_byte
 	; set second return value
 	mov r22, r23
 	; set [PINx]/[PORTx] offset
 	mov r23, r16
 	; get [PINx]/[PORTx]
-	rcall get_struct_word_by_Z_r23_to_Z
+	rcall get_struct_word
 	; load [PINx]/[PORTx] value
 	ld r23, Z
 	; detect current state and set it to the first return value
@@ -227,12 +227,12 @@ st_device_io_set_port_byte:
 	mov r16, r23
 	; load USED_BIT_MASK into the r23
 	ldi r23, ST_DEVICE_IO_USED_BIT_MASK_OFFSET
-	rcall get_struct_byte_by_Z_r23_to_r23
+	rcall get_struct_byte
 	; calculate set value
 	mov r17, r23
 	; load PORTx address to the Y & load PORTx value into the r16
 	ldi r23, ST_DEVICE_IO_PORTX_ADDRESS_OFFSET
-	rcall get_struct_word_by_Z_r23_to_Z
+	rcall get_struct_word
 	ld r23, Z
 	; calculate new value (add caclulated value to the existing value)
 	com r17

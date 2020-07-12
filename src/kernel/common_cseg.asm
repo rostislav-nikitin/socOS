@@ -43,12 +43,8 @@
 .endm
 
 .macro m_save_r16_Z_SREG_registers
-	; save SREG
-	;push r16
-	;in r16, SREG
-	;push r16
-	;pop r16
-	; save other regs
+	push r16
+	in r16, SREG
 	push r16
 	push ZL
 	push ZH
@@ -58,8 +54,8 @@
 	pop ZH
 	pop ZL
 	pop r16
-	;out SREG, r16
-	;pop r16
+	out SREG, r16
+	pop r16
 .endm
 
 .macro m_save_r16_r17_registers
@@ -214,6 +210,46 @@
 	pop ZL
 	pop r23
 	pop r22
+.endm
+
+.macro m_save_r23_X_Y_Z_registers
+	push XL
+	push XH
+	push YL
+	push YH
+	push ZL
+	push ZH
+	push r23
+.endm
+
+.macro m_restore_r23_X_Y_Z_registers
+	pop r23
+	pop ZH
+	pop ZL
+	pop YH
+	pop YL
+	pop XH
+	pop XL
+.endm
+
+.macro m_save_r23_Y_Z_registers
+	push XL
+	push XH
+	push YL
+	push YH
+	push ZL
+	push ZH
+	push r23
+.endm
+
+.macro m_restore_r23_Y_Z_registers
+	pop r23
+	pop ZH
+	pop ZL
+	pop YH
+	pop YL
+	pop XH
+	pop XL
 .endm
 
 .macro m_save_r22_r23_r24_r25_X_Y_Z_registers
@@ -514,74 +550,35 @@
 	pop r16
 .endm
 
+
 mem_copy:
 	; save registers
-	; push r24
-	; X - source
+	; Z - source
 	; Y - destination
-	; r16 - length
-	; r17 - temp
-	push r16
-	push r17
-	push XL
-	push XH
-	push YL
-	push YH
+	; r23 - length
+	; r16 - temp
+	m_save_r16_SREG_registers
+	m_save_r23_Y_Z_registers
 
 	mem_copy_loop:
-		cpi r16, 0x00
+		cpi r23, 0x00
 		breq mem_copy_loop_exit
 
-		ld r17, X+
-		st Y+, r17
+		ld r16, Z+
+		st Y+, r16
 
-		dec r16
+		dec r23
 
 		rjmp mem_copy_loop
 
 	mem_copy_loop_exit:		
 
-	; restore registers
-	pop YH
-	pop YL
-	pop XH
-	pop XL
-	pop r17
-	pop r16
+	m_restore_r23_Y_Z_registers
+	m_restore_r16_SREG_registers
 
 	ret
 
-get_struct_byte_by_X_r16_to_r16:
-	; parameters
-	; X - st_address
-	; r16 - offset / result
-	push XL
-	push XH
-	add XL, r16
-	eor r16, r16
-	adc XH, r16
-	ld r16, X
-	pop XH
-	pop XL
-
-	ret
-
-get_struct_byte_by_Z_r16_to_r16:
-	; parameters
-	; X - st_address
-	; r16 - offset / result
-	push ZL
-	push ZH
-	add ZL, r16
-	eor r16, r16
-	adc ZH, r16
-	ld r16, Z
-	pop ZH
-	pop ZL
-
-	ret
-
-get_struct_byte_by_Z_r23_to_r23:
+get_struct_byte:
 	; parameters
 	; X - st_address
 	; r23 - offset / result
@@ -596,42 +593,7 @@ get_struct_byte_by_Z_r23_to_r23:
 
 	ret
 
-get_struct_word_by_X_ZL_to_Z:
-	; parameters
-	; X - st_address
-	; r16 - offset / result L
-	; r17 - result H
-	push XL
-	push XH
-	add XL, ZL
-	eor ZL, ZL
-	adc XH, ZL
-	ld ZL, X+
-	ld ZH, X
-	pop XH
-	pop XL
-
-	ret
-
-get_struct_word_by_Z_r16_to_Z:
-	; parameters
-	; Z - [st_*]
-	; r16 - offset
-	; result:
-	; ZL - L
-	; ZH - H
-	; add offset to the [st_*] in Z
-	add ZL, r16
-	eor r16, r16
-	adc ZH, r16
-	; load address to the Z
-	ld r16, Z+
-	ld ZH, Z
-	mov ZL, r16
-	; return (Z contains target address)
-	ret
-
-get_struct_word_by_Z_r23_to_Z:
+get_struct_word:
 	; parameters
 	; Z - [st_*]
 	; r23 - offset
@@ -654,96 +616,14 @@ get_struct_word_by_Z_r23_to_Z:
 
 	ret
 
-set_struct_byte_by_Z_r16_r17:
+set_struct_byte:
 	m_save_r16_Z_SREG_registers
 
-	add ZL, r16
+	add ZL, r23
 	ldi r16, 0x00
 	adc ZH, r16
-	st Z, r17
+	st Z, r22
 
 	m_restore_r16_Z_SREG_registers	
 
 	ret
-
-/*
-get_second_param_address_and_st_device_io_address:
-	; input parameters:
-	; return value:
-	;	word	address of the second parameter of the previous procedure
-	;	word	address ot the st_dev
-	m_save_r16_X_Z_registers
-	; set X to the [dev: st_device_io]
-	in XL, SPL
-	in XH, SPH
-	ldi r16, SZ_R16_X_Z_REGISTERS + SZ_RET_ADDRESS + SZ_STACK_PREVIOUS_OFFSET
-	add XL, r16
-	ldi r16, 0x00
-	adc XH, r16
-
-	mov ZL, XL
-	mov ZH, XH
-
-	; set X to the address of the second parameter (after the dev: st_device_io) of the previous procedure
-	ldi r16, (2 * SZ_ADDRESS) + SZ_RET_ADDRESS + SZ_ADDRESS
-	add ZL, r16
-	ldi r16, 0x00
-	adc ZH, r16
-	; first return value
-	st X+, ZL
-	st X+, ZH
-	; get [st_dev: st_device_io]
-	ld r16, Z+
-	ld ZH, Z
-	; second return parameter
-	st X+, r16
-	st X, ZH
-
-	m_restore_r16_X_Z_registers
-
-	ret
-*/
-/*
-mem_copy:
-	; parameters by value (through stack):
-	;	word	from
-	;	word	to
-	;	word	length
-
-	; save registers
-	m_save_r16_r17_r18_X_Y_registers
-
-	ldi r16, 0x00
-	in YL, SPL
-	in YH, SPH
-	add YL, SZ_R16_R17_R18_X_Y_REGISTERS +  SZ_RET_ADDRESS + SZ_STACK_PREVIOUS_OFFSET
-	adc YH, r16
-
-	ld XH, Y+
-	ld XL, Y+
-	ld r16, Y+
-	ld r17, Y+
-	ld r18, Y
-	mov YH, r16
-	mov YL, r17
-
-	; init index
-	ldi r16, 0x00
-	mem_copy_loop:
-		cpi r16, r18
-		brge mem_copy_loop_exit
-
-		ld r18, X+
-		st Y+, r18
-
-		inc r16
-
-		rjmp mem_copy_loop
-
-	mem_copy_loop_exit:
-
-	; restore registers
-	m_restore_r16_r17_r18_X_Y_registers
-	
-	ret
-*/
