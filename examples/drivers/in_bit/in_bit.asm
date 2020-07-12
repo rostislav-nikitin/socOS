@@ -10,7 +10,7 @@ rcall main_thread
 .include "../../../src/kernel/common_def.asm"
 ;.include "../../../src/kernel/thread_def.asm"
 .include "../../../src/kernel/drivers/st_device_io_def.asm"
-.include "../../../src/kernel/drivers/bit_input_def.asm"
+.include "../../../src/kernel/drivers/in_bit_def.asm"
 .include "../../../src/kernel/drivers/switch_def.asm"
 .include "../../../src/kernel/drivers/led_def.asm"
 
@@ -19,7 +19,7 @@ rcall main_thread
 ; custom data & descriptors
 .dseg
 	led1:		.BYTE SZ_ST_LED
-	bit_input1:	.BYTE SZ_ST_BIT_INPUT
+	in_bit1:	.BYTE SZ_ST_IN_BIT
 
 ; main thread
 .cseg
@@ -29,7 +29,7 @@ rcall main_thread
 .include "../../../src/kernel/common_cseg.asm"
 ;.include "../../../src/kernel/thread_cseg.asm"
 .include "../../../src/kernel/drivers/st_device_io_cseg.asm"
-.include "../../../src/kernel/drivers/bit_input_cseg.asm"
+.include "../../../src/kernel/drivers/in_bit_cseg.asm"
 .include "../../../src/kernel/drivers/switch_cseg.asm"
 .include "../../../src/kernel/drivers/led_cseg.asm"
 .include "../../../src/extensions/delay_cseg.asm"
@@ -56,13 +56,13 @@ main_thread:
 	m_init_stack
 	; init leds
 	m_led_init led1, DDRC, PORTC, (1 << BIT4)
-	m_bit_input_init bit_input1, DDRC, PINC, PORTC, (1 << BIT1)
+	m_in_bit_init in_bit1, DDRC, PINC, PORTC, (1 << BIT1)
 	; init global interrupts
 	; m_init_interrupts
 
 	.equ DELAY_TIME = 200000
 
-	ldi r16, BIT_INPUT_STATE_DOWN
+	ldi r16, IN_BIT_STATE_OFF
 
 	main_thread_loop:
 		nop
@@ -70,13 +70,14 @@ main_thread:
 		nop
 		m_led_toggle led1
 		nop
-		m_bit_input_get bit_input1, r16
-		cpi r16, BIT_INPUT_STATE_DOWN
-		breq main_thread_loop_bit_input_state_down
-		m_led_on led1
-		rjmp main_thread_loop_end
-		main_thread_loop_bit_input_state_down:
-		m_led_off led1
+		m_in_bit_get in_bit1, r16
+		cpi r16, IN_BIT_STATE_OFF
+		breq main_thread_loop_in_bit_state_off
+		main_thread_loop_in_bit_state_on:
+			m_led_on led1
+			rjmp main_thread_loop_end
+		main_thread_loop_in_bit_state_off:
+			m_led_off led1
 
 		main_thread_loop_end:
 			;m_delay DELAY_TIME

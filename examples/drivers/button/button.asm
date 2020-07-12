@@ -10,7 +10,9 @@ rcall main_thread
 .include "../../../src/kernel/common_def.asm"
 ;.include "../../../src/kernel/thread_def.asm"
 .include "../../../src/kernel/drivers/st_device_io_def.asm"
+.include "../../../src/kernel/drivers/in_bit_def.asm"
 .include "../../../src/kernel/drivers/button_def.asm"
+.include "../../../src/kernel/drivers/switch_def.asm"
 .include "../../../src/kernel/drivers/led_def.asm"
 
 ;.include components data segments
@@ -28,7 +30,9 @@ rcall main_thread
 .include "../../../src/kernel/common_cseg.asm"
 ;.include "../../../src/kernel/thread_cseg.asm"
 .include "../../../src/kernel/drivers/st_device_io_cseg.asm"
+.include "../../../src/kernel/drivers/in_bit_cseg.asm"
 .include "../../../src/kernel/drivers/button_cseg.asm"
+.include "../../../src/kernel/drivers/switch_cseg.asm"
 .include "../../../src/kernel/drivers/led_cseg.asm"
 .include "../../../src/extensions/delay_cseg.asm"
 
@@ -71,6 +75,7 @@ main_thread:
 		m_button_get button1, r16
 		cpi r16, BUTTON_STATE_DOWN
 		breq main_thread_loop_button_state_down
+		main_thread_loop_button_state_up:
 		m_led_on led1
 		rjmp main_thread_loop_end
 		main_thread_loop_button_state_down:

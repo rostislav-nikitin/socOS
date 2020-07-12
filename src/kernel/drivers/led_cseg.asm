@@ -20,7 +20,7 @@
 	;	@3	word USED_BIT_MASK
 	; save registers
 
-	m_switch_init @0, @1, @2, @3
+	m_out_bit_init @0, @1, @2, @3
 .endm
 
 led_init:
@@ -33,7 +33,7 @@ led_init:
 	; input parameters:
 	;	@0	word	[st_led:st_device_io]
 	;	@1	byte 	led_state
-	m_switch_set @0, @1
+	m_out_bit_set @0, @1
 .endm
 
 .macro  m_led_on
@@ -52,7 +52,7 @@ led_set:
 	; input parameters:
 	;	word	st_led
 	;	byte	led_state
-	rcall switch_set
+	rcall out_bit_set
 
 	ret
 
@@ -61,7 +61,7 @@ led_set:
 	;	@0	word	[st_led:st_device_io]
 	; returns:
 	;	@1	register
-	m_switch_get @0, @1
+	m_out_bit_get @0, @1
 .endm
 
 led_get:
@@ -69,14 +69,14 @@ led_get:
 	;	Z	word	[st_led:st_device_io]
 	; returns:
 	;	r23	byte	current led state
-	rcall switch_get
+	rcall out_bit_get
 
 	ret
 
 .macro m_led_toggle
 	; input parameters:
 	; 	@0	word	st_led
-	m_switch_toggle @0
+	m_out_bit_toggle @0
 .endm
 
 led_toggle:

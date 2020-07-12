@@ -10,14 +10,14 @@ rcall main_thread
 .include "../../../src/kernel/common_def.asm"
 ;.include "../../../src/kernel/thread_def.asm"
 .include "../../../src/kernel/drivers/st_device_io_def.asm"
-.include "../../../src/kernel/drivers/switch_def.asm"
+.include "../../../src/kernel/drivers/out_bit_def.asm"
 
 ;.include components data segments
 ;.include "../../../src/kernel/thread_dseg.asm"
 ; custom data & descriptors
 .dseg
-	switch1:		.BYTE SZ_ST_SWITCH
-	switch2: 		.BYTE SZ_ST_SWITCH
+	out_bit1:		.BYTE SZ_ST_OUT_BIT
+	out_bit2: 		.BYTE SZ_ST_OUT_BIT
 
 ; main thread
 .cseg
@@ -27,7 +27,7 @@ rcall main_thread
 .include "../../../src/kernel/common_cseg.asm"
 ;.include "../../../src/kernel/thread_cseg.asm"
 .include "../../../src/kernel/drivers/st_device_io_cseg.asm"
-.include "../../../src/kernel/drivers/switch_cseg.asm"
+.include "../../../src/kernel/drivers/out_bit_cseg.asm"
 .include "../../../src/extensions/delay_cseg.asm"
 
 
@@ -50,9 +50,9 @@ rcall main_thread
 main_thread:
 	; stack initialization
 	m_init_stack
-	; init switchs
-	m_switch_init switch1, DDRC, PORTC, (1 << BIT4)
-	m_switch_init switch2, DDRC, PORTC, (1 << BIT5)
+	; init out_bits
+	m_out_bit_init out_bit1, DDRC, PORTC, (1 << BIT4)
+	m_out_bit_init out_bit2, DDRC, PORTC, (1 << BIT5)
 	; init global interrupts
 	; m_init_interrupts
 
@@ -61,17 +61,17 @@ main_thread:
 	main_thread_loop:
 		nop
 		;m_delay DELAY_TIME
-		m_switch_set switch1, SWITCH_STATE_ON
+		m_out_bit_set out_bit1, OUT_BIT_STATE_ON
 		nop
 		;m_delay DELAY_TIME
-		m_switch_set switch1, SWITCH_STATE_OFF
+		m_out_bit_set out_bit1, OUT_BIT_STATE_OFF
 		nop
 		;m_delay DELAY_TIME
-		m_switch_on switch1
+		m_out_bit_on out_bit1
 		nop
 		;m_delay DELAY_TIME
-		m_switch_off switch1
+		m_out_bit_off out_bit1
 		nop
-		m_switch_toggle switch2
+		m_out_bit_toggle out_bit2
 
 		rjmp main_thread_loop

@@ -16,7 +16,7 @@
 	;	@2	word 	[PINx]
 	;	@3	word 	[PORTx]
 	;	@4	byte 	USED_BIT_MASK
-	m_st_device_io_init @0, @1, @2, @3, @4, 0x00
+	m_in_bit_init @0, @1, @2, @3, @4
 .endm
 
 .macro m_button_get
@@ -24,16 +24,7 @@
 	;	@0	word	[st_button]
 	; returns:
 	; 	@1	reg
-	m_save_r23_Z_registers
-
-	ldi ZL, low(@0)
-	ldi ZH, high(@0)
-
-	rcall button_get
-
-	mov @1, r23
-
-	m_restore_r23_Z_registers
+	m_in_bit_get @0, @1
 .endm
 
 button_get:
@@ -41,22 +32,7 @@ button_get:
 	;	word	[st_button]
 	; returns:
 	;	byte
-	m_save_r22_SREG_registers
-	;
-	rcall st_device_io_get_pin_byte
-	; detect current state
-	and r23, r22
-	;
 
-	brne button_get_state_up
-	button_get_state_dows:
-		ldi r23, BUTTON_STATE_DOWN
-		rjmp button_get_end
-	button_get_state_up:
-		ldi r23, BUTTON_STATE_UP
-
-	button_get_end:
-
-	m_restore_r22_SREG_registers
+	rcall in_bit_get
 
 	ret

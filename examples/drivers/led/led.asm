@@ -10,7 +10,7 @@ rcall main_thread
 .include "../../../src/kernel/common_def.asm"
 ;.include "../../../src/kernel/thread_def.asm"
 .include "../../../src/kernel/drivers/st_device_io_def.asm"
-.include "../../../src/kernel/drivers/switch_def.asm"
+.include "../../../src/kernel/drivers/out_bit_def.asm"
 .include "../../../src/kernel/drivers/led_def.asm"
 
 ;.include components data segments
@@ -28,7 +28,7 @@ rcall main_thread
 .include "../../../src/kernel/common_cseg.asm"
 ;.include "../../../src/kernel/thread_cseg.asm"
 .include "../../../src/kernel/drivers/st_device_io_cseg.asm"
-.include "../../../src/kernel/drivers/switch_cseg.asm"
+.include "../../../src/kernel/drivers/out_bit_cseg.asm"
 .include "../../../src/kernel/drivers/led_cseg.asm"
 .include "../../../src/extensions/delay_cseg.asm"
 
