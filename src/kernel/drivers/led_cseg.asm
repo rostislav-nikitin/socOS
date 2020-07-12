@@ -19,16 +19,8 @@
 	;	@2	word [PORTx]
 	;	@3	word USED_BIT_MASK
 	; save registers
-	m_save_Z_registers
-	; init (st_device_io)st_led
-	m_st_device_io_init @0, @1, 0x0000, @2, @3, @3
-	; init led
-	ldi ZL, low(@0)
-	ldi ZH, high(@0)
-	rcall led_init
-	;release stack from parameters
-	;restore registers
-	m_restore_Z_registers
+
+	m_switch_init @0, @1, @2, @3
 .endm
 
 led_init:
@@ -41,17 +33,7 @@ led_init:
 	; input parameters:
 	;	@0	word	[st_led:st_device_io]
 	;	@1	byte 	led_state
-	; save registers
-	m_save_r23_Z_registers
-	; push parameters
-	ldi r23, @1
-	ldi ZL, low(@0)
-	ldi ZH, high(@0)
-	; call procedure
-	rcall led_set
-	; release stack from parameters
-	; restore registers
-	m_restore_r23_Z_registers
+	m_switch_set @0, @1
 .endm
 
 .macro  m_led_on
@@ -70,23 +52,7 @@ led_set:
 	; input parameters:
 	;	word	st_led
 	;	byte	led_state
-	m_save_SREG_registers
-	; load led_state
-	; check state to set
-	cpi r23, LED_STATE_ON
-	brne led_set_off
-
-	ldi r23, ST_LED_USED_BIT_MASK_OFFSET
-	rcall get_struct_byte
-	rjmp led_set_call_st_device_io_set_port_byte
-
-	led_set_off:
-		ldi r23, 0x00
-	led_set_call_st_device_io_set_port_byte:
-		rcall st_device_io_set_port_byte
-
-	led_set_end:
-	m_restore_SREG_registers
+	rcall switch_set
 
 	ret
 
@@ -95,14 +61,7 @@ led_set:
 	;	@0	word	[st_led:st_device_io]
 	; returns:
 	;	@1	register
-	m_save_Z_registers
-
-	ldi ZL, low(@0)
-	ldi ZH, high(@0)
-
-	rcall led_get
-
-	m_restore_Z_registers
+	m_switch_get @0, @1
 .endm
 
 led_get:
@@ -110,55 +69,19 @@ led_get:
 	;	Z	word	[st_led:st_device_io]
 	; returns:
 	;	r23	byte	current led state
-	m_save_r22_SREG_registers
-	; call st_device_io_get_pin_byte
-	rcall st_device_io_get_port_byte
-	; compare value
-	and r23, r22
-	breq led_get_off
-	led_get_on:
-		ldi r23, LED_STATE_ON
-		rjmp  led_get_end
-	led_get_off:
-		ldi r23, LED_STATE_OFF
-
-	led_get_end:
-		m_restore_r22_SREG_registers
+	rcall switch_get
 
 	ret
 
 .macro m_led_toggle
 	; input parameters:
 	; 	@0	word	st_led
-	m_save_Z_registers
-
-	ldi ZL, low(@0)
-	ldi ZH, high(@0)
-
-	rcall led_toggle
-
-	m_restore_Z_registers
+	m_switch_toggle @0
 .endm
 
 led_toggle:
 	; input parameters:
 	;	Z	word	[st_led:st_device_io]
-	m_save_r23_SREG_registers
-
-	rcall led_get
-
-	cpi r23, LED_STATE_ON
-	brne led_toggle_led_on
-
-	led_toggle_led_off:	
-		ldi r23, LED_STATE_OFF
-		rjmp led_toggle_led_set
-	led_toggle_led_on:
-		ldi r23, LED_STATE_ON
-
-	led_toggle_led_set:
-		rcall led_set
-
-	m_restore_r23_SREG_registers
+	rcall led_toggle
 
 	ret

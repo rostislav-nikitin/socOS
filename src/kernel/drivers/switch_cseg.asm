@@ -102,6 +102,8 @@ switch_set:
 
 	rcall switch_get
 
+	mov @1, r23
+
 	m_restore_Z_registers
 .endm
 
