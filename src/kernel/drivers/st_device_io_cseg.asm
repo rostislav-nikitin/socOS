@@ -188,7 +188,7 @@ st_device_io_get_px_byte:
 	; returns:
 	;	r23	byte	PINx/PORTx (value)
 	;	r22	byte	USED_BIT_MASK
-	m_save_r16_SREG_registers
+	m_save_r16_Z_SREG_registers
 	; set X to the [st_device_io] or derived
 	; save PORT/PIN ADDRESS OFFSET
 	mov r16, r23
@@ -206,7 +206,7 @@ st_device_io_get_px_byte:
 	; detect current state and set it to the first return value
 	and r23, r22
 	;
-	m_restore_r16_SREG_registers
+	m_restore_r16_Z_SREG_registers
 
 	ret
 
