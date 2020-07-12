@@ -12,7 +12,7 @@ rcall main_thread
 .include "../../../src/kernel/drivers/st_device_io_def.asm"
 .include "../../../src/kernel/drivers/in_bit_def.asm"
 .include "../../../src/kernel/drivers/button_def.asm"
-.include "../../../src/kernel/drivers/switch_def.asm"
+.include "../../../src/kernel/drivers/out_bit_def.asm"
 .include "../../../src/kernel/drivers/led_def.asm"
 
 ;.include components data segments
@@ -20,6 +20,8 @@ rcall main_thread
 ; custom data & descriptors
 .dseg
 	led1:		.BYTE SZ_ST_LED
+	led2:		.BYTE SZ_ST_LED
+	led3:		.BYTE SZ_ST_LED
 	button1:	.BYTE SZ_ST_BUTTON
 
 ; main thread
@@ -32,7 +34,7 @@ rcall main_thread
 .include "../../../src/kernel/drivers/st_device_io_cseg.asm"
 .include "../../../src/kernel/drivers/in_bit_cseg.asm"
 .include "../../../src/kernel/drivers/button_cseg.asm"
-.include "../../../src/kernel/drivers/switch_cseg.asm"
+.include "../../../src/kernel/drivers/out_bit_cseg.asm"
 .include "../../../src/kernel/drivers/led_cseg.asm"
 .include "../../../src/extensions/delay_cseg.asm"
 
@@ -58,7 +60,9 @@ main_thread:
 	m_init_stack
 	; init leds
 	m_led_init led1, DDRC, PORTC, (1 << BIT4)
-	m_button_init button1, DDRC, PINC, PORTC, (1 << BIT1)
+	m_led_init led2, DDRC, PORTC, (1 << BIT5)
+	m_led_init led3, DDRC, PORTC, (1 << BIT6)
+	m_button_init button1, DDRC, PINC, PORTC, (1 << BIT1), button1_on_button_down_handler, button1_on_button_up_handler, NULL_POINTER
 	; init global interrupts
 	; m_init_interrupts
 
@@ -67,6 +71,7 @@ main_thread:
 	ldi r16, BUTTON_STATE_DOWN
 
 	main_thread_loop:
+		m_button_handle_io button1
 		nop
 		m_led_toggle led1
 		nop
@@ -86,3 +91,14 @@ main_thread:
 			rjmp main_thread_loop
 
 		ret
+
+button1_on_button_down_handler:
+	m_led_off led2
+	m_led_off led3
+	ret
+button1_on_button_up_handler:
+	m_led_on led2
+	ret
+button1_on_button_pressed_handler:
+	m_led_on led3
+	ret

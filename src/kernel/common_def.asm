@@ -1,4 +1,8 @@
 ; constants
+.equ NULL									= 0x00
+.equ NULL_POINTER								= 0x0000
+.equ NULL_POINTER_L								= low(NULL_POINTER)
+.equ NULL_POINTER_H								= high(NULL_POINTER)
 ; bits
 .equ BIT0									= 0x00
 .equ BIT1									= 0x01

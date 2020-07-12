@@ -1,5 +1,4 @@
 ; extensions
-
 .macro m_save_SREG_registers
 	push r16
 	in r16, SREG
@@ -98,6 +97,53 @@
 	pop r16
 .endm
 
+.macro m_save_r16_r22_r23_Y_Z_SREG_registers
+	push r16
+	in r16, SREG
+	push r16
+	push r22
+	push r23
+	push YL
+	push YH
+	push ZL
+	push ZH
+.endm
+
+.macro m_restore_r16_r22_r23_Y_Z_SREG_registers
+	pop ZH
+	pop ZL
+	pop YH
+	pop YL
+	pop r23
+	pop r22
+	pop r16
+	out SREG, r16
+	pop r16
+.endm
+
+
+.macro m_save_r16_r23_Y_Z_SREG_registers
+	push r16
+	in r16, SREG
+	push r16
+	push r23
+	push YL
+	push YH
+	push ZL
+	push ZH
+.endm
+
+.macro m_restore_r16_r23_Y_Z_SREG_registers
+	pop ZH
+	pop ZL
+	pop YH
+	pop YL
+	pop r23
+	pop r16
+	out SREG, r16
+	pop r16
+.endm
+
 .macro m_save_r23_registers
 	push r23
 .endm
@@ -129,6 +175,23 @@
 	out SREG, r22
 	pop r22
 .endm
+
+.macro m_save_Z_SREG_registers
+	push r16
+	in r16, SREG
+	push r16
+	push ZL
+	push ZH
+.endm
+
+.macro m_restore_Z_SREG_registers
+	pop ZH
+	pop ZL
+	pop r16
+	out SREG, r16
+	pop r16
+.endm
+
 
 .macro m_save_r21_r22_r23_Z_registers
 	push r21
@@ -176,6 +239,32 @@
 	pop ZL
 .endm
 
+.macro m_save_Y_Z_registers
+	push YL
+	push YH
+	push ZL
+	push ZH
+.endm
+
+.macro m_restore_Y_Z_registers
+	pop ZH
+	pop ZL
+	pop YH
+	pop YL
+.endm
+
+.macro m_save_r23_Y_registers
+	push r23
+	push YL
+	push YH
+.endm
+
+.macro m_restore_r23_Y_registers
+	pop YH
+	pop YL
+	pop r23
+.endm
+
 .macro m_save_r23_Z_registers
 	push r23
 	push ZL
@@ -194,6 +283,20 @@
 .endm
 
 .macro m_restore_r22_r23_registers
+	pop r23
+	pop r22
+.endm
+
+.macro m_save_r22_r23_Y_registers
+	push r22
+	push r23
+	push YL
+	push YH
+.endm
+
+.macro m_restore_r22_r23_Y_registers
+	pop YH
+	pop YL
 	pop r23
 	pop r22
 .endm
@@ -277,6 +380,47 @@
 	pop r23
 	pop r22
 .endm
+
+.macro m_save_r24_r25_X_Y_registers
+	push r24
+	push r25
+	push XL
+	push XH
+	push YL
+	push YH
+.endm
+
+.macro m_restore_r24_r25_X_Y_registers
+	pop YH
+	pop YL
+	pop XH
+	pop XL
+	pop r25
+	pop r24
+.endm
+
+.macro m_save_r24_r25_X_Y_Z_registers
+	push r24
+	push r25
+	push XL
+	push XH
+	push YL
+	push YH
+	push ZL
+	push ZH
+.endm
+
+.macro m_restore_r24_r25_X_Y_Z_registers
+	pop ZH
+	pop ZL
+	pop YH
+	pop YL
+	pop XH
+	pop XL
+	pop r25
+	pop r24
+.endm
+
 
 .macro m_save_r16_r17_r23_r24_X_Y_Z_registers
         push ZL
@@ -624,6 +768,49 @@ set_struct_byte:
 	adc ZH, r16
 	st Z, r22
 
-	m_restore_r16_Z_SREG_registers	
+	m_restore_r16_Z_SREG_registers
+
+	ret
+
+set_struct_word:
+	m_save_r16_Z_SREG_registers
+
+	add ZL, r23
+	ldi r16, 0x00
+	adc ZH, r16
+	st Z+, YL
+	st Z, YH
+
+	m_restore_r16_Z_SREG_registers
+
+	ret
+
+.macro m_set_Y_to_null_pointer
+	ldi YL, NULL_POINTER_L
+	ldi YH, NULL_POINTER_H
+.endm
+
+.macro m_cpw @0, @1
+	; reg
+	m_save_Y_Z_registers
+
+	ldi ZL, low(@0)
+	ldi ZH, high(@0)
+	ldi YL, low(@1)
+	ldi YH, high(@1)
+
+	rcall cpw
+
+	m_restore_Y_Z_registers
+.endm	
+
+
+cpw:
+	clz
+	cpse ZH, YH
+	rjmp cpw_end
+	cp ZL, YL
+
+	cpw_end:
 
 	ret
