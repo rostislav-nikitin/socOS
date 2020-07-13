@@ -73,9 +73,18 @@ st_device_io_init:
 	st Z+, r23
 	; stotr [TYPE_BIT_MASK] into the [dev:st_device_io]
 	st Z, r22
+	; check does [DDRx] is NULL_POINTER
+	m_set_Z_to_null_pointer
+	ldi r16, IO_PORTS_OFFSET
+	add ZL, r16
+	ldi r16, 0x00
+	adc ZH, r16
+	rcall cpw
 	; restore Z
 	pop ZH
 	pop ZL
+	; check does [DDRx] is NULL_POINTER
+	breq st_device_io_init_end
 	; set Z to the [PORTx]
 	mov ZL, r24
 	mov ZH, r25
@@ -112,8 +121,11 @@ st_device_io_init:
 	st Y, r17
 	; store back to the [PORTx]
 	st Z, r16
+	; store to the [PINx] "1" where [PORTx] pulled up to the Vcc
+	st X, r16
 
-	m_restore_r16_r17_SREG_registers
+	st_device_io_init_end:
+		m_restore_r16_r17_SREG_registers
 
 	ret
 

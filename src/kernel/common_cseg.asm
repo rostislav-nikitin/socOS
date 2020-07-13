@@ -77,6 +77,15 @@
 	pop r16
 .endm
 
+.macro m_save_r16_registers
+	push r16
+.endm
+
+.macro m_restore_r16_registers
+	pop r16
+.endm
+
+
 .macro m_save_r16_r17_registers
 	push r16
 	push r17
@@ -212,6 +221,17 @@
 	pop r16
 .endm
 
+.macro m_save_r16_Y_registers
+	push r16
+	push YL
+	push YH
+.endm
+
+.macro m_restore_r16_Y_registers
+	pop YH
+	pop YL
+	pop r16
+.endm
 
 .macro m_save_r21_r22_r23_Z_registers
 	push r21
@@ -828,6 +848,11 @@ set_struct_word:
 .macro m_set_Y_to_null_pointer
 	ldi YL, NULL_POINTER_L
 	ldi YH, NULL_POINTER_H
+.endm
+
+.macro m_set_Z_to_null_pointer
+	ldi ZL, NULL_POINTER_L
+	ldi ZH, NULL_POINTER_H
 .endm
 
 .macro m_cpw @0, @1
