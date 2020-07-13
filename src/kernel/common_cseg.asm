@@ -229,6 +229,26 @@
 	pop r21
 .endm
 
+.macro m_save_r21_r22_r23_Y_Z_registers
+	push r21
+	push r22
+	push r23
+	push ZL
+	push ZH
+	push YL
+	push YH
+.endm
+
+.macro m_restore_r21_r22_r23_Y_Z_registers
+	pop YH
+	pop YL
+	pop ZH
+	pop ZL
+	pop r23
+	pop r22
+	pop r21
+.endm
+
 .macro m_save_r21_r22_r23_Z_SREG_registers
 	push r21
 	in r21, SREG

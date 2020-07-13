@@ -62,15 +62,15 @@ main_thread:
 	m_led_init led1, DDRC, PORTC, (1 << BIT4)
 	m_led_init led2, DDRC, PORTC, (1 << BIT5)
 	; inot encoder
-	m_encoder_init encoder1, DDRC, PINC, PORTC, (1 << BIT2), (1 << BIT1)
+	m_encoder_init encoder1, DDRC, PINC, PORTC, (1 << BIT1), (1 << BIT2), encoder1_on_turn_handler
 	; init global interrupts
 	; m_init_interrupts
 
 
 	main_thread_loop:
 		m_encoder_detect encoder1, r16
-
-		main_thread_loop_check_backward:
+		// uncomment to check result of m_encoder_detect, now used on_turn_handler
+		/*main_thread_loop_check_backward:
 			cpi r16, ENCODER_STATE_BACKWARD
 			brne main_thread_loop_check_forward
 			m_led_on led1
@@ -84,7 +84,23 @@ main_thread:
 			rjmp main_thread_loop_end
 		main_thread_loop_check_none:
 			;m_led_off led1
-			;m_led_off led2
+			;m_led_off led2*/
 
 	main_thread_loop_end:
 		rjmp main_thread_loop
+
+encoder1_on_turn_handler:
+	encoder1_on_turn_handler_check_forward:
+		cpi r23, ENCODER_STATE_FORWARD
+		brne encoder1_on_turn_handler_check_backward
+		m_led_on led1
+		m_led_off led2
+		rjmp  encoder1_on_turn_handler_end
+	encoder1_on_turn_handler_check_backward:
+		cpi r23, ENCODER_STATE_BACKWARD
+		m_led_off led1
+		m_led_on led2
+
+	encoder1_on_turn_handler_end:
+	
+	ret

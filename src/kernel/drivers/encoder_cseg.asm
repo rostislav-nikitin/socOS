@@ -15,8 +15,9 @@
 	;	@0 	word	[st_encoder]
 	;	@1	byte 	BIT1x_MASK
 	;	@2 	byte 	BIT2x_MASK
+	;	@3	word	[on_turn_handler]
 	; save registers
-	m_save_r21_r22_r23_Z_registers
+	m_save_r21_r22_r23_Y_Z_registers
 	; set [st_encoder:st_device_io]
 	ldi ZL, low(@0)
 	ldi ZH, high(@0)
@@ -26,6 +27,9 @@
 	ldi r22, @2
 	; set state
 	ldi r21, (@1|@2)
+
+	ldi YL, low(@3)
+	ldi YH, high(@3)
 
 	rcall st_encoder_init
 
@@ -41,16 +45,18 @@
 	;	@3	word 	[PORTx]
 	;	@4	byte 	BIT1x_MASK
 	;	@5 	byte 	BIT2x_MASK
+	;	@6	word	[on_turn_handler]
 	m_st_device_io_init @0, @1, @2, @3, (@4|@5), 0x00
-	m_st_encoder_init @0, @4, @5
+	m_st_encoder_init @0, @4, @5, @6
 .endm
 
 st_encoder_init:
 	; input parameters:
-	;	word	[st_encoder]
-	;	byte	BIT1x_MASK
-	;	byte	BIT2x_MASK
-	;	byte	ENCODER_STATE
+	;	Z	word	[st_encoder]
+	;	r23	byte	BIT1x_MASK
+	;	r22	byte	BIT2x_MASK
+	;	r21	byte	ENCODER_STATE
+	;	Y	word	[on_turn_handler]
 	; set X to the [st_encoder] address
 	; init st_encoder
 	; init st_encoder
@@ -69,6 +75,9 @@ st_encoder_init:
 	ldi r23, ST_ENCODER_STATE
 	pop r22
 	rcall set_struct_byte
+
+	ldi r23, ST_ENCODER_ON_TURN_HANDLER_OFFSET
+	rcall set_struct_word
 
 	ret
 
@@ -138,21 +147,35 @@ encoder_detect:
 		rjmp encoder_detect_save
 	encoder_detect_backward:
 		cp r22, r1
-		brne encoder_detect_forward
+		breq encoder_detect_forward
 		ldi r17, ENCODER_STATE_BACKWARD
 		rjmp encoder_detect_save
 	encoder_detect_forward:
 		cp r22, r2
-		brne encoder_detect_end
+		breq encoder_detect_save
 		ldi r17, ENCODER_STATE_FORWARD
 		rjmp encoder_detect_save
-
 	encoder_detect_save:
 		; save to previous state
 		cp r23, r22
 		breq encoder_detect_end
 		ldi r23, ST_ENCODER_STATE
 		rcall set_struct_byte
+	encoder_detect_raise_events:
+		cpi r17, ENCODER_STATE_BACKWARD
+		breq encoder_detect_raise_events_raise
+		cpi r17, ENCODER_STATE_FORWARD
+		breq encoder_detect_raise_events_raise
+		rjmp encoder_detect_end
+	encoder_detect_raise_events_raise:
+		push ZL
+		push ZH
+		ldi r23, ST_ENCODER_ON_TURN_HANDLER_OFFSET
+		rcall get_struct_word
+		mov r23, r17
+		icall
+		pop ZH
+		pop ZL
 	encoder_detect_end:
 		mov r23, r17
 		m_restore_r1_r2_r16_r17_r22_SREG_registers
