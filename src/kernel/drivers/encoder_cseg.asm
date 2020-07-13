@@ -25,7 +25,7 @@
 	; set BIT2x_MASK
 	ldi r22, @2
 	; set state
-	ldi r21, ENCODER_STATE_NONE
+	ldi r21, (@1|@2)
 
 	rcall st_encoder_init
 
@@ -95,7 +95,7 @@ encoder_detect:
 	;	Z	word	[st_encoder]
 	; returns:
 	;	r23	byte	state
-	m_save_r1_r2_r3_r16_SREG_registers
+	m_save_r1_r2_r16_r17_r22_SREG_registers
 
 	; load BIT1x_MASK into the r17
 	ldi r23, ST_ENCODER_BIT1_MASK_OFFSET
@@ -113,46 +113,48 @@ encoder_detect:
 	ldi r23, ST_ENCODER_PINX_ADDRESS_OFFSET
 	rcall get_struct_word
 	; load PINx (value)
-	ld r3, Z ; r19 -> r3
+	ld r22, Z ; r19 -> r22
 	pop ZH
 	pop ZL
 	; load previos state
 	ldi r23, ST_ENCODER_STATE
 	rcall get_struct_byte
-	; r16 -> r23
+	; r16 -> r17
+	ldi r17, ENCODER_STATE_NONE
 	; prepare mask
 	ldi r16, 0x00
 	or r16, r1
 	or r16, r2
 	; detect current state
-	and r3, r16
+	and r22, r16
+	; if previous state is ENCODER_STATE_NONE
+	cp r23, r16
 	encoder_detect_init:
-		brne encoder_detect_acceptable
-		ldi r22, ENCODER_STATE_NONE
+		breq encoder_detect_forbidden
 		rjmp encoder_detect_save
-
-	encoder_detect_acceptable:
-		cpi r23, ENCODER_STATE_NONE
-		brne encoder_detect_end
-
+	encoder_detect_forbidden:
+		and r22, r16
+		brne encoder_detect_backward
+		rjmp encoder_detect_save
 	encoder_detect_backward:
-		cp r3, r1
+		cp r22, r1
 		brne encoder_detect_forward
-		ldi r22, ENCODER_STATE_BACKWARD
+		ldi r17, ENCODER_STATE_BACKWARD
 		rjmp encoder_detect_save
-
 	encoder_detect_forward:
-		cp r3, r2
+		cp r22, r2
 		brne encoder_detect_end
-		ldi r22, ENCODER_STATE_FORWARD
+		ldi r17, ENCODER_STATE_FORWARD
 		rjmp encoder_detect_save
 
 	encoder_detect_save:
 		; save to previous state
+		cp r23, r22
+		breq encoder_detect_end
 		ldi r23, ST_ENCODER_STATE
 		rcall set_struct_byte
-		mov r23, r22
 	encoder_detect_end:
-		m_restore_r1_r2_r3_r16_SREG_registers
+		mov r23, r17
+		m_restore_r1_r2_r16_r17_r22_SREG_registers
 
 	ret

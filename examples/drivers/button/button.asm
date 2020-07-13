@@ -59,10 +59,10 @@ main_thread:
 	; stack initialization
 	m_init_stack
 	; init leds
-	m_led_init led1, DDRC, PORTC, (1 << BIT4)
-	m_led_init led2, DDRC, PORTC, (1 << BIT5)
-	m_led_init led3, DDRC, PORTC, (1 << BIT6)
-	m_button_init button1, DDRC, PINC, PORTC, (1 << BIT1), button1_on_button_down_handler, button1_on_button_up_handler, NULL_POINTER
+	m_led_init led1, DDRC, PORTC, (1 << BIT3)
+	m_led_init led2, DDRC, PORTC, (1 << BIT4)
+	m_led_init led3, DDRC, PORTC, (1 << BIT5)
+	m_button_init button1, DDRC, PINC, PORTC, (1 << BIT1), button1_on_button_down_handler, button1_on_button_up_handler, button1_on_button_pressed_handler
 	; init global interrupts
 	; m_init_interrupts
 
@@ -74,20 +74,20 @@ main_thread:
 		m_button_handle_io button1
 		nop
 		m_led_toggle led1
-		nop
-		m_led_toggle led1
-		nop
-		m_button_get button1, r16
-		cpi r16, BUTTON_STATE_DOWN
-		breq main_thread_loop_button_state_down
-		main_thread_loop_button_state_up:
-		m_led_on led1
-		rjmp main_thread_loop_end
-		main_thread_loop_button_state_down:
-		m_led_off led1
+		;nop
+		;m_led_toggle led1
+		;nop
+		;m_button_get button1, r16
+		;cpi r16, BUTTON_STATE_DOWN
+		;breq main_thread_loop_button_state_down
+		;main_thread_loop_button_state_up:
+		;m_led_on led1
+		;rjmp main_thread_loop_end
+		;main_thread_loop_button_state_down:
+		;m_led_off led1
 
 		main_thread_loop_end:
-			;m_delay DELAY_TIME
+			m_delay DELAY_TIME
 			rjmp main_thread_loop
 
 		ret

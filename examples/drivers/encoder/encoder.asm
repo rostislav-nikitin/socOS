@@ -10,6 +10,7 @@ rcall main_thread
 .include "../../../src/kernel/common_def.asm"
 ;.include "../../../src/kernel/thread_def.asm"
 .include "../../../src/kernel/drivers/st_device_io_def.asm"
+.include "../../../src/kernel/drivers/out_bit_def.asm"
 .include "../../../src/kernel/drivers/led_def.asm"
 .include "../../../src/kernel/drivers/encoder_def.asm"
 
@@ -28,7 +29,9 @@ rcall main_thread
 ; include components code segments
 .include "../../../src/kernel/common_cseg.asm"
 ;.include "../../../src/kernel/thread_cseg.asm"
+.include "../../../src/extensions/delay_cseg.asm"
 .include "../../../src/kernel/drivers/st_device_io_cseg.asm"
+.include "../../../src/kernel/drivers/out_bit_cseg.asm"
 .include "../../../src/kernel/drivers/led_cseg.asm"
 .include "../../../src/kernel/drivers/encoder_cseg.asm"
 
@@ -59,7 +62,7 @@ main_thread:
 	m_led_init led1, DDRC, PORTC, (1 << BIT4)
 	m_led_init led2, DDRC, PORTC, (1 << BIT5)
 	; inot encoder
-	m_encoder_init encoder1, DDRC, PINC, PORTC, (1 << BIT3), (1 << BIT2)
+	m_encoder_init encoder1, DDRC, PINC, PORTC, (1 << BIT2), (1 << BIT1)
 	; init global interrupts
 	; m_init_interrupts
 
