@@ -1,4 +1,4 @@
-![picture](https://github.com/rostislav-nikitin/socOS/blob/master/documentation/images/logo_136x80.png?raw=true)
+![picture](https://github.com/rostislav-nikitin/socOS/blob/master/documentation/images/logo_134x80.png?raw=true)
 <!-- # socOS -->
 The acronym socOS stands for a **S**ystem **o**n a **C**hip **O**perating **S**ystem.
 The main idea of the socOS to provie a hardware abstraction layer of the SoC and connected devices for the end users.
