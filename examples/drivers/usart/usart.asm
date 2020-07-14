@@ -98,24 +98,29 @@ main_thread:
 		ret
 
 button1_on_button_down_handler:
-	m_led_off led2
-	m_led_off led3
+	;m_led_off led2
+	;m_led_off led3
 	ret
 button1_on_button_up_handler:
-	m_led_on led2
+	;m_led_on led2
 	ret
 button1_on_button_pressed_handler:
-	m_led_on led3
+	m_led_off led2
+	m_led_off led3
 	m_usart_udre_enable
 	ret
 
 usart_on_rxc_handler:
+	;m_led_off led2
+	m_led_on led3
 	m_usart_udre_enable
 	ret
 usart_on_udre_handler:
 	m_usart_udre_disable
 	; set value to push to UDR
 	ldi r23, 0xA0
+	m_led_on led2
+	;m_led_off led3
 	ret
 usart_on_txc_handler:
 	ret
