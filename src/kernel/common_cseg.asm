@@ -337,6 +337,44 @@
 	pop r23
 .endm
 
+.macro m_save_r22_X_SREG_registers
+	push r16
+	in r16, SREG
+	push r16
+	push r22
+	push ZL
+	push ZH
+.endm
+
+.macro m_restore_r22_X_SREG_registers
+	pop ZH
+	pop ZL
+	pop r22
+	pop r16
+	out SREG, r16
+	pop r16
+.endm
+
+.macro m_save_r23_X_SREG_registers
+	push r16
+	in r16, SREG
+	push r16
+	push r22
+	push r23
+	push ZL
+	push ZH
+.endm
+
+.macro m_restore_r23_X_SREG_registers
+	pop ZH
+	pop ZL
+	pop r23
+	pop r22
+	pop r16
+	out SREG, r16
+	pop r16
+.endm
+
 .macro m_save_r22_r23_registers
 	push r22
 	push r23
@@ -373,6 +411,43 @@
 	pop ZL
 	pop r23
 	pop r22
+.endm
+
+.macro m_save_r16_r22_r23_SREG_registers
+	push r16
+	in r16, SREG
+	push r16
+	push r22
+	push r23
+.endm
+
+.macro m_restore_r16_r22_r23_SREG_registers
+	pop r23
+	pop r22
+	pop r16
+	out SREG, r16
+	pop r16
+.endm
+
+
+.macro m_save_r16_r22_r23_X_SREG_registers
+	push r16
+	in r16, SREG
+	push r16
+	push r22
+	push r23
+	push XL
+	push XH
+.endm
+
+.macro m_restore_r16_r22_r23_X_SREG_registers
+	pop XH
+	pop XL
+	pop r23
+	pop r22
+	pop r16
+	out SREG, r16
+	pop r16
 .endm
 
 .macro m_save_r23_X_Y_Z_registers
@@ -782,9 +857,16 @@ mem_copy:
 
 	ret
 
+.macro m_get_struct_byte_by_offset
+	; parameters:
+	;	@0	offset
+	ldi r23, @0
+	rcall get_struct_byte
+.endm
+
 get_struct_byte:
 	; parameters
-	; X - st_address
+	; Z - st_address
 	; r23 - offset / result
 	push ZL
 	push ZH
@@ -819,6 +901,56 @@ get_struct_word:
 	pop r23
 
 	ret
+
+.macro m_set_struct_byte_by_offset_and_value_wo_save_registers
+	; parameters:
+	;	@0	offset
+	;	@1	value
+
+	ldi r23, @0
+	ldi r22, @1
+	rcall set_struct_byte
+.endm
+
+.macro m_set_struct_byte_by_offset_and_value
+	; parameters:
+	;	@0	offset
+	;	@1	value
+	m_save_r22_r23_registers
+
+	ldi r23, @0
+	ldi r22, @1
+	rcall set_struct_byte
+
+	m_restore_r22_r23_registers
+.endm
+
+.macro m_set_struct_byte_by_offset_and_register
+	; parameters:
+	;	@0	offset
+	;	@1	register
+	m_save_r22_r23_registers
+
+	mov r22, @1
+	ldi r23, @0
+
+	rcall set_struct_byte
+
+	m_restore_r22_r23_registers
+.endm
+
+.macro m_set_struct_byte_by_offset_and_register_wo_save_registers
+	; parameters:
+	;	@0	offset
+	;	@1	register
+
+	mov r22, @1
+	ldi r23, @0
+
+	rcall set_struct_byte
+.endm
+
+
 
 set_struct_byte:
 	m_save_r16_Z_SREG_registers

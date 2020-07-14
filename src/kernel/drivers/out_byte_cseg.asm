@@ -69,13 +69,10 @@ out_byte_set:
 	; input parameters:
 	;	word	st_out_byte
 	;	byte	out_byte_state
-	m_save_SREG_registers
 	; load out_byte_state
 	; check state to set
-	cpi r23, OUT_BYTE_STATE_ON
+	;cpi r23, OUT_BYTE_STATE_ON
 	rcall st_device_io_set_port_byte
-
-	m_restore_SREG_registers
 
 	ret
 
