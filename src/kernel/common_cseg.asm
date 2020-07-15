@@ -77,6 +77,27 @@
 	pop r16
 .endm
 
+.macro m_save_r16_Y_Z_SREG_registers
+	push r16
+	in r16, SREG
+	push r16
+	push YL
+	push YH
+	push ZL
+	push ZH
+.endm
+
+.macro m_restore_r16_Y_Z_SREG_registers
+	pop ZH
+	pop ZL
+	pop YH
+	pop YL
+	pop r16
+	out SREG, r16
+	pop r16
+.endm
+
+
 .macro m_save_r16_registers
 	push r16
 .endm
@@ -370,6 +391,24 @@
 	pop r23
 .endm
 
+.macro m_save_r16_r23_Z_SREG_registers
+	push r16
+	in r16, SREG
+	push r16
+	push r23
+	push ZL
+	push ZH
+.endm
+
+.macro m_restore_r16_r23_Z_SREG_registers
+	pop ZH
+	pop ZL
+	pop r23
+	pop r16
+	out SREG, r16
+	pop r16
+.endm
+
 .macro m_save_r23_Z_SREG_registers
 	push r23
 	in r23, SREG
@@ -446,6 +485,30 @@
 	pop YL
 	pop r23
 	pop r22
+.endm
+
+.macro m_save_r21_r22_r23_X_Y_Z_registers
+	push r21
+	push r22
+	push r23
+	push XL
+	push XH
+	push YL
+	push YH
+	push ZL
+	push ZH
+.endm
+
+.macro m_restore_r21_r22_r23_X_Y_Z_registers
+	pop ZH
+	pop ZL
+	pop YH
+	pop YL
+	pop XH
+	pop ZL
+	pop r23
+	pop r22
+	pop r21
 .endm
 
 .macro m_save_r22_r23_X_Y_Z_registers

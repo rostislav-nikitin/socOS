@@ -11,6 +11,7 @@
 ; inheritance
 ; st_child: st_parent - st_child inherited from the st_parent
 
+; st_device_io: st_device
 ; implementation
 .macro m_st_device_io_init
 	; input parameters:
@@ -54,6 +55,9 @@ st_device_io_init:
 	;	r23	byte 	USED_BIT_MASK
 	;	r22	byte	TYPE_BIT_MASK (0 - Input, 1 - Output)	
 	; set X to the [st_device_io] address
+	; call base ctor
+	rcall st_device_init
+
 	m_save_r16_r17_SREG_registers
 	;
 	ldi r16, 0x00

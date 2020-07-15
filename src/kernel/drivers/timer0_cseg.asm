@@ -62,7 +62,15 @@ timer0_interrupt_overflow_disable:
 .endm
 
 timer0_counter_get_value:
+	m_save_Z_registers
+	; returns:
+	;	r23	counter value
+	ldi ZL, low(timer0_static_instance)
+	ldi ZH, high(timer0_static_instance)
+
 	rcall timer_base_counter_get_value
+
+	m_restore_Z_registers
 
 	ret
 

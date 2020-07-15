@@ -1,119 +1,172 @@
 ;.include "m8def.inc"
-.macro m_timer2_base_init
+.macro m_timer2_init
+	m_save_Z_registers
 	; parameters:
-	;	@3	timer_divider	timer divider
-	;	@4	byte		interrupt_overflow_bit_mask
-	;	@5	word		overflow handler
-	;	@6	byte		mode
-	;	@7	byte		compare threshold
-	;	@8	byte		compare_interrupt_bit_mask
-	;	@9	word		compare handler
-	m_timer_w_pwm_base_init timer2_static_instance, TCCR2, OCR2, @0, (1 << TOIE2), @5, @6, @7, (1 << OCIE2), @9
-	;
-	m_restore_r22_r23_X_Y_Z_registers
+	;	@0	timer_divider	timer divider
+	;	@1	word		overflow handler
+	;	@2	byte		mode
+	;	@3	byte		compare threshold
+	;	@4	word		compare handler
+
+	m_timer_w_pwm_base_init timer2_static_instance, TCCR2, TCNT2, OCR2, @0, (1 << TOIE2), @1, @2, @3, (1 << OCIE2), @4
+
+	ldi ZL, low(timer2_static_instance)
+	ldi ZH, high(timer2_static_instance)
+
+	rcall timer2_init
+
+	m_restore_Z_registers
 .endm
 
-timer2_base_init:
-	push r23
-	ldi r23, ST_TIMER_W_PWM_BASE_COMPARE_CONTROL_REGISTER_ADDRESS_OFFSET
-	rcall set_struct_word
-	pop r23
-
-	push r22
-	mov r22, r23
-	ldi r23, ST_TIMER_W_PWM_BASE_MODE_OFFSET
-	rcall set_struct_byte
-	pop r22
-
-	ldi r23, ST_TIMER_W_PWM_BASE_COMPARE_THRESHOLD_OFFSET
-	rcall set_struct_byte
-
-	push r22
-	mov r22, r23
-	ldi r23, ST_TIMER_W_PWM_BASE_MODE_OFFSET
-	rcall set_struct_byte
-	pop r22
-
-	push YL
-	push YH
-	mov YL, XL
-	mov YH, XH
-	ldi r23, ST_TIMER_W_PWM_BASE_COMPARE_HANDLER_OFFSET
-	rcall set_struct_word
-	pop YH
-	pop YL
-
-	rcall timer_w_pwm_base_init_ports
+timer2_init:
+	rcall timer2_init_ports_mode
 
 	ret
 
-timer2_base_init_ports:
-	; init divider
+timer2_init_ports_mode:
+	m_save_r16_r23_Z_SREG_registers
+	;
 
-	rcall timer_w_pwm_base_init_ports_ocr
-	; rcall timer2_base_init_ports_mode
-	ret
-
-timer2_base_init_ports_ocr:
-	m_save_r23_Z_SREG_registers
-
-	ldi r23, ST_TIMER_W_PWM_BASE_COMPARE_THRESHOLD_OFFSET
+	ldi r23, ST_TIMER2_MODE_OFFSET
 	rcall get_struct_byte
 
 	push r23
 
-	ldi r23, ST_TIMER_W_PWM_BASE_COMPARE_CONTROL_REGISTER_ADDRESS_OFFSET
+	ldi r23, ST_TIMER2_COUNTER_CONTROL_REGISTER_ADDRESS_OFFSET
 	rcall get_struct_word
+
+	ld r16, Z
+
+	; reset all WGM/COM bits
+	ldi r23, (1 << WGM21) | (1 << WGM20) | (1 << COM21) | (1 << COM20)
+	com r23
+	and r16, r23
 
 	pop r23
 
-	st Z, r23
+	timer2_init_ports_mode_check_off:
+		cpi r23, TIMER_W_PWM_MODE_OFF
+		breq timer2_init_ports_mode_end
+	timer2_init_ports_mode_check_phase_correction:	
+		cpi r23, TIMER_W_PWM_MODE_PHASE_CORRECTION
+		brne timer2_init_ports_mode_check_phase_correction_inverted
+		; set required
+		ldi r23, (0 << WGM21) | (1 << WGM20) | (1 << COM21) | (0 << COM20)
+		or r16, r23
+		rjmp timer2_init_ports_mode_end
+	timer2_init_ports_mode_check_phase_correction_inverted:
+		cpi r23, TIMER_W_PWM_MODE_PHASE_CORRECTION_INVERTED
+		brne timer2_init_ports_mode_check_ctc
+		; set required
+		ldi r23, (0 << WGM21) | (1 << WGM20) | (1 << COM21) | (1 << COM20)
+		or r16, r23		
+		rjmp timer2_init_ports_mode_end
+	timer2_init_ports_mode_check_ctc:
+		cpi r23, TIMER_W_PWM_MODE_CTC
+		brne timer2_init_ports_mode_check_fast
+		; set required
+		ldi r23, (1 << WGM21) | (0 << WGM20) | (0 << COM21) | (1 << COM20)
+		or r16, r23		
+		rjmp timer2_init_ports_mode_end
+	timer2_init_ports_mode_check_fast:
+		cpi r23, TIMER_W_PWM_MODE_FAST
+		brne timer2_init_ports_mode_check_fast_inverted
+		; set required
+		ldi r23, (1 << WGM21) | (1 << WGM20) | (1 << COM21) | (0 << COM20)
+		or r16, r23		
+		rjmp timer2_init_ports_mode_end
+	timer2_init_ports_mode_check_fast_inverted:
+		cpi r23, TIMER_W_PWM_MODE_FAST_INVERTED
+		brne timer2_init_ports_mode_end
+		;
+		ldi r23, (1 << WGM21) | (1 << WGM20) | (1 << COM21) | (1 << COM20)
+		or r16, r23
+		rjmp timer2_init_ports_mode_end
 
-	m_restore_r23_Z_SREG_registers
+	timer2_init_ports_mode_end:
+		st Z, r16
+	;
+	m_restore_r16_r23_Z_SREG_registers
 
 	ret
 
-;timer2_base_init_ports_mode:
-;	ret
-
-.macro timer2_base_interrupts_enable
+.macro m_timer2_interrupts_enable
 	m_timer_w_pwm_base_interrupts_enable timer2_static_instance
 .endm
 
-timer2_base_interrupts_enable:
+timer2_interrupts_enable:
 	rcall timer_w_pwm_base_interrupts_enable
 
 	ret
 
-.macro timer2_base_interrupts_disable
+.macro m_timer2_interrupts_disable
 	m_timer_w_pwm_base_interrupts_disable timer2_static_instance
 .endm
 
-timer2_base_interrupts_disable:
+timer2_interrupts_disable:
 	rcall timer_w_pwm_base_interrupts_disable
 
 	ret
 
- .macro m_timer2_base_interrupt_overflow_enable
-	m_timer_base_interrupt_overflow_enable timer2_static_instance
+.macro m_timer2_interrupt_overflow_enable
+	m_timer_w_pwm_base_interrupt_overflow_enable timer2_static_instance
 .endm
 
-timer2_base_interrupt_overflow_enable:
-	rcall timer_base_interrupt_overflow_enable	
+timer2_interrupt_overflow_enable:
+	rcall timer_w_pwm_base_interrupt_overflow_enable	
 
 	ret
 
-.macro m_timer2_base_interrupt_overflow_disable
+.macro m_timer2_interrupt_overflow_disable
 	m_timer_w_pwm_base_interrupt_overflow_disable timer2_static_instance
 .endm
 
-timer2_base_interrupt_overflow_disable:
+timer2_interrupt_overflow_disable:
 	rcall timer_w_pwm_base_interrupt_overflow_disable
 	
 	ret
 
-timer2_comp_handler:
-	reti
+.macro m_timer2_counter_get_value
+	; returns:
+	;	@0	register	register with current counter value
+	m_timer_w_pwm_base_counter_get_value timer2_static_instance, @0
+.endm
+
+timer2_counter_get_value:
+	m_save_Z_registers
+	; returns:
+	;	r23	counter value
+	ldi ZL, low(timer2_static_instance)
+	ldi ZH, high(timer2_static_instance)
+
+	rcall timer_w_pwm_base_counter_get_value
+
+	m_restore_Z_registers
+
+	ret
 
 timer2_ovf_handler:
+	m_save_r23_Z_registers
+
+	ldi ZL, low(timer2_static_instance)
+	ldi ZH, high(timer2_static_instance)
+	ldi r23, ST_TIMER2_OVERFLOW_HANDLER_OFFSET
+
+	rcall st_device_raise_event
+
+	m_restore_r23_Z_registers
+
+	reti
+
+timer2_comp_handler:
+	m_save_r23_Z_registers
+
+	ldi ZL, low(timer2_static_instance)
+	ldi ZH, high(timer2_static_instance)
+	ldi r23, ST_TIMER2_COMPARE_HANDLER_OFFSET
+
+	rcall st_device_raise_event
+
+	m_restore_r23_Z_registers
+
 	reti

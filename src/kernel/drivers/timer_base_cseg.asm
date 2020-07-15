@@ -26,6 +26,15 @@
 .endm
 
 timer_base_init:
+	; parameters
+	;	Z	[st_timer_base: st_device]
+	;	Y	[TCCRx]
+	;	X	[TCNTx]
+	;	r23	timer divider
+	;	r22	interrupt bit mask
+	;	r24,r25	[overflow handler]
+	rcall st_device_init
+
 	push r23
 	ldi r23, ST_TIMER_BASE_COUNTER_CONTROL_REGISTER_ADDRESS_OFFSET
 	rcall set_struct_word
@@ -178,6 +187,10 @@ timer_base_interrupt_overflow_disable:
 .endm
 
 timer_base_counter_get_value:
+	; parameters:
+	;	Z	word	[st_timer_base]
+	; returns:
+	;	r23	counter value
 	m_save_Z_registers
 
 	ldi r23, ST_TIMER_BASE_COUNTER_REGISTER_ADDRESS_OFFSET
