@@ -84,6 +84,9 @@ main_thread:
 
 		main_thread_loop_end:
 			;m_delay DELAY_TIME
+			push r16
+			m_timer0_counter_get_value r16
+			pop r16
 			nop
 			rjmp main_thread_loop
 

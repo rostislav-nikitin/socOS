@@ -3,7 +3,7 @@
 	; parameters:
 	;	@0	timer_divider	timer divider
 	;	@1	word		overflow handler
-	m_timer_base_init timer0_static_instance, TCCR0, @0, (1 << TOIE0), @1
+	m_timer_base_init timer0_static_instance, TCCR0, TCNT0, @0, (1 << TOIE0), @1
 	rcall timer0_init
 .endm
 
@@ -29,6 +29,18 @@ timer0_interrupts_enable:
 
 timer0_interrupts_disable:
 	rcall timer_base_interrupts_disable
+
+	ret
+
+
+.macro m_timer0_counter_get_value
+	; returns:
+	;	@0	register	register with current counter value
+	m_timer_base_counter_get_value timer0_static_instance, @0
+.endm
+
+timer0_counter_get_value:
+	rcall timer_base_counter_get_value
 
 	ret
 
