@@ -62,9 +62,11 @@ main_thread:
 	; stack initialization
 	m_init_stack
 	; init leds
-	m_led_init led1, DDRC, PORTC, (1 << BIT5)
+		m_led_init led1, DDRC, PORTC, (1 << BIT5)
 	m_led_init led2, DDRC, PORTC, (1 << BIT4)
-	m_timer2_init TIMER_DIVIDER_1024X, timer2_on_overflow_handler, TIMER_W_PWM_MODE_FAST, 0xEF, timer2_on_compare_handler
+	m_timer2_init TIMER_DIVIDER_1024X, timer2_on_overflow_handler, TIMER_W_PWM_MODE_FAST, 0x7F, timer2_on_compare_handler
+	ldi r16, 0x08
+	out DDRB, r16
 
 	m_timer2_interrupts_enable
 	; init global interrupts

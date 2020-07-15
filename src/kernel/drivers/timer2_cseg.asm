@@ -1,4 +1,5 @@
 ;.include "m8def.inc"
+; PWM at PINB[3]
 .macro m_timer2_init
 	m_save_Z_registers
 	; parameters:
@@ -8,7 +9,7 @@
 	;	@3	byte		compare threshold
 	;	@4	word		compare handler
 
-	m_timer_w_pwm_base_init timer2_static_instance, TCCR2, TCNT2, OCR2, @0, (1 << TOIE2), @1, @2, @3, (1 << OCIE2), @4
+	m_timer_w_pwm_base_init timer2_static_instance, TCCR2, TCNT2, OCR2, @0, (1 << TOIE2), @1, DDRB, (1 << BIT3), @2, @3, (1 << OCIE2), @4
 
 	ldi ZL, low(timer2_static_instance)
 	ldi ZH, high(timer2_static_instance)

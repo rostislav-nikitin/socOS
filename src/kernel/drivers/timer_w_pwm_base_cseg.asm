@@ -8,10 +8,12 @@
 	;	@4	timer_divider	timer divider
 	;	@5	byte			interrupt_bit_mask
 	;	@6	word			overflow handler
-	;	@7	byte			mode
-	;	@8	byte			compare threshold
-	;	@9	byte			compare interrupt bit mask
-	;	@10	word			compare handler
+	;	@7	word			PWM_[DDRx]
+	;	@8	byte			PWM_bit_mask
+	;	@9	byte			mode
+	;	@10	byte			compare threshold
+	;	@11	byte			compare interrupt bit mask
+	;	@12	word			compare handler
 	m_save_r21_r22_r23_X_Y_Z_registers
 
 	m_timer_base_init @0, @1, @2, @4, @5, @6
@@ -20,11 +22,14 @@
 	ldi ZH, high(@0)
 	ldi YL, low(@3 + IO_PORTS_OFFSET)
 	ldi YH, high(@3 + IO_PORTS_OFFSET)
-	ldi r23, @7
-	ldi r22, @8
-	ldi r21, @9
-	ldi XL, low(@10)
-	ldi XH, high(@10)
+	ldi r24, low(@7 + IO_PORTS_OFFSET)
+	ldi r25, high(@7 + IO_PORTS_OFFSET)
+	ldi r20, @8
+	ldi r23, @9
+	ldi r22, @10
+	ldi r21, @11
+	ldi XL, low(@12)
+	ldi XH, high(@12)
 
 	rcall timer_w_pwm_base_init
 	;
@@ -32,10 +37,7 @@
 .endm
 
 timer_w_pwm_base_init:
-	push r23
-	ldi r23, ST_TIMER_W_PWM_BASE_COMPARE_CONTROL_REGISTER_ADDRESS_OFFSET
-	rcall set_struct_word
-	pop r23
+	m_save_r22_r23_Y_registers
 
 	push r22
 	mov r22, r23
@@ -43,25 +45,34 @@ timer_w_pwm_base_init:
 	rcall set_struct_byte
 	pop r22
 
+	ldi r23, ST_TIMER_W_PWM_BASE_COMPARE_CONTROL_REGISTER_ADDRESS_OFFSET
+	rcall set_struct_word
+
 	ldi r23, ST_TIMER_W_PWM_BASE_COMPARE_THRESHOLD_OFFSET
 	rcall set_struct_byte
 
-	push r22
 	mov r22, r21
 	ldi r23, ST_TIMER_W_PWM_BASE_COMPARE_INTERRUPT_BIT_MASK_OFFSET
 	rcall set_struct_byte
-	pop r22
 
-	push YL
-	push YH
+	mov r22, r20
+	ldi r23, ST_TIMER_W_PWM_BASE_DDRX_BIT_MASK_OFFSET
+	rcall set_struct_byte
+
+	mov YL, r24
+	mov YH, r25
+	ldi r23, ST_TIMER_W_PWM_BASE_DDRX_ADDRESS_OFFSET
+	rcall set_struct_word
+
 	mov YL, XL
 	mov YH, XH
 	ldi r23, ST_TIMER_W_PWM_BASE_COMPARE_HANDLER_OFFSET
 	rcall set_struct_word
-	pop YH
-	pop YL
 
 	rcall timer_w_pwm_base_init_ports_ocr
+	rcall timer_w_pwm_base_init_ports_ddrx
+
+	m_restore_r22_r23_Y_registers
 
 	ret
 
@@ -81,6 +92,23 @@ timer_w_pwm_base_init_ports_ocr:
 	st Z, r23
 
 	m_restore_r23_Z_SREG_registers
+
+	ret
+
+timer_w_pwm_base_init_ports_ddrx:
+	m_save_r16_r23_Z_SREG_registers
+
+	ldi r23, ST_TIMER_W_PWM_BASE_DDRX_BIT_MASK_OFFSET
+	rcall get_struct_byte
+	mov r16, r23
+
+	ldi r23, ST_TIMER_W_PWM_BASE_DDRX_ADDRESS_OFFSET
+	rcall get_struct_word
+	ld r23, Z
+	or r23, r16
+	st Z, r23
+
+	m_restore_r16_r23_Z_SREG_registers
 
 	ret
 
@@ -149,14 +177,10 @@ timer_w_pwm_base_interrupt_compare_enable:
 
 	ldi r23, ST_TIMER_W_PWM_BASE_COMPARE_INTERRUPT_BIT_MASK_OFFSET
 	rcall get_struct_byte
-	mov r16, r23
 
-	ldi r23, ST_TIMER_W_PWM_BASE_COUNTER_CONTROL_REGISTER_ADDRESS_OFFSET
-	rcall get_struct_word
-	ld r23, Z
-
-	or r23, r16
-	st Z, r23
+	in r16, TIMSK
+	or r16, r23
+	out TIMSK, r16
 
 	m_restore_r16_r23_Z_SREG_registers
 
@@ -180,15 +204,11 @@ timer_w_pwm_base_interrupt_compare_disable:
 
 	ldi r23, ST_TIMER_W_PWM_BASE_COMPARE_INTERRUPT_BIT_MASK_OFFSET
 	rcall get_struct_byte
-	mov r16, r23
+	com r23
 
-	ldi r23, ST_TIMER_W_PWM_BASE_COUNTER_CONTROL_REGISTER_ADDRESS_OFFSET
-	rcall get_struct_word
-	ld r23, Z
-
-	com r16
-	and r23, r16
-	st Z, r23
+	in r16, TIMSK
+	and r16, r23
+	out TIMSK, r16
 
 	m_restore_r16_r23_Z_SREG_registers
 	
