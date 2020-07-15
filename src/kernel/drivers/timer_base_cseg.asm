@@ -37,7 +37,7 @@ timer_base_init:
 	rcall set_struct_byte
 	pop r22
 
-	ldi r23, ST_TIMER_BASE_INTERRUPT_BIT_MASK_OFFSET
+	ldi r23, ST_TIMER_BASE_OVERFLOW_INTERRUPT_BIT_MASK_OFFSET
 	rcall set_struct_byte
 
 	push YL
@@ -86,20 +86,42 @@ timer_base_init_ports:
 .macro m_timer_base_interrupts_enable
 	; parameters:
 	;	@0	[st_timer]
+	m_timer_base_interrupt_overflow_enable @0
+.endm
+
+timer_base_interrupts_enable:
+	rcall timer_base_interrupt_overflow_enable
+
+	ret
+
+.macro m_timer_base_interrupts_disable
+	; parameters:
+	;	@0	[st_timer]
+	m_timer_base_interrupt_overflow_disable @0
+.endm
+
+timer_base_interrupts_disable:
+	rcall timer_base_interrupt_overflow_disable
+
+	ret
+
+.macro m_timer_base_interrupt_overflow_enable
+	; parameters:
+	;	@0	[st_timer]
 	m_save_Z_registers
 
 	ldi ZL, low(@0)
 	ldi ZH, high(@0)
 
-	rcall timer_base_interrupts_enable
+	rcall timer_base_interrupt_overflow_enable
 
 	m_restore_Z_registers
 .endm
 
-timer_base_interrupts_enable:
+timer_base_interrupt_overflow_enable:
 	m_save_r16_r23_SREG_registers
 
-	ldi r23, ST_TIMER_BASE_INTERRUPT_BIT_MASK_OFFSET
+	ldi r23, ST_TIMER_BASE_OVERFLOW_INTERRUPT_BIT_MASK_OFFSET
 	rcall get_struct_byte
 
 	in r16, TIMSK
@@ -110,7 +132,7 @@ timer_base_interrupts_enable:
 	
 	ret
 
-.macro m_timer_base_interrupts_disable
+.macro m_timer_base_interrupt_overflow_disable
 	; parameters:
 	;	@0	[st_timer]
 	m_save_Z_registers
@@ -118,15 +140,15 @@ timer_base_interrupts_enable:
 	ldi ZL, low(@0)
 	ldi ZH, high(@0)
 
-	rcall timer_base_interrupts_disable
+	rcall timer_base_interrupt_overflow_disable
 
 	m_restore_Z_registers
 .endm
 
-timer_base_interrupts_disable:
+timer_base_interrupt_overflow_disable:
 	m_save_r16_r23_SREG_registers
 
-	ldi r23, ST_TIMER_BASE_INTERRUPT_BIT_MASK_OFFSET
+	ldi r23, ST_TIMER_BASE_OVERFLOW_INTERRUPT_BIT_MASK_OFFSET
 	rcall get_struct_byte
 
 	com r23

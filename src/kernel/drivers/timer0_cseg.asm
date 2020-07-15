@@ -32,6 +32,28 @@ timer0_interrupts_disable:
 
 	ret
 
+.macro m_timer0_interrupt_overflow_enable
+	; parameters:
+	;	@0	[st_timer]
+	m_timer_base_interrupt_overflow_enable timer0_static_instance
+.endm
+
+timer0_interrupt_overflow_enable:
+	rcall timer_base_interrupt_overflow_enable
+
+	ret
+
+.macro m_timer0_interrupt_overflow_disable
+	; parameters:
+	;	@0	[st_timer]
+	m_timer_base_interrupt_overflow_disable timer0_static_instance
+.endm
+
+timer0_interrupt_overflow_disable:
+	rcall timer_base_interrupt_overflow_disable
+
+	ret
+
 
 .macro m_timer0_counter_get_value
 	; returns:
