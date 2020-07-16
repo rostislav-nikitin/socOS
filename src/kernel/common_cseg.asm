@@ -1163,3 +1163,34 @@ cpw:
 	cpw_end:
 
 	ret
+
+.macro m_int_to_mask
+	m_save_r23_registers
+	; pramaeters:
+	;	@0	byte	value
+	; returns:
+	;	@1	byte	mask
+	ldi r23, @0
+	rcall int_to_mask
+	ldi @1, r23
+
+	m_restore_r23_registers
+.endm
+int_to_mask:
+	m_save_r16_SREG_registers
+
+	ldi r16, 0x01
+
+	int_to_mask_loop_begin:
+		cpi r23, 0x00
+		breq int_to_mask_set_result
+		dec r23
+		lsr r16
+	rjmp int_to_mask_loop_begin
+
+	int_to_mask_set_result:
+		mov r23, r16
+
+	m_restore_r16_SREG_registers
+
+	ret
