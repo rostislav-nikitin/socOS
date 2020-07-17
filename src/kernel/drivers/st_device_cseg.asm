@@ -26,4 +26,4 @@ st_device_raise_event:
 
 	m_restore_r16_Y_Z_SREG_registers
 
-	reti
+	ret

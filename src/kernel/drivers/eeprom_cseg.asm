@@ -7,8 +7,8 @@
 
 	ldi ZL, low(eeprom_static_instance)
 	ldi ZH, high(eeprom_static_instance)
-	ldi YL, low(@1)
-	ldi YH, high(@1)
+	ldi YL, low(@0)
+	ldi YH, high(@0)
 	;
 	rcall eeprom_init
 	;
@@ -24,6 +24,25 @@ eeprom_init:
 	m_restore_r23_registers
 
 	ret
+
+.macro m_eeprom_interrupts_enable
+	rcall eeprom_interrupts_enable
+.endm
+
+eeprom_interrupts_enable:
+	sbi EECR, EERIE
+
+	ret
+
+.macro m_eeprom_interrupts_disable
+	rcall eeprom_interrupts_disable
+.endm
+
+eeprom_interrupts_disable:
+	cbi EECR, EERIE
+
+	ret
+
 
 .macro m_eeprom_store_sync
 	; parameters
@@ -75,6 +94,7 @@ eeprom_store_sync:
 	m_restore_r23_Z_registers
 .endm
 eeprom_load_sync:
+	cli
 	rcall eeprom_wait_ready_sync
 	; get load parameters (addr)
 	out EEARL, ZL
@@ -83,6 +103,7 @@ eeprom_load_sync:
 	; load from the EEPROM
 	sbi EECR, EERE
 	in r23, EEDR
+	sei
 
 	ret
 
@@ -104,10 +125,10 @@ eepom_try_store:
 	sei
 
         eepom_try_store_ok:
-		ld r23, EEPROM_STATE_OK
+		ldi r23, EEPROM_STATE_OK
 		rjmp eepom_try_store_end
 	eepom_try_store_busy:
-		ld r23, EEPROM_STATE_BUSY
+		ldi r23, EEPROM_STATE_BUSY
 		rjmp eepom_try_store_end
 	eepom_try_store_end:
 
@@ -128,10 +149,10 @@ eeprom_try_load:
 	sei
 
         eeprom_try_load_ok:
-		ld r23, EEPROM_STATE_OK
+		ldi r23, EEPROM_STATE_OK
 		rjmp eeprom_try_load_end
 	eeprom_try_load_busy:
-		ld r23, EEPROM_STATE_BUSY
+		ldi r23, EEPROM_STATE_BUSY
 		rjmp eeprom_try_load_end
 	eeprom_try_load_end:
 
