@@ -1,43 +1,60 @@
 ; Analog Comparator
-; struct st_ac size
-.equ SZ_ST_ADC 				= 0x05
+; struct st_adc size
+.equ SZ_ST_ADC 				= 0x07
 ; struct st_usart
 .equ ST_ADC_INPUT_NEGATIVE		= 0x00
 .equ ST_ADC_INPUT_POSITIVE		= 0x01
-.equ ST_ADC_INTERRPUT_MODE_ARISE		= 0x02
-.equ ST_ADC_ON_CHANGED_HANDLER_OFFSET	= 0x03
+.equ ST_ADC_FREQUENCY			= 0x02
+.equ ST_ADC_OUTPUT_VALUE_ORDER		= 0x03
+.equ ST_ADC_CONTINUOUS_MEASUREMENT	= 0x04
+.equ ST_ADC_ON_COMPLETED_HANDLER_OFFSET	= 0x05
 
-.equ ADC_POWER_DISABLED			= 0x00 ; ADCD = 0x01
-.equ ADC_POWER_ENABLED			= 0x01 ; ADCD = 0x00
+; ADC_INPUT_NEGATIVE(ADMUX: REFS1-REFS0)
+.equ ADC_INPUT_NEGATIVE_AREF		= 0x00 ; AREF pin (PIN24)
+.equ ADC_INPUT_NEGATIVE_AVCC		= 0x01 ; Vcc
+;.equ ADC_INPUT_NEGATIVE_FORBIDDEN	= 0x02 ;
+.equ ADC_INPUT_NEGATIVE_REG_2_56V	= 0x03 ; 2.56 V
 
-; ADC_INPUT_NEGATIVE (ADCME
-.equ ADC_INPUT_NEGATIVE_A_IN1		= 0xff ; ADCME disabled ; PIND7; DDRD as IN
-.equ ADC_INPUT_NEGATIVE_PINC0		= 0x00 ; ADCME enabled ; ADME disabled ; DDRC as IN
-.equ ADC_INPUT_NEGATIVE_PINC1		= 0x01 ; ADCME enabled ; ADME disabled ; DDRC as IN
-.equ ADC_INPUT_NEGATIVE_PINC2		= 0x02 ; ADCME enabled ; ADME disabled ; DDRC as IN
-.equ ADC_INPUT_NEGATIVE_PINC3		= 0x03 ; ADCME enabled ; ADME disabled ; DDRC as IN
-.equ ADC_INPUT_NEGATIVE_PINC4		= 0x04 ; ADCME enabled ; ADME disabled ; DDRC as IN
-.equ ADC_INPUT_NEGATIVE_PINC5		= 0x05 ; ADCME enabled ; ADME disabled ; DDRC as IN
-.equ ADC_INPUT_NEGATIVE_PINC6		= 0x06 ; ADCME enabled ; ADME disabled ; DDRC as IN
-.equ ADC_INPUT_NEGATIVE_PINC7		= 0x07 ; ADCME enabled ; ADME disabled ; DDRC as IN
+; ADC_INPUT_POSITIVE (ADMUX: MUX3-MUX2-MUX1-MUX0)
+.equ ADC_INPUT_POSITIVE_PINC0		= 0x00 ; DDRC as IN, PINC unpull-up;
+.equ ADC_INPUT_POSITIVE_PINC1		= 0x01 ; DDRC as IN, PINC unpull-up
+.equ ADC_INPUT_POSITIVE_PINC2		= 0x02 ; DDRC as IN, PINC unpull-up
+.equ ADC_INPUT_POSITIVE_PINC3		= 0x03 ; DDRC as IN, PINC unpull-up
+.equ ADC_INPUT_POSITIVE_PINC4		= 0x04 ; DDRC as IN, PINC unpull-up
+.equ ADC_INPUT_POSITIVE_PINC5		= 0x05 ; DDRC as IN, PINC unpull-up
+.equ ADC_INPUT_POSITIVE_PINC6		= 0x06 ; DDRC as IN, PINC unpull-up
+.equ ADC_INPUT_POSITIVE_PINC7		= 0x07 ; DDRC as IN, PINC unpull-up
+.equ ADC_INPUT_VREF_1_23V		= 0x0E ; For calibration (to detect ADC error)
+.equ ADC_INPUT_VREF_GND			= 0x0F ; For calibration (to detect AFC error)
 
-; ADC_INPUT_POSITIVE
-.equ ADC_INPUT_POSITIVE_A_IN0		= 0x00 ; ADCBG = 0x00	PIND6; DDRD as IN
-.equ ADC_INPUT_POSITIVE_VREF_1_23_V	= 0x01 ; ADCBG = 0x01
+; ADC_FREQUENCY (ADCSRA: ADSP2-1-0)
+.equ ADC_FREQUNCY_X1			= 0x00
+.equ ADC_FREQUNCY_X2			= 0x01
+.equ ADC_FREQUNCY_X4			= 0x02
+.equ ADC_FREQUNCY_X8			= 0x03
+.equ ADC_FREQUNCY_X16			= 0x04
+.equ ADC_FREQUNCY_X32			= 0x05
+.equ ADC_FREQUNCY_X64			= 0x06
+.equ ADC_FREQUNCY_X128			= 0x07
 
-; ADC_INTERRPUT_MODE_ARISE
-.equ ADC_INTERRPUT_MODE_ARISE_BOTH_FRONTS	= 0b00 ; raising/falling front
-.equ ADC_INTERRPUT_MODE_ASISE_FORBIDDEN		= 0b01 ; raising/falling front
-.equ ADC_INTERRPUT_MODE_ARISE_FALLING_FRONT	= 0b10 ; raising/falling front
-.equ ADC_INTERRPUT_MODE_ARISE_RAISING_FRONT	= 0b11 ; raising/falling front
-; ADC_OUTPUT_VALUE
-.equ ADC_OUTPUT_VALUE_FALSE			= FALSE
-.equ ADC_OUTPUT_VALUE_TRUE			= TRUE
+; ADC_CONTINUOUS_MEASUREMENT (ADCSRA: ADFR)
+.equ ADC_CONTINUOUS_MEASUREMENT_TRUE	= TRUE
+.equ ADC_CONTINUOUS_MEASUREMENT_FALSE	= FALSE
+
+; ADC_OUTPUT_VALUE_ORDER
+.equ ADC_OUTPUT_VALUE_ORDER_LOW_FULL	= 0x00
+.equ ADC_OUTPUT_VALUE_ORDER_HIGH_FULL	= 0x01
+
+; ADC_CONVERSION_COMPLETED
+.equ ADC_CONVERSION_COMPLETED_TRUE	= TRUE
+.equ ADC_CONVERSION_COMPLETED_FALSE	= FALSE
 
 
 
-
-; ADCO - get_value
-; ADCI - interrupt raised
-; ADCIE - enable/interrupt
-; ADCIC - enable TIMER1 capture timer1_capture_enable/timer1_capture_disable
+;ADCSRA:
+;	ADEN - enable/disable
+;	ADFR - continuous measure
+;	ADSC - start convertion (single measure)
+;	ADIE - interrupt enable
+;ADMUX
+;	ADLAR - if 0 then all low at ADCL, 2 high at ADCH. if 1 then all high at ADCH, 2 low at ADCL

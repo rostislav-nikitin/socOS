@@ -4,7 +4,7 @@
 	;	@0	byte	ST_AC_INPUT_NEGATIVE
 	;	@1	byte	ST_AC_INPUT_POSITIVE
 	;	@2	byte	ST_AC_INTERRPUT_MODE
-	;	@3	word	ST_AC_ON_CHANGED_HANDLER_OFFSET
+	;	@3	word	ST_AC_ON_COMPLETED_HANDLER_OFFSET
 	m_save_r21_r22_r23_Y_Z_registers
 	;
 	m_st_device_init
@@ -38,7 +38,7 @@ ac_init:
 	ldi r23, ST_AC_INTERRPUT_MODE_ARISE
 	rcall set_struct_byte
 
-	ldi r23, ST_AC_ON_CHANGED_HANDLER_OFFSET
+	ldi r23, ST_AC_ON_COMPLETED_HANDLER_OFFSET
 	rcall set_struct_word
 
 	rcall ac_init_ports
@@ -194,10 +194,10 @@ ac_output_value_get:
 
 	ret
 
-ac_changed_handler:
+ac_completed_handler:
 	m_save_r23_Z_registers
 	;
-	ldi r23, ST_AC_ON_CHANGED_HANDLER_OFFSET
+	ldi r23, ST_AC_ON_COMPLETED_HANDLER_OFFSET
 
 	ldi ZL, low(ac_static_instance)
 	ldi ZH, high(ac_static_instance)

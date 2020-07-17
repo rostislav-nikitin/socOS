@@ -13,9 +13,13 @@ st_device_raise_event:
 	m_save_r16_Y_Z_SREG_registers
 
 	rcall get_struct_word
+	push YL
+	push YH
 	m_set_Y_to_null_pointer
 	rcall cpw
-	breq st_device_raise_event
+	pop YH
+	pop YL
+	breq st_device_raise_event_end
 	icall
 
 	st_device_raise_event_end:

@@ -247,6 +247,20 @@
 	pop r23
 .endm
 
+.macro m_save_r16_r22_SREG_registers
+	push r16
+	in r16, SREG
+	push r16
+	push r22
+.endm
+
+.macro m_restore_r16_r22_SREG_registers
+	pop r22
+	pop r16
+	out SREG, r16
+	pop r16
+.endm
+
 .macro m_save_r22_SREG_registers
 	push r22
 	in r22, SREG
@@ -301,6 +315,28 @@
 	pop r23
 	pop r22
 	pop r21
+.endm
+
+.macro m_save_r20_r21_r22_r23_Y_Z_registers
+	push r20
+	push r21
+	push r22
+	push r23
+	push ZL
+	push ZH
+	push YL
+	push YH
+.endm
+
+.macro m_restore_r20_r21_r22_r23_Y_Z_registers
+	pop YH
+	pop YL
+	pop ZH
+	pop ZL
+	pop r23
+	pop r22
+	pop r21
+	pop r20
 .endm
 
 .macro m_save_r21_r22_r23_Y_Z_registers
@@ -1167,12 +1203,12 @@ cpw:
 .macro m_int_to_mask
 	m_save_r23_registers
 	; pramaeters:
-	;	@0	byte	value
+	;	@0	register	value
 	; returns:
-	;	@1	byte	mask
-	ldi r23, @0
+	;	@1	register	mask
+	mov r23, @0
 	rcall int_to_mask
-	ldi @1, r23
+	mov @1, r23
 
 	m_restore_r23_registers
 .endm
@@ -1192,5 +1228,37 @@ int_to_mask:
 		mov r23, r16
 
 	m_restore_r16_SREG_registers
+
+	ret
+.macro m_lshift
+	m_save_r22_r23_registers
+	; parameters
+	;	@0	register	value to shift
+	;	@1	register	positions to shift to
+	; returns:
+	;	@3	register	shifted value
+	mov r23, @0
+	mov r22, @1
+
+	rcall lshift
+
+	mov @3, r23
+
+	m_resore_r22_r23_registers
+.endm
+lshift:
+	m_save_r16_r22_SREG_registers
+
+	lshift_loop:
+		cpi r22, 0x00
+		breq lshift_end
+		dec r22
+		lsl r23
+
+		rjmp lshift_loop
+
+	lshift_end:
+
+	m_restore_r16_r22_SREG_registers
 
 	ret

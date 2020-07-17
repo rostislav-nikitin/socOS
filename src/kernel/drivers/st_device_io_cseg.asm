@@ -3,11 +3,13 @@
 ; 	[address] - pointer to the address
 ;
 ; parameter passing convention:
+; procedures
 ; Z, Y, X, r24, r25		- address parameters
 ; r23, r22, r21, r20, r19, r18	- value parameters
 ; r17, r16			- temporary registers
 ; r0 .. r15			- work with data
-;
+; event handlers:
+; Y 				- two values (from YL, to YH) or address depends on handler. If there are more then two parameters, use some memory object and put address to it through Y
 ; inheritance
 ; st_child: st_parent - st_child inherited from the st_parent
 
