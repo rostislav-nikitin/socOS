@@ -67,8 +67,8 @@ main_thread:
 	; init global interrupts
 	m_init_interrupts
 
-	m_eeprom_load_sync eeprom_led_state, r17
-	cpi r17, LED_STATE_OFF
+	m_eeprom_load_sync eeprom_led_state, r16
+	cpi r16, LED_STATE_OFF
 	breq main_thread_led_off
 
 	main_thread_led_on:

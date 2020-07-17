@@ -107,12 +107,36 @@ eeprom_load_sync:
 
 	ret
 
-eepom_try_store:
+.macro m_eeprom_try_store_sync
+	; parameters:
+	;	@0	word	EEPROM address to store to
+	;	@1	byte	value to store to the EEPROM
+	; results:
+	;	@2	register to store result status
+	m_save_r23_Z_registers
+
+	ldi ZL, low(@0)
+	ldi ZH, high(@0)
+	ldi r23, @1
+
+	rcall eeprom_try_store_sync
+
+	mov @2, r23
+
+	m_restore_r23_Z_registers
+.endm
+
+eeprom_try_store_sync:
+	; parameters:
+	;	Z	word	EEPROM addres to load from
+	;	r23	byte	value to store to the EEPROM
+	; returns:
+	;	r23 byte	status
 	m_save_r16_registers
 
 	in r16, EECR
-	sbrs r16, EERE
-	rjmp eepom_try_store_busy
+	sbrc r16, EERE
+	rjmp eeprom_try_store_sync_busy
 
 	cli
 	out EEARL, ZL
@@ -121,24 +145,50 @@ eepom_try_store:
 
 	sbi EECR, EEMWE
 	sbi EECR, EEWE
-	
 	sei
 
-        eepom_try_store_ok:
+	eeprom_try_store_sync_ok:
 		ldi r23, EEPROM_STATE_OK
-		rjmp eepom_try_store_end
-	eepom_try_store_busy:
+		rjmp eeprom_try_store_sync_end
+	eeprom_try_store_sync_busy:
 		ldi r23, EEPROM_STATE_BUSY
-		rjmp eepom_try_store_end
-	eepom_try_store_end:
+		rjmp eeprom_try_store_sync_end
+	eeprom_try_store_sync_end:
+
+	m_restore_r16_registers
 
 	ret
-eeprom_try_load:
+
+.macro m_eeprom_try_load_sync
+	; parameters:
+	;	@0	word		EEPROM address to load value from
+	; results:
+	;	@1	register	the value loaded from the EEPROM
+	;	@2	register 	status
+	m_save_r22_r23_Z_registers
+
+	ldi ZL, low(@0)
+	ldi ZH, high(@0)
+
+	rcall eeprom_try_load_sync
+
+	mov @1, r23
+	mov @2, r22
+
+	m_restore_r22_r23_Z_registers
+.endm
+
+eeprom_try_load_sync:
+	; parameters:
+	;	Z	word	EEPROM addres to load from
+	; returns:
+	;	r23	byte	value loaded from the EEPROM
+	;	r22 byte	status
 	m_save_r16_registers
 
 	in r16, EECR
-	sbrs r16, EERE
-	rjmp eeprom_try_load_busy
+	sbrc r16, EERE
+	rjmp eeprom_try_load_sync_busy
 
 	cli
 	out EEARL, ZL
@@ -148,15 +198,13 @@ eeprom_try_load:
 	in r23, EEDR
 	sei
 
-        eeprom_try_load_ok:
-		ldi r23, EEPROM_STATE_OK
-		rjmp eeprom_try_load_end
-	eeprom_try_load_busy:
-		ldi r23, EEPROM_STATE_BUSY
-		rjmp eeprom_try_load_end
-	eeprom_try_load_end:
-
-	ret
+	eeprom_try_load_sync_ok:
+		ldi r22, EEPROM_STATE_OK
+		rjmp eeprom_try_load_sync_end
+	eeprom_try_load_sync_busy:
+		ldi r22, EEPROM_STATE_BUSY
+		rjmp eeprom_try_load_sync_end
+	eeprom_try_load_sync_end:
 
 	m_restore_r16_registers
 
