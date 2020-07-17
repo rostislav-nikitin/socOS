@@ -186,9 +186,12 @@ ac_output_value_get:
 	rjmp ac_output_value_get_false
 	ac_output_value_get_true:
 		ldi r23, AC_OUTPUT_VALUE_TRUE
-
+		rjmp ac_output_value_get_end
 	ac_output_value_get_false:
 		ldi r23, AC_OUTPUT_VALUE_FALSE
+
+	ac_output_value_get_end:
+
 	ret
 
 ac_changed_handler:

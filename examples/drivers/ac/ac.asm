@@ -24,6 +24,7 @@ rcall main_thread
 ; custom data & descriptors
 .dseg
 	led1:		.BYTE SZ_ST_LED
+	led2:		.BYTE SZ_ST_LED
 
 ; main thread
 .cseg
@@ -62,6 +63,7 @@ main_thread:
 	m_init_stack
 	; init leds
 	m_led_init led1, DDRC, PORTC, (1 << BIT5)
+	m_led_init led2, DDRC, PORTC, (1 << BIT4)
 	m_ac_init AC_INPUT_NEGATIVE_A_IN1, AC_INPUT_POSITIVE_VREF_1_23_V, AC_INTERRPUT_MODE_ARISE_BOTH_FRONTS, ac_on_changed_handler
 	m_ac_enable
 	m_ac_interrupts_enable
@@ -71,8 +73,17 @@ main_thread:
 
 	main_thread_loop:
 		nop
+		nop
 		main_thread_loop_end:
-			rjmp main_thread_loop
+			m_ac_output_value_get r16
+			cpi r16, AC_OUTPUT_VALUE_FALSE
+			breq main_thread_loop_ac_false
+			main_thread_loop_ac_true:
+				m_led_on led2
+				rjmp main_thread_loop
+			main_thread_loop_ac_false:
+				m_led_off led2
+				rjmp main_thread_loop
 
 		ret
 
