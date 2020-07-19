@@ -2,20 +2,29 @@
 
 ; extensions
 .macro m_delay_short
-	; @0 - ((cycles * 5) + 3 + 4) to delay
-
-	; 3 clock cycles
-	ldi r19, low(@0)
-	ldi r20, high(@0)
+	; parameters:
+	;	@	3 x bytes int	n
+	; description:
+	;	delay time = [3 + 7 + 5 + (5 x n)] clock cycles
+	; delay = 3 clock cycles
+	ldi r23, low(@0)
+	ldi r22, high(@0)
 	ldi r21, byte3(@0)
 
-	; total loop length is 5 clock cycles
-	m_delay_short_loop:
-		subi	r19, 1
-		sbci	r20, 0
-		sbci	r21, 0
-		brcc	m_delay_short_loop
+	rcall delay_short
+
 .endm
+
+delay_short:
+	; total loop length is [7 + 5 + (5 x n)] clock cycles
+	delay_short_loop:
+		subi	r23, 1
+		sbci	r22, 0
+		sbci	r21, 0
+		brcc	delay_short_loop
+
+	ret
+
 
 .macro m_delay
 	; @0 - ((cycles * 5) + 15|16|17? + 4) to delay

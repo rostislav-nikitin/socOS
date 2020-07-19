@@ -125,13 +125,35 @@ st_device_io_init:
 	; sum input + outputs then store to the [DDRx]
 	; store back to the [DDRx]
 	st Y, r17
+	; check [PORTx] is null pointer
 	; store back to the [PORTx]
+	rcall st_device_io_cp_Z_is_null_pointer
+	breq st_device_io_init_end
 	st Z, r16
 	; store to the [PINx] "1" where [PORTx] pulled up to the Vcc
 	st X, r16
 
 	st_device_io_init_end:
 		m_restore_r16_r17_SREG_registers
+
+	ret
+
+st_device_io_cp_Z_is_null_pointer:
+	push YL
+	push YH
+	push ZL
+	push ZH
+
+	mov YL, ZL
+	mov YH, ZH
+	m_set_Z_to_io_ports_offset
+
+	rcall cpw
+
+	pop ZH
+	pop ZL
+	pop YH
+	pop YL
 
 	ret
 

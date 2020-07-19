@@ -77,6 +77,24 @@
 	pop r16
 .endm
 
+.macro m_save_r16_r17_Z_SREG_registers
+	push r16
+	in r16, SREG
+	push r16
+	push r17
+	push ZL
+	push ZH
+.endm
+
+.macro m_restore_r16_r17_Z_SREG_registers
+	pop ZH
+	pop ZL
+	pop r17
+	pop r16
+	out SREG, r16
+	pop r16
+.endm
+
 .macro m_save_r16_Y_Z_SREG_registers
 	push r16
 	in r16, SREG
@@ -97,6 +115,27 @@
 	pop r16
 .endm
 
+.macro m_save_r16_r22_Y_Z_SREG_registers
+	push r16
+	in r16, SREG
+	push r16
+	push r22
+	push YL
+	push YH
+	push ZL
+	push ZH
+.endm
+
+.macro m_restore_r16_r22_Y_Z_SREG_registers
+	pop ZH
+	pop ZL
+	pop YH
+	pop YL
+	pop r22
+	pop r16
+	out SREG, r16
+	pop r16
+.endm
 
 .macro m_save_r16_registers
 	push r16
@@ -208,6 +247,82 @@
 	pop YH
 	pop YL
 	pop r23
+	pop r16
+	out SREG, r16
+	pop r16
+.endm
+
+.macro m_save_r16_r17_r23_Y_Z_SREG_registers
+	push r16
+	in r16, SREG
+	push r16
+	push r17
+	push r23
+	push YL
+	push YH
+	push ZL
+	push ZH
+.endm
+
+.macro m_restore_r16_r17_r23_Y_Z_SREG_registers
+	pop ZH
+	pop ZL
+	pop YH
+	pop YL
+	pop r23
+	pop r17
+	pop r16
+	out SREG, r16
+	pop r16
+.endm
+
+.macro m_save_r16_r17_r18_Y_Z_SREG_registers
+	push r16
+	in r16, SREG
+	push r16
+	push r17
+	push r18
+	push YL
+	push YH
+	push ZL
+	push ZH
+.endm
+
+.macro m_restore_r16_r17_r18_Y_Z_SREG_registers
+	pop ZH
+	pop ZL
+	pop YH
+	pop YL
+	pop r18
+	pop r17
+	pop r16
+	out SREG, r16
+	pop r16
+.endm
+
+.macro m_save_r16_r17_r18_r21_r22_Y_Z_SREG_registers
+	push r16
+	in r16, SREG
+	push r16
+	push r17
+	push r18
+	push r21
+	push r22
+	push YL
+	push YH
+	push ZL
+	push ZH
+.endm
+
+.macro m_restore_r16_r17_r18_r21_r22_Y_Z_SREG_registers
+	pop ZH
+	pop ZL
+	pop YH
+	pop YL
+	pop r22
+	pop r21
+	pop r18
+	pop r17
 	pop r16
 	out SREG, r16
 	pop r16
@@ -1175,6 +1290,19 @@ set_struct_word:
 	ldi ZH, NULL_POINTER_H
 .endm
 
+.macro m_set_Z_to_io_ports_offset
+	m_save_r16_SREG_registers
+
+	m_set_Z_to_null_pointer
+
+	ldi r16, IO_PORTS_OFFSET
+	add ZL, r16
+	ldi r16, 0x00
+	adc ZH, r16
+
+	m_restore_r16_SREG_registers
+.endm
+
 .macro m_cpw @0, @1
 	; reg
 	m_save_Y_Z_registers
@@ -1188,7 +1316,6 @@ set_struct_word:
 
 	m_restore_Y_Z_registers
 .endm	
-
 
 cpw:
 	clz
