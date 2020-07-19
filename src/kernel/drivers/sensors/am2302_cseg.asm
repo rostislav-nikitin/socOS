@@ -94,6 +94,11 @@ am2302_init_ports:
 .endm
 
 am2302_data_get:
+	; parameters:
+	;	Z	word	[st_sm2302]
+	; returns:
+	;	r23	status
+
 	; check current state
 	;rcall am2302_data_check_state
 	;cpi r23, STATE_IN_PROGRESS
@@ -104,6 +109,10 @@ am2302_data_get:
 	brne am2302_data_get_error
 	; protocol data get packet
 	rcall am2302_device_data_get
+	cpi r23, ST_AM2302_RESULT_STATE_OK
+	brne am2302_data_get_error
+	; validate checksum
+	rcall am2302_device_data_validate_checksum
 
 	am2302_data_get_error:
 	am2302_data_get_end:
@@ -340,5 +349,49 @@ am2302_device_io_read_until_high:
 	am2302_device_io_read_until_high_end:
 
 	pop r16
+
+	ret
+
+am2302_device_data_validate_checksum:
+	; parameters:
+	;	Z	word	[st_am2302]
+	; returns:
+	;	r23	status
+	; set to r16 length of bytes to sum (all except checksum)
+	m_save_r16_r17_r18_Z_SREG_registers
+
+	ldi r16, (SZ_ST_AM2302_DATA - 1)
+	; load recived checksum
+	ldi r23, ST_AM2302_DATA_CHECKSUM
+	rcall get_struct_byte
+	mov r17, r23
+	; calculate checksum
+	ldi r18, ST_AM2302_DATA
+	add ZL, r18
+	ldi r18, 0x00
+	adc ZH, r18
+	
+	am2302_device_data_validate_checksum_calculate_loop:
+		cpi r16, 0x00
+		breq am2302_device_data_validate_checksum_check
+		dec r16
+		ld r23, Z+
+		add r18, r23
+		rjmp am2302_device_data_validate_checksum_calculate_loop
+
+	am2302_device_data_validate_checksum_check:
+		cp r17, r18
+		breq am2302_device_data_validate_checksum_ok
+
+	am2302_device_data_validate_checksum_error:
+		
+		ldi r23, ST_AM2302_RESULT_STATE_ERROR_DATA_CHECKSUM
+		rjmp am2302_device_data_validate_checksum_end
+	am2302_device_data_validate_checksum_ok:
+		ldi r23, ST_AM2302_RESULT_STATE_OK
+		rjmp am2302_device_data_validate_checksum_end
+
+	am2302_device_data_validate_checksum_end:
+		m_restore_r16_r17_r18_Z_SREG_registers
 
 	ret

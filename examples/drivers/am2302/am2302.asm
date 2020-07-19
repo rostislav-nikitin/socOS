@@ -109,7 +109,7 @@ usart_on_udre_handler:
 		m_led_on led1
 		ldi ZL, low(am2302_1)
 		ldi ZH, high(am2302_1)
-		ldi r23, ST_AM2302_DATA_CHECKSUM
+		ldi r23, ST_AM2302_DATA_TEMPERATURE_LOW
 		rcall get_struct_byte
 		rjmp usart_on_udre_handler_end
 
