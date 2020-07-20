@@ -95,6 +95,58 @@
 	pop r16
 .endm
 
+.macro m_save_r16_r17_r18_r22_r23_Z_SREG_registers
+	push r16
+	in r16, SREG
+	push r16
+	push r17
+	push r18
+	push r22
+	push r23
+	push ZL
+	push ZH
+.endm
+
+.macro m_restore_r16_r17_r18_r22_r23_Z_SREG_registers
+	pop ZH
+	pop ZL
+	pop r23
+	pop r22
+	pop r18
+	pop r17
+	pop r16
+	out SREG, r16
+	pop r16
+.endm
+
+.macro m_save_r16_r17_r18_r19_r22_r23_Z_SREG_registers
+	push r16
+	in r16, SREG
+	push r16
+	push r17
+	push r18
+	push r19
+	push r22
+	push r23
+	push ZL
+	push ZH
+.endm
+
+.macro m_restore_r16_r17_r18_r19_r22_r23_Z_SREG_registers
+	pop ZH
+	pop ZL
+	pop r23
+	pop r22
+	pop r19
+	pop r18
+	pop r17
+	pop r16
+	out SREG, r16
+	pop r16
+.endm
+
+
+
 .macro m_save_r16_r17_r18_Z_SREG_registers
 	push r16
 	in r16, SREG
