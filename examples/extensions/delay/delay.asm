@@ -14,7 +14,7 @@ rcall main_thread
 ; include SoC defaults
 .include "m8def.inc"
 ; include components code segments
-.include "../../lib/delay_cseg.asm"
+.include "../../../src/extensions/delay_cseg.asm"
 
 ; macros
 .macro m_init_stack
@@ -35,17 +35,17 @@ rcall main_thread
 .endm
 
 main_thread:
-	; stack initialization
+	; iniut stack
 	m_init_stack
-	; ports initialization
+	; init ports
 	m_init_ports
 
-	.equ DELAY = 200000
+	.equ DELAY_TIME = 200000
 
 	main_thread_loop:
-		m_delay_short DELAY
+		m_delay_short DELAY_TIME
 		rcall led_loggle
-		m_delay DELAY
+		m_delay DELAY_TIME
 		rcall led_loggle
 
 		rjmp main_thread_loop
