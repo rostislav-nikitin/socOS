@@ -77,10 +77,64 @@ timer_w_pwm_base_init:
 	ret
 
 timer_w_pwm_base_init_ports_ocr:
-	m_save_r23_Z_SREG_registers
+	rcall timer_w_pwm_base_compare_control_register_set_compare_threshold
+
+	ret
+
+.macro m_timer_w_pwm_base_compare_threshold_set
+	; parameters:
+	;	@0	[st_timer]
+	;	@1	byte		compare threshold
+	m_save_r23_Z_regisrers
+
+	ldi ZL, low(@0)
+	ldi ZH, high(@0)
+	ldi r23, @1
+
+	rcall timer_w_pwm_base_compare_threshold_set
+        	
+	m_restore_r23_Z_registers
+.endm
+timer_w_pwm_base_compare_threshold_set:
+	m_save_r22_r23_registers
+
+	mov r22, r23
+	ldi r23, ST_TIMER_W_PWM_BASE_COMPARE_THRESHOLD_OFFSET
+	rcall set_struct_byte
+
+	;mov r23, r22
+	;rcall timer_w_pwm_base_compare_register_set
+
+	m_restore_r22_r23_registers
+
+	ret
+
+.macro m_timer_w_pwm_base_compare_control_register_set_compare_threshold
+	; parameters:
+	;	@0	[st_timer]
+	m_save_Z_regisrers
+
+	ldi ZL, low(@0)
+	ldi ZH, high(@0)
+
+	rcall timer_w_pwm_base_compare_control_register_set_compare_threshold
+        	
+	m_restore_Z_registers
+.endm
+timer_w_pwm_base_compare_control_register_set_compare_threshold:
+	m_save_r23_registers
 
 	ldi r23, ST_TIMER_W_PWM_BASE_COMPARE_THRESHOLD_OFFSET
 	rcall get_struct_byte
+
+	rcall timer_w_pwm_base_compare_control_register_set
+
+	m_restore_r23_registers
+
+	ret
+
+timer_w_pwm_base_compare_control_register_set:
+	m_save_r23_Z_registers
 
 	push r23
 
@@ -91,7 +145,7 @@ timer_w_pwm_base_init_ports_ocr:
 
 	st Z, r23
 
-	m_restore_r23_Z_SREG_registers
+	m_restore_r23_Z_registers
 
 	ret
 

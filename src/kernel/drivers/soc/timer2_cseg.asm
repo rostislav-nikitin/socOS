@@ -25,11 +25,86 @@ timer2_init:
 	ret
 
 timer2_init_ports_mode:
-	m_save_r16_r23_Z_SREG_registers
-	;
+	rcall timer2_counter_control_register_set_mode
+
+	ret
+
+.macro m_timer2_compare_threshold_set
+	; parameters:
+	;	@0	byte	threshlod
+	m_timer_w_pwm_base_compare_threshold_set timer2_static_instance, @0
+	
+.endm
+timer2_compare_threshold_set:
+	m_save_Z_registers
+
+	ldi ZL, low(timer2_static_instance)
+	ldi ZH, high(timer2_static_instance)
+
+	rcall timer_w_pwm_base_compare_threshold_set
+
+	m_restore_Z_registers
+
+	ret
+
+.macro m_timer2_compare_control_register_set_compare_threshold
+	m_timer_w_pwm_base_compare_control_register_set_compare_threshold timer2_static_instance
+.endm
+timer2_compare_control_register_set_compare_threshold:
+	ldi ZL, low(timer2_static_instance)
+	ldi ZH, high(timer2_static_instance)
+
+	rcall timer_w_pwm_base_compare_control_register_set_compare_threshold
+	ret
+
+.macro m_timer2_counter_control_register_set_mode
+	rcall timer2_counter_control_register_set_mode
+.endm
+timer2_counter_control_register_set_mode:
+	m_save_r23_Z_registers
+
+	ldi ZL, low(timer2_static_instance)
+	ldi ZH, high(timer2_static_instance)
 
 	ldi r23, ST_TIMER2_MODE_OFFSET
 	rcall get_struct_byte
+
+	rcall timer2_counter_control_register_set
+
+	m_restore_r23_Z_registers
+
+	ret
+
+.macro m_timer2_counter_control_register_set_mode_off
+	rcall timer2_pwm_disable
+.endm
+timer2_counter_control_register_set_mode_off:
+	m_save_r23_registers
+
+	ldi r23, TIMER_W_PWM_MODE_OFF
+
+	rcall timer2_counter_control_register_set
+
+	m_restore_r23_registers
+
+	ret
+
+.macro m_timer2_counter_control_register_set
+	; parameters:
+	;	@0	byte	TIMER_W_PWM_MODE
+	m_save_r23_registers
+
+	ldi r23, @0
+
+	rcall timer2_counter_control_register_set
+
+	m_resore_r23_registers
+.endm
+timer2_counter_control_register_set:
+	m_save_r16_r23_Z_SREG_registers
+
+	ldi ZL, low(timer2_static_instance)
+	ldi ZH, high(timer2_static_instance)
 
 	push r23
 
@@ -45,46 +120,46 @@ timer2_init_ports_mode:
 
 	pop r23
 
-	timer2_init_ports_mode_check_off:
+	timer2_mode_set_check_off:
 		cpi r23, TIMER_W_PWM_MODE_OFF
-		breq timer2_init_ports_mode_end
-	timer2_init_ports_mode_check_phase_correction:	
+		breq timer2_mode_set_end
+	timer2_mode_set_check_phase_correction:	
 		cpi r23, TIMER_W_PWM_MODE_PHASE_CORRECTION
-		brne timer2_init_ports_mode_check_phase_correction_inverted
+		brne timer2_mode_set_check_phase_correction_inverted
 		; set required
 		ldi r23, (0 << WGM21) | (1 << WGM20) | (1 << COM21) | (0 << COM20)
 		or r16, r23
-		rjmp timer2_init_ports_mode_end
-	timer2_init_ports_mode_check_phase_correction_inverted:
+		rjmp timer2_mode_set_end
+	timer2_mode_set_check_phase_correction_inverted:
 		cpi r23, TIMER_W_PWM_MODE_PHASE_CORRECTION_INVERTED
-		brne timer2_init_ports_mode_check_ctc
+		brne timer2_mode_set_check_ctc
 		; set required
 		ldi r23, (0 << WGM21) | (1 << WGM20) | (1 << COM21) | (1 << COM20)
 		or r16, r23		
-		rjmp timer2_init_ports_mode_end
-	timer2_init_ports_mode_check_ctc:
+		rjmp timer2_mode_set_end
+	timer2_mode_set_check_ctc:
 		cpi r23, TIMER_W_PWM_MODE_CTC
-		brne timer2_init_ports_mode_check_fast
+		brne timer2_mode_set_check_fast
 		; set required
 		ldi r23, (1 << WGM21) | (0 << WGM20) | (0 << COM21) | (1 << COM20)
 		or r16, r23		
-		rjmp timer2_init_ports_mode_end
-	timer2_init_ports_mode_check_fast:
+		rjmp timer2_mode_set_end
+	timer2_mode_set_check_fast:
 		cpi r23, TIMER_W_PWM_MODE_FAST
-		brne timer2_init_ports_mode_check_fast_inverted
+		brne timer2_mode_set_check_fast_inverted
 		; set required
 		ldi r23, (1 << WGM21) | (1 << WGM20) | (1 << COM21) | (0 << COM20)
 		or r16, r23		
-		rjmp timer2_init_ports_mode_end
-	timer2_init_ports_mode_check_fast_inverted:
+		rjmp timer2_mode_set_end
+	timer2_mode_set_check_fast_inverted:
 		cpi r23, TIMER_W_PWM_MODE_FAST_INVERTED
-		brne timer2_init_ports_mode_end
+		brne timer2_mode_set_end
 		;
 		ldi r23, (1 << WGM21) | (1 << WGM20) | (1 << COM21) | (1 << COM20)
 		or r16, r23
-		rjmp timer2_init_ports_mode_end
+		rjmp timer2_mode_set_end
 
-	timer2_init_ports_mode_end:
+	timer2_mode_set_end:
 		st Z, r16
 	;
 	m_restore_r16_r23_Z_SREG_registers

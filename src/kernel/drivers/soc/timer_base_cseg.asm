@@ -73,10 +73,35 @@ timer_base_init:
 
 timer_base_init_ports:
 	; init divider
-	m_save_r23_Z_SREG_registers
+	rcall timer_base_counter_set_divider
+
+	ret
+
+timer_base_counter_set_divider:
+	m_save_r23_registers
 
 	ldi r23, ST_TIMER_BASE_DIVIDER_BIT_MASK_OFFSET
 	rcall get_struct_byte
+
+	rcall timer_base_counter_set
+
+	m_restore_r23_registers
+
+	ret
+
+timer_base_counter_set_disabled:
+	m_save_r23_registers
+
+	ldi r23, TIMER_DIVIDER_CLOCK_DISABLED
+
+	rcall timer_base_counter_set
+
+	m_restore_r23_registers
+
+	ret
+
+timer_base_counter_set:
+	m_save_r23_Z_registers
 
 	push r23
 
@@ -87,7 +112,7 @@ timer_base_init_ports:
 
 	st Z, r23
 
-	m_restore_r23_Z_SREG_registers
+	m_restore_r23_Z_registers
 
 	ret
 
