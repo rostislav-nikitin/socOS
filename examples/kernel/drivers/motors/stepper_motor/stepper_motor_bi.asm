@@ -12,7 +12,7 @@ rcall main_thread
 .include "../../../../../src/kernel/drivers/io/st_device_io_def.asm"
 .include "../../../../../src/kernel/drivers/io/out_bit_def.asm"
 .include "../../../../../src/kernel/drivers/io/hid/led_def.asm"
-.include "../../../../../src/kernel/drivers/motors/stepper_motor_def.asm"
+.include "../../../../../src/kernel/drivers/motors/stepper_motor_bi_def.asm"
 .include "../../../../../src/kernel/drivers/soc/timer_base_def.asm"
 .include "../../../../../src/kernel/drivers/soc/timer0_def.asm"
 
@@ -21,8 +21,8 @@ rcall main_thread
 .include "../../../../../src/kernel/drivers/soc/timer0_dseg.asm"
 ; custom data & descriptors
 .dseg
-	led1:			.BYTE SZ_ST_LED
-	stepper_motor1:	.BYTE SZ_ST_STEPPER_MOTOR
+	led1:				.BYTE SZ_ST_LED
+	stepper_motor_bi1:	.BYTE SZ_ST_STEPPER_MOTOR_BI
 
 ; main thread
 .cseg
@@ -35,7 +35,7 @@ rcall main_thread
 .include "../../../../../src/kernel/drivers/io/st_device_io_cseg.asm"
 .include "../../../../../src/kernel/drivers/io/out_bit_cseg.asm"
 .include "../../../../../src/kernel/drivers/io/hid/led_cseg.asm"
-.include "../../../../../src/kernel/drivers/motors/stepper_motor_cseg.asm"
+.include "../../../../../src/kernel/drivers/motors/stepper_motor_bi_cseg.asm"
 .include "../../../../../src/kernel/drivers/soc/timer_base_cseg.asm"
 .include "../../../../../src/kernel/drivers/soc/timer0_cseg.asm"
 
@@ -44,16 +44,16 @@ main_thread:
 	m_init_stack
 	; init leds
 	m_led_init led1, DDRC, PORTC, (1 << BIT5)
-	m_stepper_motor_init stepper_motor1, DDRC, PORTC, STEPPER_MOTOR_TETRADE_MASK_LOW, STEPPER_MOTOR_DIRECTION_CCW, STEPPER_MOTOR_WAIT_STEP_64X
+	m_stepper_motor_bi_init stepper_motor_bi1, DDRC, PORTC, STEPPER_MOTOR_BI_TETRADE_MASK_LOW, STEPPER_MOTOR_BI_DIRECTION_CCW, STEPPER_MOTOR_BI_WAIT_STEP_64X
 	m_timer0_init TIMER_DIVIDER_1024X, timer0_on_overflow_handler
 	m_timer0_interrupts_enable
 	; init global interrupts
-	;m_stepper_motor_rotate stepper_motor1, 1
-	m_stepper_motor_rotate_infinity stepper_motor1
-	m_stepper_motor_stop stepper_motor1
+	;m_stepper_motor_bi_rotate stepper_motor_bi1, 1
+	m_stepper_motor_bi_rotate_infinity stepper_motor_bi1
+	m_stepper_motor_bi_stop stepper_motor_bi1
 	;
-	m_stepper_motor_direction_set stepper_motor1, STEPPER_MOTOR_DIRECTION_CW
-	m_stepper_motor_rotate stepper_motor1, 2
+	m_stepper_motor_bi_direction_set stepper_motor_bi1, STEPPER_MOTOR_BI_DIRECTION_CW
+	m_stepper_motor_bi_rotate stepper_motor_bi1, 2
 
 	m_init_interrupts
 
@@ -70,6 +70,6 @@ main_thread:
 
 timer0_on_overflow_handler:
 	m_led_toggle led1
-	m_stepper_motor_handle_io stepper_motor1
+	m_stepper_motor_bi_handle_io stepper_motor_bi1
 
 	ret
