@@ -172,8 +172,6 @@ timer0_on_overflow_handler:
 
 ## socOS structure
 Currenlty socOS code distributed by the next namespaces (each folder is a namespace):
-* **\[extensions/\*\] is a socOS extensions namespace
-    * delay	- extension that provides macro/procedures for delays
 * **\[kernel/\*]** is a kernel common code namespace
     * kernel		- definitions/procedures used in the most of the drivers
     * thread_pool	- thread pool powered by the timer0. It asldo provides the thread abstraction and the procedures to control this abstraction instances
@@ -206,7 +204,8 @@ Currenlty socOS code distributed by the next namespaces (each folder is a namesp
 	* **\[kernel/drivers/motors/\*\]** the namespace that represents motors
 		* _motor:timer2_	- driver (static abstract class (int handler/definitions/static instance data/procedures)) used to control any abstract motor controlled by the PWM
 		* _motor_stepper_bi:device_io_	- driver to control any abstract bi-phase stepper motor controller by the stepper motor controller wich should be connected to the MCU port tetrade. Configured by the specified DDRx/PORTx/TETRADE(L|H)
-
+* **\[extensions/\*\]** is a socOS extensions namespace
+    * delay	- extension that provides macro/procedures for delays
 ## socOS conventions
 ### Variable naming convention:
 * name:		variable
