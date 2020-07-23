@@ -158,6 +158,8 @@ timer0_on_overflow_handler:
 
 ## socOS structure
 Currenlty socOS code distributed by the next namespaces (each folder is a namespace):
+* **\[extensions/\*\] is a socOS extensions namespace
+    * delay	- extension that provides macro/procedures for delays
 * **\[kernel/\*]** is a kernel common code namespace
     * kernel		- definitions/procedures used in the most of the drivers
     * thread_pool	- thread pool powered by the timer0. It asldo provides the thread abstraction and the procedures to control this abstraction instances
@@ -181,10 +183,10 @@ Currenlty socOS code distributed by the next namespaces (each folder is a namesp
 	    * _out_byte:device_io_	- the driver that can configure port for the ouput of the byte by the specified DDRx/PORTx parameters and can write one byte to it
 	    * _switch:device_io_		- the driver that represents a controlled switch. In derived from the kernel/drivers/io/out_bit and can switch one bit at the specified by the DDRx/PORTx/BITx port
 	    * **\[kernel/drivers/io/hid/\*\]** the namespace that contains drivers for the HID I/O devices	    
-		* _led:out_bit_
-		* _button:in_bit_
-		* _encoder:device_io_
-		* _seven segment indicator:out_byte_
+		- _led:out_bit_	- led driver
+		- _button:in_bit_	- button driver
+		- _encoder:device_io_	- 2-bit Gray code encoder driver
+		- _ssi:out_byte_	- seven segment indicator driver
 	    * **\[kernel/drivers/io/sensors/\*\]** the namespace that represents sensors
 		* _am2302:device_io_	- AM2302/DHT22 sensor driver. Is can configure specified DDRx/PINx/BITx for the input. And then communicates with an AM2302/DHT22 sensor through a one wire.
 	* **\[kernel/drivers/motors/\*\]** the namespace that represents motors
@@ -263,7 +265,8 @@ ldi r23, ST_LED_PORTX_ADDRESS_OFFSET
 ldi YL, low(PORTC)
 ldi YH, high(PORTC)
 rcall set_struct_word
-; after the call the PORTx address will be stored into the st_led::ST_LED_PORTX_ADDRESS_OFFSET field.
+; after the call the PORTx address will be stored into the st_led::ST_LED_PORTX_ADDRESS_OFFSET 
+field.
 ```
 
 * \[macro\] m_set_Y_to_null_pointer - null pointer to the Y
