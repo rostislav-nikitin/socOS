@@ -163,8 +163,8 @@ Currenlty socOS code distributed by the next namespaces (each folder is a namesp
     * thread_pool	- thread pool powered by the timer0. It asldo provides the thread abstraction and the procedures to control this abstraction instances
     * **\[kernel/drivers/\*\]** namespace that contains drivers for different devices. Where drivers are some low level code that provides some abstraction for the particular device. Thus you can use any device not by reading/writing bits within some control/data registers but throug call some human readable procedures like a led_on, led_off, etc.
 	* device	- base class (definitions/procedures) for any device driver
-    * **\[kernel/drivers/soc\*\]** the namespace that represents SoC build-in devices
-		* ac:st_device	- driver for the analog comparator
+    * **\[kernel/drivers/soc/\*\]** the namespace that represents SoC build-in devices
+		* _ac:st_device_	- driver for the analog comparator
 		* adc:st_device	- driver for the analog-digital convertor
 		* timer_base:st_device -	 base abstract class (definitions/procedures) for any timer driver
 		* time0:timer_base	- driver (timer0 static class (int handler/definitions/static instance data/procedures)) for the timer0
@@ -173,19 +173,19 @@ Currenlty socOS code distributed by the next namespaces (each folder is a namesp
 		* usart:st_device	- driver (usart static class (int handler/definitions/static instance data/procedures)) for the usart interface
 		* eeprom:st_device- driver (eeprom static class (int handler/definitions/static instance data/procedures)) for the eeprom controller
 		* watchdog:st_device- driver (watchdog static class (definitions/procedures)) for the watchdog counter    
-	* **\[kernel/drivers/io/\*]** the namespace that contains drivers for the I/O devices like a led, button, etc.
+	* **\[kernel/drivers/io/\*\]** the namespace that contains drivers for the I/O devices like a led, button, etc.
 	    * device_io:device		-base class (definitions/procedures) for most of the I/O devices
 	    * in_bit:device_io		- the driver that can configure port/pin for the input by the specified DDRx/PINx/PORTx/BITx parameters and can read one bit from it
 	    * out_bit:device_io		- the driver that can configure port/pin for the ouput by the specified DDRx/PORTx/BITx parameters and can write one bit to it
 	    * in_byte:device_io		- (not implemented yet)
 	    * out_byte:device_io	- the driver that can configure port for the ouput of the byte by the specified DDRx/PORTx parameters and can write one byte to it
 	    * switch:device_io		- the driver that represents a controlled switch. In derived from the kernel/drivers/io/out_bit and can switch one bit at the specified by the DDRx/PORTx/BITx port
-	    * **\[kernel/drivers/io/hid\*]** the namespace that contains drivers for the HID I/O devices	    
+	    * **\[kernel/drivers/io/hid/\*\]** the namespace that contains drivers for the HID I/O devices	    
 		* led:out_bit
 		* button:in_bit
 		* encoder:device_io
 		* seven segment indicator:out_byte
-	    * **\[kernel/drivers/io/sensors\*\]** the namespace that represents sensors
+	    * **\[kernel/drivers/io/sensors/\*\]** the namespace that represents sensors
 		* am2302:device_io	- AM2302/DHT22 sensor driver. Is can configure specified DDRx/PINx/BITx for the input. And then communicates with an AM2302/DHT22 sensor through a one wire.
 	* **\[kernel/drivers/motors\]** the namespace that represents motors
 		* motor:timer2	- driver (static abstract class (int handler/definitions/static instance data/procedures)) used to control any abstract motor controlled by the PWM
