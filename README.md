@@ -284,10 +284,10 @@ For example:
 	ldi ZH, high(@0)
 	
 	ldi YL, low(@1)
-	ldi YH, low(@1)
+	ldi YH, high(@1)
 	
 	ldi XL, low(@2)
-	ldi XH, low(@2)
+	ldi XH, high(@2)
 	
 	ldi r23, @3
 	
@@ -379,7 +379,7 @@ Example of use:
 ldi ZL, low(buffer_from)
 ldi ZH, high(buffer_to)
 ldi YL, low(buffer_to)
-ldi YH, hihg(buffer_to)
+ldi YH, high(buffer_to)
 ldi r23, sz_buffer_to
 
 rcall mem_copy
@@ -388,7 +388,7 @@ rcall mem_copy
 Example of use:
 ```Assembly
 ldi ZL, low(st_led)
-ldi ZH, low(st_led)
+ldi ZH, high(st_led)
 ldi r23, ST_LED_USED_BIT_MASK_OFFSET
 
 rcall get_struct_byte
@@ -398,7 +398,7 @@ rcall get_struct_byte
 Example of use:
 ```AssemblyFor example:
 ldi ZL, low(st_led)
-ldi ZH, low(st_led)
+ldi ZH, high(st_led)
 ldi r23, ST_LED_PORTX_ADDRESS_OFFSET
 
 rcall get_struct_word
@@ -408,7 +408,7 @@ rcall get_struct_word
 Example of use:
 ```Assembly
 ldi ZL, low(st_led)
-ldi ZH, low(st_led)
+ldi ZH, high(st_led)
 ldi r23, ST_LED_USED_BIT_MASK_OFFSET
 ldi r22, 0b00000001
 
@@ -419,7 +419,7 @@ rcall set_struct_byte
 ```Assembly
 Use example:
 ldi ZL, low(st_led)
-ldi ZH, low(st_led)
+ldi ZH, high(st_led)
 ldi r23, ST_LED_PORTX_ADDRESS_OFFSET
 ldi YL, low(PORTC)
 ldi YH, high(PORTC)
