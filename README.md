@@ -173,15 +173,14 @@ Currenlty socOS code distributed by the next namespaces:
       - bi-phase stepper motor
 
 
-#Documentation
-##Conventions
-###Variable naming convention:
+## Conventions
+### Variable naming convention:
  	* name:		variable
  	* [name]:	pointer to the variable
 
-###Parameter passing convention:
+### Parameter passing convention:
 In most cases parameters are passing through registers. But sometimes (if parameters to much) they could be passed through stack.
-####Procedures:
+#### Procedures:
 	* The address parameters are passing/returning through next registres in such order: Z, Y, X, r24, r25
 	* The value parameters are passing/returning through next registers in a such order: r23, r22, r21, r20, r19, r18
 Example:
@@ -189,14 +188,14 @@ Example:
 	In this case Z register should be used to pass port address and r23 register to pass bit mask value. The result will be passed into the r23 register.
 
 	* The work/temporary registers are: r17, r0. But registers used to pass parameters also could be used in case if they are not used in the particular call or if they was saved with use of the stack or by the some another way.
-####Event handlers:
+#### Event handlers:
 Sometimes required to pass some parameters to the event handler. For this purposes please use Y register. If you need to pass two values or then then please put them into the: YH, YL (in this order).
 Otherwise some struct should be created, filled with data that sould be passes to the event handler. And it's address should be put into the Y (before event handler called). And the event hadler could access this data.
 
-###Inheritance
+### Inheritance
 The next typing (in the comments) st_child: st_parent means that st_child inherited from the st_parent. That measn that st_child has a same sructoure (filelds with a same offsets) but extended with additional fields.
 
-##Kernel procedures/macroses
+## Kernel procedures/macroses
 * m_init_stack
 * m_init_interrupts
 * \[macro\] save_XXX_registers/restore_XXX_registers - set ot two macroses to save/restore registers. It is more useful to type for example: save_r23_Z_SREG_registers instead of set of push commands
@@ -283,7 +282,7 @@ st_device is a base abstract structure for the all devices. Kernel contains next
 
 ## st_out_byte
 
-##app.asm structure
+## app.asm structure
 We recommend to use guidelines below to build you own firmware based on the socOS.
 But let's start from the socOS description.
 The app.asm structure:
@@ -295,15 +294,3 @@ To create a firmware based on socOS you have to clone this repo and
 
 ## Table of Contents
 * [socOS structure] (#socOS-structure)
-* 
-
-##app.asm structure
-We recommend to use guidelines below to build you own firmware based on the socOS.
-But let's start from the socOS description.
-The app.asm structure:
-1. First of all add .include "kernel\drivers\...\{driver_name}_int.asm" 
-
-To create a firmware based on socOS you have to clone this repo and
-1. You can open app.aps in the AVR studio
- as a start point of you firmware application. app.aps is a AVR Studio project that can be used as a template to build your custom firmware.
-
