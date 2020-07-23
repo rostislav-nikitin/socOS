@@ -21,9 +21,9 @@ The main idea is a reusing of the socOS kernel/drivers/extensions (from this blo
 Instead of this socOS providing some human readable abstractions.
 You simply need to include into the AVR Studio project corresponding components and reuse them. But at the beginning let's understand base socOS concepts.
 The main concepts of the socOS are:
-* kernel	- represented by the "kernel/kernel_def.asm" and "kernel/kernel_cseg.asm" assembler files that contains some common socOS basic definitions and procedures used by the most of the socOS components.
+* kernel	- represented by the "kernel/kernel_def.asm" and "kernel/kernel\_cseg.asm" assembler files that contains some common socOS basic definitions and procedures used by the most of the socOS components.
 * driver	- represented by the set of the next blocks that compose a virtual class entity. Virtual because Assembly language does not support classes but logically this blocks are the parts of the one entity. All this blocks are distributed by the separate files:
-    * "{driver_name}_int.asm"	- file with a next structure:
+    * "{driver\_name}\_int.asm"	- file with a next structure:
     ```Assembly
     .cseg
 	.org {address_of_the_interrupt_handler}
@@ -39,8 +39,8 @@ The main concepts of the socOS are:
         rjmp timer0_ovf_handler ; timer 0 overflow
 	
     ```
-    This kind of files should be included in the interruprs include block of the your application app.asm file
-    * "{driver_name}_def.asm"	- file with a some structures/constants/enumerations definitions.
+    This kind of files should be included in the interruprs include block of the your application app.asm file which structure will be discussed later
+    * "{driver\_name}\_def.asm"	- file with a some structures/constants/enumerations definitions.
     Something like that:
     ```Assembly
     .equ SZ_ST_{DRIVER_NAME}			= 0x05
@@ -51,13 +51,13 @@ The main concepts of the socOS are:
     .equ PROT_DDRC				= 0x27
     ...
     ```
-    This kind of files should be included in the definitions include block of the you application app.asm file
+    This kind of files should be included in the definitions include block of the you application app.asm file which structure will be discussed later
     * "{driver_name}_dseg.asm"	- here are data segment static variables, structures, arrays that are used by the component internally
     ```Assembly
     .dseg
 	st_{driver_name}:	.BYTE SZ_ST_{DRIVER_NAME}
     ```
-    This kind of files should be included in the data segment include block of the your main application app.asm file
+    This kind of files should be included in the data segment include block of the your main application app.asm file which structure will be discussed later
     * "{driver_name}_cseg.asm"	- this is a code block of the driver with the driver implementation
     ```Assembly
     .macro m_led_init
@@ -74,7 +74,7 @@ The main concepts of the socOS are:
 	ret
     ...
     ```
-    This kind of files should be included in the code segment inclide block of the your appication app.asm file
+    This kind of files should be included in the code segment inclide block of the your appication app.asm file which structure will be discussed later
     
 * extension	- represented by the "{extension_name}_cseg.asm" assembler file that contains some common procedures, which extends AVR assemler functionality.
 ## The structure of the app.asm:
