@@ -224,7 +224,7 @@ In this case Z register should be used to pass port address and r23 register to 
 * The work/temporary registers are: r17, r0. But registers used to pass parameters also could be used in case if they are not used in the particular call or if they was saved with use of the stack or by the some another way.
 #### Event handlers:
 Sometimes required to pass some parameters to the event handler. For this purposes please use register **Y**. If you need to pass two values or less then please put them into the: **YH, YL** (in this order). Otherwise some structure should be created and filled with data. And structure address sould be passes to the event handler. For this it's address should be put into the **Y** (before event handler called). And thus the event handler could access this data.
-### Constants
+#### Constants
 Constants could defined with use of a next pattern:
 ```Assembly
 .equ CONSTANT_NAME = CONSTANT_VALUE
@@ -234,7 +234,7 @@ For example:
 ```Assembly
 .equ PI	= 3.14159265359
 ```
-### Enumerations
+#### Enumerations
 Enumerations could be defined with use of a next pattern:
 ```Assembly
 ; define ENUMERATION_NAME
@@ -249,7 +249,7 @@ For example:
 .equ LED_STATE_OFF	= FALSE
 .equ LED_STATE_ON	= TRUE
 ```
-### Components and classes
+#### Components and classes
 Most of the devices can be represented as components which has a some interrupt handlers, definitions, data and code. According to this each such component could be represented as a viurtual classes. Virtual because Assembly language does not support and OOP/OOD structures. But virtually each class could be represented with:
 * class structure (set of the fields). Such structure could be defined by the own size, and fields offsets. And situated inside a {device_name}\_def.asm file
 
@@ -346,7 +346,7 @@ For example:
 	rjmp ac_completed_handler ; Analog Comparator Handler
 ```
 
-### Inheritance
+#### Inheritance
 Virtual clsasses could be inherited one form another.
 Following notation st_child:st_parent means that st_child inherited from the st_parent. That measn that st_child has a same sructure (filelds with a same offsets) but possibly extended with additional fields.
 
@@ -373,7 +373,7 @@ For example:
 * m_init_stack
 * m_init_interrupts
 * \[macro\] save_XXX_registers/restore_XXX_registers - set ot two macroses to save/restore registers. It is more useful to type for example: save_r23_Z_SREG_registers instead of set of push commands
-* \[proc\] mem_copy(\[from\], \[to\], lenght) - copyies {lenght} bytes \[from\] \[to\]
+* \[proc\] mem_copy(\[from\], \[to\], lenlowght) - copyies {lenght} bytes \[from\] \[to\]
 Example of use:
 ```Assembly
 ldi ZL, low(buffer_from)
