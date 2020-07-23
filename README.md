@@ -3,7 +3,7 @@
 The acronym socOS stands for the **S**ystem **o**n a **C**hip **O**perating **S**ystem.
 The main idea of the socOS to provie a hardware abstraction layer of the SoC and connected devices for the end users.
 For now supported only the AVR family MCU devices and all the tests was made only at the AVR ATmega8 one.
-
+# Overview
 ## How to use it?
 1. Clone this repository
 2. In the src folder you can find three files:
@@ -25,10 +25,17 @@ The main entities of the socOS are:
     * "{driver_name}_int.asm"	- file with a next structure:
     ```(asm)
     .cseg
-	.org 0x{address_of_the_interrupt_handler}
+	.org {address_of_the_interrupt_handler}
 	{driver_name|soc_internal_device_name}_{event_one_name}_handler
 	...
 	{driver_name|soc_internal_device_name}_{event_n_name}_handler	
+	
+    ```
+    For example:
+    ```(asm)
+    .cseg
+	.org 0x09
+        rjmp timer0_ovf_handler ; timer 0 overflow
 	
     ```
     This kind of files should be included in the interruprs include block of the your application app.asm file
@@ -151,27 +158,40 @@ timer0_on_overflow_handler:
 
 ## socOS structure
 First of all socOS consistis of the:
-* kernel_cseg.asm - this is a some base macro/procedures
-Currenlty socOS code distributed by the next namespaces:
-* **\[kernel/\*]** is a kernel common code:
-  - common function like: mem_copy, get_struct_byte*, get_struct_word*, etc
-  - thread pool (powered by the timer) with thread abstraction and procedures to control it instances
-  * **\[kernel/drivers/\*\]** wich contains drivers for different devices. Drivers are some low level code that provides functionality abstraction for the particular device. Thus you can use any device not by reading/writing bits within some control/data registers but throug call some human readable procedures like a led_on, led_off, etc
-    * **\[kernel/drivers/io\]** For now supported next IO devices:
-      - led
-      - encoder
-      - button
-      - seven segment indicator
-      - analog comparator
-      - analog-digital convertor
-      - pulse width modulation
-      - USART interface
-      - EEPROM manager
-    * **\[kernel/drivers/sensors\]** For now supported next sensor device:
-      - DHT22/AM2302 humidity/temperature sensor
-    * **\[kernel/drivers/motors\]** For now supported next motor devices:
-      - bi-phase stepper motor
+* [kernel/kernel_*.asm] - this is a some base macro/procedures
 
+Currenlty socOS code distributed by the next namespaces (each folder is a namespace):
+* **\[kernel/\*]** is a kernel common code namespace
+    * kernel		- definitions/procedures used in the most of the drivers
+    * thread_pool	- thread pool powered by the timer0. It asldo provides the thread abstraction and the procedures to control this abstraction instances
+    * **\[kernel/drivers/\*\]** namespace that contains drivers for different devices. Where drivers are some low level code that provides some abstraction for the particular device. Thus you can use any device not by reading/writing bits within some control/data registers but throug call some human readable procedures like a led_on, led_off, etc.
+	* device	- base class (definitions/procedures) for any device driver
+    * **\[kernel/drivers/soc\]** the namespace that represents SoC build-in devices
+		* ac:st_device	- driver for the analog comparator
+		* adc:st_device	- driver for the analog-digital convertor
+		* timer_base:st_device -	 base abstract class (definitions/procedures) for any timer driver
+		* time0:timer_base	- driver (timer0 static class (int handler/definitions/static instance data/procedures)) for the timer0
+		* timer_w_pwm_base:timer_base -	base abstract class (definitions/procedures) for any timer driver with a PWM (Pulse Width Modulation) functionality
+		* timer2:timer_w_pwm_base	- driver (timer2 static class (int handler/definitions/static instance data/procedures)) for the timer2
+		* usart:st_device	- driver (usart static class (int handler/definitions/static instance data/procedures)) for the usart interface
+		* eeprom:st_device- driver (eeprom static class (int handler/definitions/static instance data/procedures)) for the eeprom controller
+		* watchdog:st_device- driver (watchdog static class (definitions/procedures)) for the watchdog counter    
+	* **\[kernel/drivers/io/\*]** the namespace that contains drivers for the I/O devices like a led, button, etc.
+	    * device_io:device		-base class (definitions/procedures) for most of the I/O devices
+	    * in_bit:device_io		- the driver that can configure port/pin for the input by the specified DDRx/PINx/PORTx/BITx parameters and can read one bit from it
+	    * out_bit:device_io		- the driver that can configure port/pin for the ouput by the specified DDRx/PORTx/BITx parameters and can write one bit to it
+	    * in_byte:device_io		- (not implemented yet)
+	    * out_byte:device_io	- the driver that can configure port for the ouput of the byte by the specified DDRx/PORTx parameters and can write one byte to it
+	    * switch:device_io		- the driver that represents a controlled switch. In derived from the kernel/drivers/io/out_bit and can switch one bit at the specified by the DDRx/PORTx/BITx port
+	    * **\[kernel/drivers/io/hid\*]** the namespace that contains drivers for the HID I/O devices	    
+		* led:out_bit
+		* button:in_bit
+		* encoder:device_io
+		* seven segment indicator:out_byte
+	    * **\[kernel/drivers/io/sensors\]** the namespace that represents sensors
+	* **\[kernel/drivers/motors\]** the namespace that represents motors
+		* motor:timer2	- driver (static abstract class (int handler/definitions/static instance data/procedures)) used to control any abstract motor controlled by the PWM
+		* bi-phase spepper motor:device_io	- driver to control any abstract bi-phase stepper motor controller by the stepper motor controller wich should be connected to the MCU port tetrade. Configured by the specified DDRx/PORTx/TETRADE(L|H)
 
 ## Conventions
 ### Variable naming convention:
@@ -195,7 +215,7 @@ Otherwise some struct should be created, filled with data that sould be passes t
 ### Inheritance
 The next typing (in the comments) st_child: st_parent means that st_child inherited from the st_parent. That measn that st_child has a same sructoure (filelds with a same offsets) but extended with additional fields.
 
-## Kernel procedures/macroses
+# Kernel procedures/macroses
 * m_init_stack
 * m_init_interrupts
 * \[macro\] save_XXX_registers/restore_XXX_registers - set ot two macroses to save/restore registers. It is more useful to type for example: save_r23_Z_SREG_registers instead of set of push commands
@@ -251,46 +271,3 @@ Use example:
 * \[proc\] int_to_mask({byte}) - converts some integer value into the bit mask. It simple making right shift of the 0x01 to the {byte} positions
 * \[macro\] m_lshift(@0, @1) returns @3 where @0 is a value to shift, @1 is a positions to shift
 * \[proc\] lshift(value, positions) returns byte {shifted_value}.
-
-
-# Drivers
-Driver is component that provides a some abstraction over hardware. For example \[kernel/drivers/io/hid/button\] provides structure and procedures to handle button events and raise another events for the consumer application.
-For example eventl like: button_down, button_up, button_pressed.
-In the you code you can specify for example {button_name}_on_button_pressed_handler to process {button_name} button_pressed events.
-Drivers are composition of the:
-* definition: {driver_name}_def.asm
-* interrupt: {driver_name}_int.asm
-* data: {driver_name}_dseg.asm
-* implementation (code): {driver_name}_cseg.asm
-## st_device
-st_device is a base abstract structure for the all devices. Kernel contains next procedures to handle st_device and derived structures :
-
-* \[abstract\] m_st_device_init/st_device_init - abstract initialization procedure that contains only ret operation. Should be called from the *_init method of the deriatives
-* st_device_raise_event([st_device], handler_address_offset) - procedure that raises an event by calling event handler specified by the [st_device] and device handler offset
-
-## st_device_io
-
-
-## st_in_bit
-
-
-## st_out_bit
-
-
-## st_in_byte (not implemented)
-
-
-## st_out_byte
-
-## app.asm structure
-We recommend to use guidelines below to build you own firmware based on the socOS.
-But let's start from the socOS description.
-The app.asm structure:
-1. First of all add .include "kernel\drivers\...\{driver_name}_int.asm" 
-
-To create a firmware based on socOS you have to clone this repo and
-1. You can open app.aps in the AVR studio
- as a start point of you firmware application. app.aps is a AVR Studio project that can be used as a template to build your custom firmware.
-
-## Table of Contents
-* [socOS structure] (#socOS-structure)
