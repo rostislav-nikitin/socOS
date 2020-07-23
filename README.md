@@ -222,7 +222,7 @@ The next typing (in the comments) st_child: st_parent means that st_child inheri
 * \[macro\] save_XXX_registers/restore_XXX_registers - set ot two macroses to save/restore registers. It is more useful to type for example: save_r23_Z_SREG_registers instead of set of push commands
 * \[proc\] mem_copy(\[from\], \[to\], lenght) - copyies {lenght} bytes \[from\] \[to\]
 Example of use:
-```(assembly)
+```assembly
 ldi ZL, low(buffer_from)
 ldi ZH, high(buffer_to)
 ldi YL, low(buffer_to)
@@ -232,7 +232,7 @@ ldi r23, sz_buffer_to
 	rcall mem_copy
 * \[proc\] get_struct_byte(\[st_{any}\], offset) returns the field byte value
 Example of use:
-```(assembly)
+```assembly
 ldi ZL, low(st_led)
 ldi ZH, low(st_led)
 ldi r23, ST_LED_USED_BIT_MASK_OFFSET
@@ -241,7 +241,7 @@ rcall get_struct_byte
 ```
 * \[proc\] get_struct_word(st_{any}, offset) returns the field word value
 Example of use:
-```(assembly)
+```assembly
 ldi ZL, low(st_led)
 ldi ZH, low(st_led)
 ldi r23, ST_LED_PORTX_ADDRESS_OFFSET
@@ -250,7 +250,7 @@ rcall get_struct_word
 ```
 * \[proc\] set_struct_byte(\[st_{any}\], offset, value)
 Example of use:
-```(assembly)
+```assembly
 ldi ZL, low(st_led)
 ldi ZH, low(st_led)
 ldi r23, ST_LED_USED_BIT_MASK_OFFSET
