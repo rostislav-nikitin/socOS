@@ -263,7 +263,7 @@ rcall set_struct_byte
 ; after the call the used bit mask will stored into the st_led::ST_LED_USED_BIT_MASK_OFFSET field.
 ```
 * \[proc\] get_struct_word(\[st_{any}, offset) returns the field word value.
-```(asembler)
+```Assembly
 Use example:
 ldi ZL, low(st_led)
 ldi ZH, low(st_led)
