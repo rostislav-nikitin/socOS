@@ -214,14 +214,14 @@ Currenlty socOS code distributed by the next namespaces (each folder is a namesp
 ### Parameter passing convention:
 In most cases parameters are passing through registers. But sometimes (if parameters to much) they could be passed through stack.
 #### Procedures:
-* The address parameters are passing/returning through next registres in such order: Z, Y, X, r24, r25
-* The value parameters are passing/returning through next registers in a such order: r23, r22, r21, r20, r19, r18
+* The address parameters are passing/returning through next registres in such order: **Z, Y, X, r24, r25**
+* The value parameters are passing/returning through next registers in a such order: **r23, r22, r21, r20, r19, r18**
 Example:
 Need to pass port addres and bit mask parameters to the st_device_io_init procedure which returns some value.
 In this case Z register should be used to pass port address and r23 register to pass bit mask value. The result will be passed into the r23 register.
 * The work/temporary registers are: r17, r0. But registers used to pass parameters also could be used in case if they are not used in the particular call or if they was saved with use of the stack or by the some another way.
 #### Event handlers:
-Sometimes required to pass some parameters to the event handler. For this purposes please use register Y. If you need to pass two values or less then please put them into the: YH, YL (in this order). Otherwise some structure should be created and filled with data. And structure address sould be passes to the event handler. For this it's address should be put into the Y (before event handler called). And thus the event handler could access this data.
+Sometimes required to pass some parameters to the event handler. For this purposes please use register **Y**. If you need to pass two values or less then please put them into the: **YH, YL** (in this order). Otherwise some structure should be created and filled with data. And structure address sould be passes to the event handler. For this it's address should be put into the **Y** (before event handler called). And thus the event handler could access this data.
 ### Constants
 Constants could defined with use of a next pattern:
 ```Assembly
