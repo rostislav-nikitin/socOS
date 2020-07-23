@@ -1,13 +1,26 @@
-; Analog Comparator
+;=======================================================================================================================
+;                                                                                                                      ;
+; Name:	socOS (System On Chip Operation System)                                                                        ;
+; 	Year: 		2020                                                                                           ;
+; 	License:	MIT License                                                                                    ;
+;                                                                                                                      ;
+;=======================================================================================================================
+
+; Require:
+;.include "m8def.inc"
+
+;.include "kernel/device_def.asm"
+
+; Analog-Digital Convertor
 ; st_adc size
-.equ SZ_ST_ADC 				= 0x07
+.equ SZ_ST_ADC 				= SZ_ST_DEVICE + 0x07
 ; st_adc:st_device
-.equ ST_ADC_INPUT_NEGATIVE		= 0x00
-.equ ST_ADC_INPUT_POSITIVE		= 0x01
-.equ ST_ADC_FREQUENCY			= 0x02
-.equ ST_ADC_OUTPUT_VALUE_ORDER		= 0x03
-.equ ST_ADC_CONTINUOUS_MEASUREMENT	= 0x04
-.equ ST_ADC_ON_COMPLETED_HANDLER_OFFSET	= 0x05
+.equ ST_ADC_INPUT_NEGATIVE		= SZ_ST_DEVICE + 0x00
+.equ ST_ADC_INPUT_POSITIVE		= SZ_ST_DEVICE + 0x01
+.equ ST_ADC_FREQUENCY			= SZ_ST_DEVICE + 0x02
+.equ ST_ADC_OUTPUT_VALUE_ORDER		= SZ_ST_DEVICE + 0x03
+.equ ST_ADC_CONTINUOUS_MEASUREMENT	= SZ_ST_DEVICE + 0x04
+.equ ST_ADC_ON_COMPLETED_HANDLER_OFFSET	= SZ_ST_DEVICE + 0x05
 
 ; enum ADC_INPUT_NEGATIVE(ADMUX: REFS1-REFS0)
 .equ ADC_INPUT_NEGATIVE_AREF		= 0x00 ; AREF pin (PIN24)

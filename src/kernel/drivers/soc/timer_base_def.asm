@@ -1,11 +1,24 @@
+;=======================================================================================================================
+;                                                                                                                      ;
+; Name:	socOS (System On Chip Operation System)                                                                        ;
+; 	Year: 		2020                                                                                           ;
+; 	License:	MIT License                                                                                    ;
+;                                                                                                                      ;
+;=======================================================================================================================
+
+; Require:
+;.include "m8def.inc"
+
+;.include "kernel/device_def.asm"
+
 ; st_timer_base size
-.equ SZ_ST_TIMER_BASE 						= 8
+.equ SZ_ST_TIMER_BASE 						= SZ_ST_DEVICE + 0x08
 ; st_timer_base:st_device
-.equ ST_TIMER_BASE_COUNTER_CONTROL_REGISTER_ADDRESS_OFFSET	= 0
-.equ ST_TIMER_BASE_COUNTER_REGISTER_ADDRESS_OFFSET		= 2
-.equ ST_TIMER_BASE_DIVIDER_BIT_MASK_OFFSET			= 4
-.equ ST_TIMER_BASE_OVERFLOW_INTERRUPT_BIT_MASK_OFFSET		= 5
-.equ ST_TIMER_BASE_OVERFLOW_HANDLER_OFFSET			= 6
+.equ ST_TIMER_BASE_COUNTER_CONTROL_REGISTER_ADDRESS_OFFSET	= SZ_ST_DEVICE + 0x00
+.equ ST_TIMER_BASE_COUNTER_REGISTER_ADDRESS_OFFSET		= SZ_ST_DEVICE + 0x02
+.equ ST_TIMER_BASE_DIVIDER_BIT_MASK_OFFSET			= SZ_ST_DEVICE + 0x04
+.equ ST_TIMER_BASE_OVERFLOW_INTERRUPT_BIT_MASK_OFFSET		= SZ_ST_DEVICE + 0x05
+.equ ST_TIMER_BASE_OVERFLOW_HANDLER_OFFSET			= SZ_ST_DEVICE + 0x06
 
 ; enum TIMER_DIVIDER
 .equ TIMER_DIVIDER_CLOCK_DISABLED		= 0x00

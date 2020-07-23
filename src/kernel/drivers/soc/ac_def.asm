@@ -1,11 +1,24 @@
+;=======================================================================================================================
+;                                                                                                                      ;
+; Name:	socOS (System On Chip Operation System)                                                                        ;
+; 	Year: 		2020                                                                                           ;
+; 	License:	MIT License                                                                                    ;
+;                                                                                                                      ;
+;=======================================================================================================================
+
+; Require:
+;.include "m8def.inc"
+
+;.include "kernel/device_def.asm"
+
 ; Analog Comparator
 ; st_ac size
-.equ SZ_ST_AC 				= 0x05
+.equ SZ_ST_AC 				= SZ_ST_DEVICE + 0x05
 ; st_ac:st_device
-.equ ST_AC_INPUT_NEGATIVE		= 0x00
-.equ ST_AC_INPUT_POSITIVE		= 0x01
-.equ ST_AC_INTERRPUT_MODE_ARISE		= 0x02
-.equ ST_AC_ON_COMPLETED_HANDLER_OFFSET	= 0x03
+.equ ST_AC_INPUT_NEGATIVE		= SZ_ST_DEVICE + 0x00
+.equ ST_AC_INPUT_POSITIVE		= SZ_ST_DEVICE + 0x01
+.equ ST_AC_INTERRPUT_MODE_ARISE		= SZ_ST_DEVICE + 0x02
+.equ ST_AC_ON_COMPLETED_HANDLER_OFFSET	= SZ_ST_DEVICE + 0x03
 
 ; enum AC_POWER
 .equ AC_POWER_DISABLED			= 0x00 ; ACD = 0x01

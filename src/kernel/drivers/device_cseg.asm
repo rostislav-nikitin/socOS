@@ -1,3 +1,14 @@
+;=======================================================================================================================
+;                                                                                                                      ;
+; Name:	socOS (System On Chip Operation System)                                                                        ;
+; 	Year: 		2020                                                                                           ;
+; 	License:	MIT License                                                                                    ;
+;                                                                                                                      ;
+;=======================================================================================================================
+
+; Require:
+;.include "m8def.inc"
+
 .macro m_device_init
 .endm
 
@@ -7,7 +18,7 @@ device_init:
 device_raise_event:
 	; parameters:
 	; 	Z	word	[:st_device]
-	; 	r23	byte	st_device::event_handler_address
+	; 	r23	byte	st_device::event_handler_address_offset
 	m_save_r16_Y_Z_SREG_registers
 
 	rcall get_struct_word

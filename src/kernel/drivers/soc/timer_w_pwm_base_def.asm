@@ -1,3 +1,17 @@
+;=======================================================================================================================
+;                                                                                                                      ;
+; Name:	socOS (System On Chip Operation System)                                                                        ;
+; 	Year: 		2020                                                                                           ;
+; 	License:	MIT License                                                                                    ;
+;                                                                                                                      ;
+;=======================================================================================================================
+
+; Require:
+;.include "m8def.inc"
+
+;.include "kernel/device_def.asm"
+;.include "kernel/soc/timer_base_def.asm"
+
 ; st_timer_w_pwm_base size
 .equ SZ_ST_TIMER_W_PWM_BASE 						= SZ_ST_TIMER_BASE + 0x0A
 ; st_timer_w_pwm_base:st_timer_base inherited fields
