@@ -23,7 +23,7 @@ The main entities of the socOS are:
 * extension	- represented by the "{extension_name}_cseg.asm" assembler file that contains some common procedures, which extends AVR assemler functionality.
 * driver	- represented by the set of the next files:
     * "{driver_name}_int.asm"	- file with a next structure:
-    ```
+    ```(asm)
     .cseg
 	.org 0x{address_of_the_interrupt_handler}
 	{driver_name|soc_internal_device_name}_{event_one_name}_handler
@@ -62,7 +62,7 @@ The main entities of the socOS are:
     .endm
     
     led_init:
-	;some init code
+	; some init code
 	ret
     ...
     ```
