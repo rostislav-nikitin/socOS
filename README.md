@@ -227,6 +227,11 @@ Constants could defined with use of a next pattern:
 ```Assembly
 .equ CONSTANT_NAME = CONSTANT_VALUE
 ```
+
+For example:
+```Assembly
+.equ PI	= 3.14159265359
+```
 ### Enumerations
 Enumerations could be defined with use of a next pattern:
 ```Assembly
@@ -245,6 +250,7 @@ For example:
 ### Components and classes
 Most of the devices can be represented as components which has a some interrupt handlers, definitions, data and code. According to this each such component could be represented as a viurtual classes. Virtual because Assembly language does not support and OOP/OOD structures. But virtually each class could be represented with:
 * class structure (set of the fields). Such structure could be defined by the own size, and fields offsets. And situated inside a {device_name}\_def.asm file
+
 For example:
 ```Assembly
 ; struct st_led size:st_out_bit
@@ -255,12 +261,14 @@ For example:
 .equ ST_LED_USED_BIT_MASK_OFFSET		= 0x04
 ```
 * class instance that can be located inside a {device_name}\_dseg.asm file (for singletons) or inside a app.asm "custom data segment block" for non-singletons
+
 For example:
 ```Assembly
 .dseg
 	led:	.BYTE	SZ_ST_LED
 ```
 * class methods (procedures) which use class structure to manipulate with class instance. Which located inside a {device_name}\_cseg.asm file
+
 For example:
 ```Assembly
 ; constructor macro
@@ -328,6 +336,7 @@ led_set:
 
 ```
 * class interrupt handlers. Specific of the firmware development require continuos interrupts handling
+
 For example:
 ```Assembly
 .cseg
@@ -338,6 +347,7 @@ For example:
 ### Inheritance
 Virtual clsasses could be inherited one form another.
 Following notation st_child:st_parent means that st_child inherited from the st_parent. That measn that st_child has a same sructure (filelds with a same offsets) but possibly extended with additional fields.
+
 For example:
 ```Assembly
 .equ SZ_ST_TIMER_W_PWM_BASE 						= SZ_ST_TIMER_BASE + 0x0A
@@ -357,7 +367,7 @@ For example:
 .equ ST_TIMER_W_PWM_BASE_COMPARE_HANDLER_OFFSET				= SZ_ST_TIMER_BASE + 0x08
 ```
 
-## socOS kernel macro/procedures
+## socOS kernel macro/procedures (system calls)
 * m_init_stack
 * m_init_interrupts
 * \[macro\] save_XXX_registers/restore_XXX_registers - set ot two macroses to save/restore registers. It is more useful to type for example: save_r23_Z_SREG_registers instead of set of push commands
