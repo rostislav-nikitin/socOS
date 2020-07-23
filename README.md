@@ -223,7 +223,21 @@ In this case Z register should be used to pass port address and r23 register to 
 * The work/temporary registers are: r17, r0. But registers used to pass parameters also could be used in case if they are not used in the particular call or if they was saved with use of the stack or by the some another way.
 #### Event handlers:
 Sometimes required to pass some parameters to the event handler. For this purposes please use register Y. If you need to pass two values or less then please put them into the: YH, YL (in this order). Otherwise some structure should be created and filled with data. And structure address sould be passes to the event handler. For this it's address should be put into the Y (before event handler called). And thus the event handler could access this data.
-
+### Constants
+Constants could defined with `.equ CONSTANT_NAME = CONSTANT_VALUE` construction
+### Enumerations
+Enumerations could be defined with use of a next pattern:
+```Assembly
+; define ENUMERATION_NAME
+.equ ENUMERATION_NAME_VALUE_1
+.equ ENUMERATION_NAME_VALUE_2
+```
+For example:
+```Assembly
+; define LED_STATE
+.equ LED_STATE_ON
+.equ LED_STATE_OFF
+```
 ### Components and classes
 Most of the devices can be represented as components which has a some interrupt handlers, definitions, data and code. According to this each such component could be represented as a viurtual classes. Virtual because Assembly language does not support and OOP/OOD structures. But virtually each class could be represented with:
 * class structure (set of the fields). Such structure could be defined by the own size, and fields offsets. And situated inside a {device_name}\_def.asm file
@@ -251,7 +265,7 @@ For example:
 	;	@0	word led instance (this)
 	;	@1	word [DDRx]
 	;	@2	word [PORTx]
-	;	@3	word bit mask
+	;	@3	byte bit mask
 	ldi ZL, low(@0)
 	ldi ZH, high(@0)
 	
@@ -318,7 +332,26 @@ For example:
 ```
 
 ### Inheritance
-The next typing (in the comments) st_child: st_parent means that st_child inherited from the st_parent. That measn that st_child has a same sructoure (filelds with a same offsets) but extended with additional fields.
+Virtual clsasses could be inherited one form another.
+Following notation st_child:st_parent means that st_child inherited from the st_parent. That measn that st_child has a same sructure (filelds with a same offsets) but possibly extended with additional fields.
+For example:
+```Assembly
+.equ SZ_ST_TIMER_W_PWM_BASE 						= SZ_ST_TIMER_BASE + 0x0A
+; st_timer_pwm_base:st_timer_base inherited fields
+.equ ST_TIMER_W_PWM_BASE_COUNTER_CONTROL_REGISTER_ADDRESS_OFFSET	= ST_TIMER_BASE_COUNTER_CONTROL_REGISTER_ADDRESS_OFFSET
+.equ ST_TIMER_W_PWM_BASE_COUNTER_REGISTER_ADDRESS_OFFSET		= ST_TIMER_BASE_COUNTER_REGISTER_ADDRESS_OFFSET
+.equ ST_TIMER_W_PWM_BASE_DIVIDER_BIT_MASK_OFFSET			= ST_TIMER_BASE_DIVIDER_BIT_MASK_OFFSET
+.equ ST_TIMER_W_PWM_BASE_OVERFLOW_INTERRUPT_BIT_MASK_OFFSET		= ST_TIMER_BASE_OVERFLOW_INTERRUPT_BIT_MASK_OFFSET
+.equ ST_TIMER_W_PWM_BASE_OVERFLOW_HANDLER_OFFSET			= ST_TIMER_BASE_OVERFLOW_HANDLER_OFFSET
+; st_timer_pwm_base new fields
+.equ ST_TIMER_W_PWM_BASE_COMPARE_CONTROL_REGISTER_ADDRESS_OFFSET	= SZ_ST_TIMER_BASE
+.equ ST_TIMER_W_PWM_BASE_DDRX_ADDRESS_OFFSET				= SZ_ST_TIMER_BASE + 0x02
+.equ ST_TIMER_W_PWM_BASE_DDRX_BIT_MASK_OFFSET				= SZ_ST_TIMER_BASE + 0x04
+.equ ST_TIMER_W_PWM_BASE_MODE_OFFSET					= SZ_ST_TIMER_BASE + 0x05
+.equ ST_TIMER_W_PWM_BASE_COMPARE_THRESHOLD_OFFSET			= SZ_ST_TIMER_BASE + 0x06
+.equ ST_TIMER_W_PWM_BASE_COMPARE_INTERRUPT_BIT_MASK_OFFSET		= SZ_ST_TIMER_BASE + 0x07
+.equ ST_TIMER_W_PWM_BASE_COMPARE_HANDLER_OFFSET				= SZ_ST_TIMER_BASE + 0x08
+```
 
 ## socOS kernel macro/procedures
 * m_init_stack
