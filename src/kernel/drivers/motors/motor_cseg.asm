@@ -1,3 +1,28 @@
+;=======================================================================================================================
+;                                                                                                                      ;
+; Name:	socOS (System On Chip Operation System)                                                                        ;
+; 	Year: 		2020                                                                                           ;
+; 	License:	MIT License                                                                                    ;
+;                                                                                                                      ;
+;=======================================================================================================================
+
+; Require:
+;.include "m8def.inc"
+
+;.include "kernel/soc/timer2_int.asm"
+
+;.include "kernel/soc/timer2_dseg.asm"
+
+;.include "kernel/device_def.asm"
+;.include "kernel/soc/timer_base_def.asm"
+;.include "kernel/soc/timer_w_pwm_base_def.asm"
+;.include "kernel/soc/timer2_def.asm"
+
+;.include "kernel/device_cseg.asm"
+;.include "kernel/soc/timer_base_cseg.asm"
+;.include "kernel/soc/timer_w_pwm_base_cseg.asm"
+;.include "kernel/soc/timer2_cseg.asm"
+
 ;.include "../soc/timer2_cseg.asm"
 
 ; PWM at PINB[3]
@@ -10,7 +35,6 @@
 
 	rcall motor_init
 .endm
-
 motor_init:
 	ret
 
@@ -42,6 +66,8 @@ motor_stop:
 	m_restore_r23_registers
 .endm
 motor_power_set:
+	; parameters
+	;	r23	byte	power [0x00:0xff]
 	; set mode off (required to change compare control register)
 	rcall timer2_counter_control_register_set_mode_off
 	; set compare thershole (to the st_timer2)
@@ -52,5 +78,3 @@ motor_power_set:
 	rcall timer2_counter_control_register_set_mode
 
 	ret
-
-

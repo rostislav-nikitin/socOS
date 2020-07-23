@@ -1,3 +1,21 @@
+;=======================================================================================================================
+;                                                                                                                      ;
+; Name:	socOS (System On Chip Operation System)                                                                        ;
+; 	Year: 		2020                                                                                           ;
+; 	License:	MIT License                                                                                    ;
+;                                                                                                                      ;
+;=======================================================================================================================
+
+; Require:
+;.include "m8def.inc"
+
+;.include "kernel/device_def.asm"
+;.include "kernel/device_io_def.asm"
+
+;.include "kernel/device_cseg.asm"
+;.include "kernel/device_io_cseg.asm"
+
+
 ; usage:
 ; .dseg
 ;   zmotor_stepper_bi1: .BYTE SZ_ST_MOTOR_STEPPER_BI
@@ -11,13 +29,13 @@
 
 .macro m_motor_stepper_bi_init
 	m_save_r24_r25_X_Y_Z_registers
-	; input parameters:
-	;	@0 	word	[st_motor_stepper_bi:device_io]
+	; parameters:
+	;	@0 	word	[st_motor_stepper_bi]
 	;	@1	word	[DDRx]
 	;	@2	word 	[PORTx]
-	;	@3	byte 	TETRADE_MASK
-	;	@4	byte	direction
-	;	@5	byte	speed
+	;	@3	byte 	MOTOR_STEPPER_BI_TETRADE_MASK
+	;	@4	byte	MOTOR_STEPPER_BI_DIRECTION
+	;	@5	byte	MOTOR_STEPPER_BI_WAIT_STEP
 	m_device_io_init @0, @1, POINTER_NULL, PORTC, @3, @3
 
 	ldi ZL, low(@0)
@@ -32,6 +50,10 @@
 .endm
 
 motor_stepper_bi_init:
+	; parameters:
+	;	Z 	word	[st_motor_stepper_bi]
+	;	r23	byte	MOTOR_STEPPER_BI_DIRECTION
+	;	r22	byte	MOTOR_STEPPER_BI_WAIT_STEP
 	m_save_r22_r23_Y_registers
 	push r23
 
@@ -39,11 +61,11 @@ motor_stepper_bi_init:
 	rcall set_struct_byte
 
 	ldi r23, ST_MOTOR_STEPPER_BI_CURRENT_STEP_OFFSET
-	ldi r22, ST_MOTOR_STEPPER_BI_CURRENT_STEP_DEFAULT
+	ldi r22, MOTOR_STEPPER_BI_CURRENT_STEP_DEFAULT
 	rcall set_struct_byte
 
 	ldi r23, ST_MOTOR_STEPPER_BI_CURRENT_WAIT_STEP_OFFSET
-	ldi r22, ST_MOTOR_STEPPER_BI_CURRENT_WAIT_STEP_DEFAULT
+	ldi r22, MOTOR_STEPPER_BI_CURRENT_WAIT_STEP_DEFAULT
 	rcall set_struct_byte
 
 	pop r23
@@ -59,7 +81,7 @@ motor_stepper_bi_init:
 
 motor_stepper_bi_init_port:
 	; parameters:
-	;	Z	word	[st_motor_stepper_bi:device_io]
+	;	Z	word	[st_motor_stepper_bi]
 	m_save_r16_r23_Z_SREG_registers
 
 	ldi r23, ST_MOTOR_STEPPER_BI_DIRECTION_OFFSET
@@ -92,8 +114,8 @@ motor_stepper_bi_init_port:
 
 .macro m_motor_stepper_bi_direction_set
 	; parameters:
-	; 	@0	word 	[st_motor_stepper_bi:device_io]
-	; 	@1	byte	direction
+	; 	@0	word 	[st_motor_stepper_bi]
+	; 	@1	byte	MOTOR_STEPPER_BI_DIRECTION
 	m_save_r23_Z_registers
 
 	ldi ZL, low(@0)
@@ -106,6 +128,9 @@ motor_stepper_bi_init_port:
 	m_restore_r23_Z_registers
 .endm
 motor_stepper_bi_direction_set:
+	; parameters:
+	; 	Z	word 	[st_motor_stepper_bi]
+	; 	r23	byte	MOTOR_STEPPER_BI_DIRECTION
 	m_save_r22_r23_registers
 
 	mov r22, r23
@@ -118,8 +143,8 @@ motor_stepper_bi_direction_set:
 
 .macro m_motor_stepper_bi_wait_step_set
 	; parameters:
-	; 	@0	word 	[st_motor_stepper_bi:device_io]
-	; 	@1	byte	steps to wait before switch before make a next step
+	; 	@0	word 	[st_motor_stepper_bi]
+	; 	@1	byte	MOTOR_STEPPER_BI_WAIT_STEP (steps to wait before switch before make a next step)
 	m_save_r23_Z_registers
 
 	ldi ZL, low(@0)
@@ -132,6 +157,9 @@ motor_stepper_bi_direction_set:
 	m_restore_r23_Z_registers
 .endm
 motor_stepper_bi_wait_step_set:
+	; parameters:
+	; 	Z	word 	[st_motor_stepper_bi]
+	; 	r23	byte	MOTOR_STEPPER_BI_WAIT_STEP (steps to wait before switch before make a next step)
 	m_save_r22_r23_registers
 
 	mov r22, r23
@@ -144,8 +172,8 @@ motor_stepper_bi_wait_step_set:
 
 .macro m_motor_stepper_bi_rotate
 	; parameters:
-	; 	@0	word 	[st_motor_stepper_bi:device_io]
-	; 	@1	u_byte 	steps to run: [0-127], ST_MOTOR_STEPPER_BI_CURRENT_STEP_INFINITY
+	; 	@0	word 	[st_motor_stepper_bi]
+	; 	@1	u_byte 	MOTOR_STEPPER_BI_CURRENT_STEP (steps to run: [0-127], MOTOR_STEPPER_BI_CURRENT_STEP_INFINITY)
 	m_save_r23_Z_registers
 
 	ldi ZL, low(@0)
@@ -158,27 +186,32 @@ motor_stepper_bi_wait_step_set:
 	m_restore_r23_Z_registers
 .endm
 motor_stepper_bi_rotate:
+	; parameters:
+	; 	Z	word 	[st_motor_stepper_bi]
+	; 	r23	u_byte 	MOTOR_STEPPER_BI_CURRENT_STEP (steps to run: [0-127], MOTOR_STEPPER_BI_CURRENT_STEP_INFINITY)
 	rcall motor_stepper_bi_steps_set
 
 	ret
 
 .macro m_motor_stepper_bi_rotate_infinity
 	; parameters:
-	; 	@0	word 	[st_motor_stepper_bi:device_io]
+	; 	@0	word 	[st_motor_stepper_bi]
 	m_save_r23_Z_registers
 
 	ldi ZL, low(@0)
 	ldi ZH, high(@0)
-	ldi r23, ST_MOTOR_STEPPER_BI_CURRENT_STEP_INFINITY
+	ldi r23, MOTOR_STEPPER_BI_CURRENT_STEP_INFINITY
 
 	rcall motor_stepper_bi_steps_set
 
 	m_restore_r23_Z_registers
 .endm
 motor_stepper_bi_rotate_infinity:
+	; parameters:
+	; 	Z	word 	[st_motor_stepper_bi]
 	m_save_r23_registers
 
-	ldi r23, ST_MOTOR_STEPPER_BI_CURRENT_STEP_INFINITY
+	ldi r23, MOTOR_STEPPER_BI_CURRENT_STEP_INFINITY
 
 	rcall motor_stepper_bi_steps_set
 
@@ -188,21 +221,23 @@ motor_stepper_bi_rotate_infinity:
 
 .macro m_motor_stepper_bi_stop
 	; parameters:
-	; 	@0	word 	[st_motor_stepper_bi:device_io]
+	; 	@0	word 	[st_motor_stepper_bi]
 	m_save_r23_Z_registers
 
 	ldi ZL, low(@0)
 	ldi ZH, high(@0)
-	ldi r23, ST_MOTOR_STEPPER_BI_CURRENT_STEP_STOP
+	ldi r23, MOTOR_STEPPER_BI_CURRENT_STEP_STOP
 
 	rcall motor_stepper_bi_steps_set
 
 	m_restore_r23_Z_registers
 .endm
 motor_stepper_bi_stop:
+	; parameters:
+	; 	Z	word 	[st_motor_stepper_bi]
 	m_save_r23_registers
 
-	ldi r23, ST_MOTOR_STEPPER_BI_CURRENT_STEP_STOP
+	ldi r23, MOTOR_STEPPER_BI_CURRENT_STEP_STOP
 
 	rcall motor_stepper_bi_steps_set
 
@@ -212,8 +247,8 @@ motor_stepper_bi_stop:
 
 .macro m_motor_stepper_bi_steps_set
 	; parameters:
-	; 	@0	word 	[st_motor_stepper_bi:device_io]
-	; 	@1	u_byte 	steps to run: [0-127], ST_MOTOR_STEPPER_BI_CURRENT_STEP_INFINITY
+	; 	@0	word 	[st_motor_stepper_bi]
+	; 	@1	u_byte 	MOTOR_STEPPER_BI_CURRENT_STEP (steps to run: [0-127], MOTOR_STEPPER_BI_CURRENT_STEP_INFINITY)
 	m_save_r23_Z_registers
 
 	ldi ZL, low(@0)
@@ -225,6 +260,9 @@ motor_stepper_bi_stop:
 	m_restore_r23_Z_registers
 .endm
 motor_stepper_bi_steps_set:
+	; parameters:
+	; 	Z	word 	[st_motor_stepper_bi]
+	; 	r23	u_byte 	MOTOR_STEPPER_BI_CURRENT_STEP (steps to run: [0-127], MOTOR_STEPPER_BI_CURRENT_STEP_INFINITY)
 	m_save_r22_r23_registers
 
 	mov r22, r23
@@ -237,7 +275,7 @@ motor_stepper_bi_steps_set:
 
 .macro m_motor_stepper_bi_handle_io
 	; parameters:
-	;	@0	word	[st_motor_stepper_bi:device_io]
+	;	@0	word	[st_motor_stepper_bi]
 	m_save_Z_registers
 
 	ldi ZL, low(@0)
@@ -249,13 +287,13 @@ motor_stepper_bi_steps_set:
 .endm
 motor_stepper_bi_handle_io:
 	; parameters:
-	;	word	[st_motor_stepper_bi]
+	;	Z	word	[st_motor_stepper_bi]
 	m_save_r16_r17_r18_r19_r22_r23_Z_SREG_registers
 
 	ldi r23, ST_MOTOR_STEPPER_BI_CURRENT_STEP_OFFSET
 	rcall get_struct_byte
 	mov r19, r23
-	cpi r19, ST_MOTOR_STEPPER_BI_CURRENT_STEP_STOP
+	cpi r19, MOTOR_STEPPER_BI_CURRENT_STEP_STOP
 	breq motor_stepper_bi_handle_io_end
 
 	motor_stepper_bi_handle_io_next_step:
@@ -299,7 +337,7 @@ motor_stepper_bi_handle_io:
 				rjmp motor_stepper_bi_handle_io_check_current_step
 
 			motor_stepper_bi_handle_io_check_current_step:
-				cpi r19, ST_MOTOR_STEPPER_BI_CURRENT_STEP_INFINITY
+				cpi r19, MOTOR_STEPPER_BI_CURRENT_STEP_INFINITY
 				breq motor_stepper_bi_handle_io_save_current_wait_step
 
 				motor_stepper_bi_handle_io_decrease_steps_to_run:
