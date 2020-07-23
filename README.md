@@ -431,8 +431,8 @@ rcall set_struct_word
 * \[macro\] m_set_Y_to_null_pointer - null pointer to the Y
 * \[macro\] m_set_Z_to_null_pointer - set null pointer to the Z
 * \[macro\] m_set_Z_to_io_ports_offset - set Z tp the IO_PORTS_OFFSET (0x20 for the ATmega8 MCU)
-* \[macro\] m_cpw(@0, @1) compare to words @0 and @1
-* \[proc\] cpw(\[{any}\], \[{any}\]) comare to words {any} and {any}
+* \[macro\] m_cpw(@0, @1) compare two words @0 and @1
+* \[proc\] cpw(\[{any}\], \[{any}\]) comare two words {any} and {any}
 * \[macro\] m_int_to_mask(@0) - converts some integer value into the bit mask. It simple making right shift of the 0x01 to the @0 positions
 * \[proc\] int_to_mask({byte}) - converts some integer value into the bit mask. It simple making right shift of the 0x01 to the {byte} positions
 * \[macro\] m_lshift(@0, @1) returns @3 where @0 is a value to shift, @1 is a positions to shift
