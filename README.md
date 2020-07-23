@@ -165,31 +165,31 @@ Currenlty socOS code distributed by the next namespaces (each folder is a namesp
 	* device	- base class (definitions/procedures) for any device driver
     * **\[kernel/drivers/soc/\*\]** the namespace that represents SoC build-in devices
 		* _ac:st_device_	- driver for the analog comparator
-		* adc:st_device	- driver for the analog-digital convertor
-		* timer_base:st_device -	 base abstract class (definitions/procedures) for any timer driver
-		* time0:timer_base	- driver (timer0 static class (int handler/definitions/static instance data/procedures)) for the timer0
-		* timer_w_pwm_base:timer_base -	base abstract class (definitions/procedures) for any timer driver with a PWM (Pulse Width Modulation) functionality
-		* timer2:timer_w_pwm_base	- driver (timer2 static class (int handler/definitions/static instance data/procedures)) for the timer2
-		* usart:st_device	- driver (usart static class (int handler/definitions/static instance data/procedures)) for the usart interface
-		* eeprom:st_device- driver (eeprom static class (int handler/definitions/static instance data/procedures)) for the eeprom controller
-		* watchdog:st_device- driver (watchdog static class (definitions/procedures)) for the watchdog counter    
+		* _adc:st_device_	- driver for the analog-digital convertor
+		* _timer_base:st_device_ -	 base abstract class (definitions/procedures) for any timer driver
+		* _time0:timer_base_	- driver (timer0 static class (int handler/definitions/static instance data/procedures)) for the timer0
+		* _timer_w_pwm_base:timer_base_ -	base abstract class (definitions/procedures) for any timer driver with a PWM (Pulse Width Modulation) functionality
+		* _timer2:timer_w_pwm_base_	- driver (timer2 static class (int handler/definitions/static instance data/procedures)) for the timer2
+		* _usart:st_device_	- driver (usart static class (int handler/definitions/static instance data/procedures)) for the usart interface
+		* _eeprom:st_device_- driver (eeprom static class (int handler/definitions/static instance data/procedures)) for the eeprom controller
+		* _watchdog:st_device_- driver (watchdog static class (definitions/procedures)) for the watchdog counter    
 	* **\[kernel/drivers/io/\*\]** the namespace that contains drivers for the I/O devices like a led, button, etc.
-	    * device_io:device		-base class (definitions/procedures) for most of the I/O devices
-	    * in_bit:device_io		- the driver that can configure port/pin for the input by the specified DDRx/PINx/PORTx/BITx parameters and can read one bit from it
-	    * out_bit:device_io		- the driver that can configure port/pin for the ouput by the specified DDRx/PORTx/BITx parameters and can write one bit to it
-	    * in_byte:device_io		- (not implemented yet)
-	    * out_byte:device_io	- the driver that can configure port for the ouput of the byte by the specified DDRx/PORTx parameters and can write one byte to it
-	    * switch:device_io		- the driver that represents a controlled switch. In derived from the kernel/drivers/io/out_bit and can switch one bit at the specified by the DDRx/PORTx/BITx port
+	    * _device_io:device_		-base class (definitions/procedures) for most of the I/O devices
+	    * _in_bit:device_io_		- the driver that can configure port/pin for the input by the specified DDRx/PINx/PORTx/BITx parameters and can read one bit from it
+	    * _out_bit:device_io_		- the driver that can configure port/pin for the ouput by the specified DDRx/PORTx/BITx parameters and can write one bit to it
+	    * _in_byte:device_io_		- (not implemented yet)
+	    * _out_byte:device_io_	- the driver that can configure port for the ouput of the byte by the specified DDRx/PORTx parameters and can write one byte to it
+	    * _switch:device_io_		- the driver that represents a controlled switch. In derived from the kernel/drivers/io/out_bit and can switch one bit at the specified by the DDRx/PORTx/BITx port
 	    * **\[kernel/drivers/io/hid/\*\]** the namespace that contains drivers for the HID I/O devices	    
-		* led:out_bit
-		* button:in_bit
-		* encoder:device_io
-		* seven segment indicator:out_byte
+		* _led:out_bit_
+		* _button:in_bit_
+		* _encoder:device_io_
+		* _seven segment indicator:out_byte_
 	    * **\[kernel/drivers/io/sensors/\*\]** the namespace that represents sensors
-		* am2302:device_io	- AM2302/DHT22 sensor driver. Is can configure specified DDRx/PINx/BITx for the input. And then communicates with an AM2302/DHT22 sensor through a one wire.
-	* **\[kernel/drivers/motors\]** the namespace that represents motors
-		* motor:timer2	- driver (static abstract class (int handler/definitions/static instance data/procedures)) used to control any abstract motor controlled by the PWM
-		* motor_stepper_bi:device_io	- driver to control any abstract bi-phase stepper motor controller by the stepper motor controller wich should be connected to the MCU port tetrade. Configured by the specified DDRx/PORTx/TETRADE(L|H)
+		* _am2302:device_io_	- AM2302/DHT22 sensor driver. Is can configure specified DDRx/PINx/BITx for the input. And then communicates with an AM2302/DHT22 sensor through a one wire.
+	* **\[kernel/drivers/motors/\*\]** the namespace that represents motors
+		* _motor:timer2_	- driver (static abstract class (int handler/definitions/static instance data/procedures)) used to control any abstract motor controlled by the PWM
+		* _motor_stepper_bi:device_io_	- driver to control any abstract bi-phase stepper motor controller by the stepper motor controller wich should be connected to the MCU port tetrade. Configured by the specified DDRx/PORTx/TETRADE(L|H)
 
 ## socOS conventions
 ### Variable naming convention:
