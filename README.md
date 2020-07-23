@@ -222,8 +222,100 @@ Need to pass port addres and bit mask parameters to the st_device_io_init proced
 In this case Z register should be used to pass port address and r23 register to pass bit mask value. The result will be passed into the r23 register.
 * The work/temporary registers are: r17, r0. But registers used to pass parameters also could be used in case if they are not used in the particular call or if they was saved with use of the stack or by the some another way.
 #### Event handlers:
-Sometimes required to pass some parameters to the event handler. For this purposes please use Y register. If you need to pass two values or then then please put them into the: YH, YL (in this order).
-Otherwise some struct should be created, filled with data that sould be passes to the event handler. And it's address should be put into the Y (before event handler called). And the event hadler could access this data.
+Sometimes required to pass some parameters to the event handler. For this purposes please use register Y. If you need to pass two values or less then please put them into the: YH, YL (in this order). Otherwise some structure should be created and filled with data. And structure address sould be passes to the event handler. For this it's address should be put into the Y (before event handler called). And thus the event handler could access this data.
+
+### Components and classes
+Most of the devices can be represented as components which has a some interrupt handlers, definitions, data and code. According to this each such component could be represented as a viurtual classes. Virtual because Assembly language does not support and OOP/OOD structures. But virtually each class could be represented with:
+* class structure (set of the fields). Such structure could be defined by the own size, and fields offsets. And situated inside a {device_name}\_def.asm file
+For example:
+```Assembly
+; struct st_led size:st_out_bit
+.equ SZ_ST_LED					= 0x05
+; struct st_led
+.equ ST_LED_DDRX_ADDRESS_OFFSET 		= 0x00
+.equ ST_LED_PORTX_ADDRESS_OFFSET		= 0x02
+.equ ST_LED_USED_BIT_MASK_OFFSET		= 0x04
+```
+* class instance that can be located inside a {device_name}\_dseg.asm file (for singletons) or inside a app.asm "custom data segment block" for non-singletons
+For example:
+```Assembly
+.dseg
+	led:	.BYTE	SZ_ST_LED
+```
+* class methods (procedures) which use class structure to manipulate with class instance. Which located inside a {device_name}\_cseg.asm file
+For example:
+```Assembly
+; constructor macro
+.macro m_led_init
+	; input parameters:
+	;	@0	word led instance (this)
+	;	@1	word [DDRx]
+	;	@2	word [PORTx]
+	;	@3	word bit mask
+	ldi ZL, low(@0)
+	ldi ZH, high(@0)
+	
+	ldi YL, low(@1)
+	ldi YH, low(@1)
+	
+	ldi XL, low(@2)
+	ldi XH, low(@2)
+	
+	ldi r23, @3
+	
+	rcall led_init
+		
+.endm
+; constuctor procedure
+led_init:
+	; input parameters:
+	;	Z	word	[st_led]
+	;	Y	word	[DDRx]
+	;	X	word	[PORTx]
+	;	r23	byte`	bit mask
+	
+	; init port
+	; ...
+	
+	ret
+
+.macro m_led_set
+	; input parameters:
+	;	@0	word	[st_led]	this
+	;	@1	byte 	led_state	LED_STATE enumeration
+	m_out_bit_set @0, @1
+.endm
+
+.macro  m_led_on
+	; input parameters:
+	;	@0 	word	[st_led]
+	m_led_set @0, LED_STATE_ON
+.endm
+
+.macro  m_led_off
+	; input parameters:
+	;	@0 	word	[st_led]
+	m_led_set @0, LED_STATE_OFF
+.endm
+
+led_set:
+	; input parameters:
+	;	word	st_led
+	;	byte	led_state
+	
+	; set/unset bit in the port
+	; ...
+
+	ret
+
+```
+* class interrupt handlers. Specific of the firmware development require continuos interrupts handling
+For example:
+```Assembly
+.cseg
+	.org 0x10
+	rjmp ac_completed_handler ; Analog Comparator Handler
+```
 
 ### Inheritance
 The next typing (in the comments) st_child: st_parent means that st_child inherited from the st_parent. That measn that st_child has a same sructoure (filelds with a same offsets) but extended with additional fields.
