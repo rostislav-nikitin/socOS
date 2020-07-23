@@ -155,7 +155,7 @@ main_thread:
     ; init global interrupts
     m_init_interrupts
 
-    ; main thread loop block
+    ; main thread procedure loop block
     main_thread_loop:
 	    nop
 	    rjmp main_thread_loop
