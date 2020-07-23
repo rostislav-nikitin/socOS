@@ -54,7 +54,7 @@ The main concepts of the socOS are:
     .equ SOME_CONST				= 0xff
     ```
     This kind of files should be included into the "definitions include block" of the you app.asm file (application entry point) which structure will be discussed later
-    * "{driver\_name}\_dseg.asm"	- here are data segment static variables, structures, arrays that are used by the component internally:
+    * "{driver\_name}\_dseg.asm"	- here are the data segment's static variables, static structures, static arrays that are used by the component internally:
     ```Assembly
     .dseg
 	st_{driver_name}:	.BYTE SZ_ST_{DRIVER_NAME}
@@ -88,7 +88,8 @@ The main concepts of the socOS are:
     ```
     This kind of files should be included into the "code segment include block" of the your app.asm file (application entry point) which structure will be discussed later
     
-* extension	- represented by the "{extension_name}_cseg.asm" assembler file that contains some common procedures, which extends AVR assemler functionality.
+* extension	- represented by the "{extension\_name}\_cseg.asm" assembler file that contains some common procedures, which extends AVR assemler functionality.
+
 ## The structure of the app.asm:
 The app.asm in an entry point of the firmware application. In most cased you will start you new firmware application there.
 This is it structure.
