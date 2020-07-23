@@ -15,12 +15,12 @@ ssi_digits: .db 0xFC, 0x60, 0xDA, 0xF2, 0x66, 0xB6, 0xBE, 0xE0, 0xFE, 0xF6, 0x0,
 
 .macro m_ssi_init
 	; input parameters:
-	;	@0	word [st_ssi:st_device_io]
+	;	@0	word [st_ssi:device_io]
 	;	@1	word [DDRx]
 	;	@2	word [PORTx]
 	; save registers
 	m_save_Z_registers
-	; init (st_device_io)st_ssi
+	; init (device_io)st_ssi
 	m_out_byte_init @0, @1, @2
 	; init ssi
 	ldi ZL, low(@0)
@@ -33,7 +33,7 @@ ssi_digits: .db 0xFC, 0x60, 0xDA, 0xF2, 0x66, 0xB6, 0xBE, 0xE0, 0xFE, 0xF6, 0x0,
 
 ssi_init:
 	; input parameters:
-	;	Z	word	[st_ssi:st_device_io]
+	;	Z	word	[st_ssi:device_io]
 	m_save_r22_r23_registers
 	
 	m_set_struct_byte_by_offset_and_value_wo_save_registers ST_SSI_STATE_OFFSET, SSI_STATE_OFF
@@ -49,7 +49,7 @@ ssi_init:
 
 .macro m_ssi_state_set
 	; input parameters:
-	;	@0	word	[st_ssi:st_device_io]
+	;	@0	word	[st_ssi:device_io]
 	;	@1	byte 	ssi_state
 	; save registers
 	m_save_r23_Z_registers

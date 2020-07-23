@@ -12,7 +12,7 @@
 .macro m_button_init
 	m_save_r24_r25_X_Y_Z_registers
 	; input parameters:
-	;	@0 	word	[st_button:st_device_io]
+	;	@0 	word	[st_button:device_io]
 	;	@1	word	[DDRx]
 	;	@2	word 	[PINx]
 	;	@3	word 	[PORTx]
@@ -83,7 +83,7 @@ button_get:
 
 .macro m_button_handle_io
 	; parameters:
-	;	@0	word	[st_button:st_device_io]
+	;	@0	word	[st_button:device_io]
 	m_save_Z_registers
 
 	ldi ZL, low(@0)

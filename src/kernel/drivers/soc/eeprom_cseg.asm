@@ -224,7 +224,7 @@ eeprom_ready_handler:
 	ldi ZH, high(eeprom_static_instance)
 	ldi r23, ST_EEPROM_ON_READY_HANDLER
 
-	rcall st_device_raise_event
+	rcall device_raise_event
 
 	m_restore_r23_Z_registers
 

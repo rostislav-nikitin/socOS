@@ -14,7 +14,7 @@
 
 .macro m_switch_init
 	; input parameters:
-	;	@0	word [st_switch:st_device_io]
+	;	@0	word [st_switch:device_io]
 	;	@1	word [DDRx]
 	;	@2	word [PORTx]
 	;	@3	word USED_BIT_MASK
@@ -25,13 +25,13 @@
 
 switch_init:
 	; input parameters:
-	;	Z	word	[st_switch:st_device_io]
+	;	Z	word	[st_switch:device_io]
 	; currently no additional logic
 	ret
 
 .macro m_switch_set
 	; input parameters:
-	;	@0	word	[st_switch:st_device_io]
+	;	@0	word	[st_switch:device_io]
 	;	@1	byte 	switch_state
 	m_out_bit_set @0, @1
 .endm
@@ -58,7 +58,7 @@ switch_set:
 
 .macro m_switch_get
 	; input parameters:
-	;	@0	word	[st_switch:st_device_io]
+	;	@0	word	[st_switch:device_io]
 	; returns:
 	;	@1	register
 	m_out_bit_get @0, @1
@@ -66,7 +66,7 @@ switch_set:
 
 switch_get:
 	; input parameters:
-	;	Z	word	[st_switch:st_device_io]
+	;	Z	word	[st_switch:device_io]
 	; returns:
 	;	r23	byte	current switch state
 	rcall out_bit_get
@@ -81,7 +81,7 @@ switch_get:
 
 switch_toggle:
 	; input parameters:
-	;	Z	word	[st_switch:st_device_io]
+	;	Z	word	[st_switch:device_io]
 	rcall switch_toggle
 
 	ret

@@ -11,12 +11,12 @@
 
 .macro m_in_bit_init
 	; input parameters:
-	;	@0 	word	[st_in_bit:st_device_io]
+	;	@0 	word	[st_in_bit:device_io]
 	;	@1	word	[DDRx]
 	;	@2	word 	[PINx]
 	;	@3	word 	[PORTx]
 	;	@4	byte 	USED_BIT_MASK
-	m_st_device_io_init @0, @1, @2, @3, @4, 0x00
+	m_device_io_init @0, @1, @2, @3, @4, 0x00
 .endm
 
 .macro m_in_bit_get
@@ -43,7 +43,7 @@ in_bit_get:
 	;	byte
 	m_save_r22_SREG_registers
 	;
-	rcall st_device_io_get_pin_byte
+	rcall device_io_get_pin_byte
 	; detect current state
 	and r23, r22
 	;

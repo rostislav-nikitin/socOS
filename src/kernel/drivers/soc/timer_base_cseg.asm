@@ -27,13 +27,13 @@
 
 timer_base_init:
 	; parameters
-	;	Z	[st_timer_base: st_device]
+	;	Z	[st_timer_base: device]
 	;	Y	[TCCRx]
 	;	X	[TCNTx]
 	;	r23	timer divider
 	;	r22	interrupt bit mask
 	;	r24,r25	[overflow handler]
-	rcall st_device_init
+	rcall device_init
 
 	push r23
 	ldi r23, ST_TIMER_BASE_COUNTER_CONTROL_REGISTER_ADDRESS_OFFSET

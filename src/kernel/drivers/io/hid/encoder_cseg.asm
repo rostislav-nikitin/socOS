@@ -18,7 +18,7 @@
 	;	@3	word	[on_turn_handler]
 	; save registers
 	m_save_r21_r22_r23_Y_Z_registers
-	; set [st_encoder:st_device_io]
+	; set [st_encoder:device_io]
 	ldi ZL, low(@0)
 	ldi ZH, high(@0)
 	; set BIT1x_MASK
@@ -39,14 +39,14 @@
 
 .macro m_encoder_init
 	; input parameters:
-	;	@0 	word	[st_encoder:st_device_io]
+	;	@0 	word	[st_encoder:device_io]
 	;	@1	word	[DDRx]
 	;	@2	word 	[PINx]
 	;	@3	word 	[PORTx]
 	;	@4	byte 	BIT1x_MASK
 	;	@5 	byte 	BIT2x_MASK
 	;	@6	word	[on_turn_handler]
-	m_st_device_io_init @0, @1, @2, @3, (@4|@5), 0x00
+	m_device_io_init @0, @1, @2, @3, (@4|@5), 0x00
 	m_st_encoder_init @0, @4, @5, @6
 .endm
 

@@ -12,13 +12,13 @@
 .macro m_motor_stepper_bi_init
 	m_save_r24_r25_X_Y_Z_registers
 	; input parameters:
-	;	@0 	word	[st_motor_stepper_bi:st_device_io]
+	;	@0 	word	[st_motor_stepper_bi:device_io]
 	;	@1	word	[DDRx]
 	;	@2	word 	[PORTx]
 	;	@3	byte 	TETRADE_MASK
 	;	@4	byte	direction
 	;	@5	byte	speed
-	m_st_device_io_init @0, @1, NULL_POINTER, PORTC, @3, @3
+	m_device_io_init @0, @1, POINTER_NULL, PORTC, @3, @3
 
 	ldi ZL, low(@0)
 	ldi ZH, high(@0)
@@ -59,7 +59,7 @@ motor_stepper_bi_init:
 
 motor_stepper_bi_init_port:
 	; parameters:
-	;	Z	word	[st_motor_stepper_bi:st_device_io]
+	;	Z	word	[st_motor_stepper_bi:device_io]
 	m_save_r16_r23_Z_SREG_registers
 
 	ldi r23, ST_MOTOR_STEPPER_BI_DIRECTION_OFFSET
@@ -92,7 +92,7 @@ motor_stepper_bi_init_port:
 
 .macro m_motor_stepper_bi_direction_set
 	; parameters:
-	; 	@0	word 	[st_motor_stepper_bi:st_device_io]
+	; 	@0	word 	[st_motor_stepper_bi:device_io]
 	; 	@1	byte	direction
 	m_save_r23_Z_registers
 
@@ -118,7 +118,7 @@ motor_stepper_bi_direction_set:
 
 .macro m_motor_stepper_bi_wait_step_set
 	; parameters:
-	; 	@0	word 	[st_motor_stepper_bi:st_device_io]
+	; 	@0	word 	[st_motor_stepper_bi:device_io]
 	; 	@1	byte	steps to wait before switch before make a next step
 	m_save_r23_Z_registers
 
@@ -144,7 +144,7 @@ motor_stepper_bi_wait_step_set:
 
 .macro m_motor_stepper_bi_rotate
 	; parameters:
-	; 	@0	word 	[st_motor_stepper_bi:st_device_io]
+	; 	@0	word 	[st_motor_stepper_bi:device_io]
 	; 	@1	u_byte 	steps to run: [0-127], ST_MOTOR_STEPPER_BI_CURRENT_STEP_INFINITY
 	m_save_r23_Z_registers
 
@@ -164,7 +164,7 @@ motor_stepper_bi_rotate:
 
 .macro m_motor_stepper_bi_rotate_infinity
 	; parameters:
-	; 	@0	word 	[st_motor_stepper_bi:st_device_io]
+	; 	@0	word 	[st_motor_stepper_bi:device_io]
 	m_save_r23_Z_registers
 
 	ldi ZL, low(@0)
@@ -188,7 +188,7 @@ motor_stepper_bi_rotate_infinity:
 
 .macro m_motor_stepper_bi_stop
 	; parameters:
-	; 	@0	word 	[st_motor_stepper_bi:st_device_io]
+	; 	@0	word 	[st_motor_stepper_bi:device_io]
 	m_save_r23_Z_registers
 
 	ldi ZL, low(@0)
@@ -212,7 +212,7 @@ motor_stepper_bi_stop:
 
 .macro m_motor_stepper_bi_steps_set
 	; parameters:
-	; 	@0	word 	[st_motor_stepper_bi:st_device_io]
+	; 	@0	word 	[st_motor_stepper_bi:device_io]
 	; 	@1	u_byte 	steps to run: [0-127], ST_MOTOR_STEPPER_BI_CURRENT_STEP_INFINITY
 	m_save_r23_Z_registers
 
@@ -237,7 +237,7 @@ motor_stepper_bi_steps_set:
 
 .macro m_motor_stepper_bi_handle_io
 	; parameters:
-	;	@0	word	[st_motor_stepper_bi:st_device_io]
+	;	@0	word	[st_motor_stepper_bi:device_io]
 	m_save_Z_registers
 
 	ldi ZL, low(@0)

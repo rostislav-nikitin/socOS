@@ -44,7 +44,7 @@
 
 	.equ USART_CLOCK_DIVIDER = ((USART_MCU_CLOCK / (USART_SPEED * 8) - 1))
 
-	m_st_device_io_init usart_static_instance, NULL_POINTER, NULL_POINTER, NULL_POINTER, MASK_EMPTY, MASK_EMPTY
+	m_device_io_init usart_static_instance, POINTER_NULL, POINTER_NULL, POINTER_NULL, MASK_EMPTY, MASK_EMPTY
 
 	;
 	ldi ZL, low(usart_static_instance)

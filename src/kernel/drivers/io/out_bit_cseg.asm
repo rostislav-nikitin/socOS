@@ -14,14 +14,14 @@
 
 .macro m_out_bit_init
 	; input parameters:
-	;	@0	word [st_out_bit:st_device_io]
+	;	@0	word [st_out_bit:device_io]
 	;	@1	word [DDRx]
 	;	@2	word [PORTx]
 	;	@3	word USED_BIT_MASK
 	; save registers
 	m_save_Z_registers
-	; init (st_device_io)st_out_bit
-	m_st_device_io_init @0, @1, 0x0000, @2, @3, @3
+	; init (device_io)st_out_bit
+	m_device_io_init @0, @1, 0x0000, @2, @3, @3
 	; init out_bit
 	ldi ZL, low(@0)
 	ldi ZH, high(@0)
@@ -33,13 +33,13 @@
 
 out_bit_init:
 	; input parameters:
-	;	Z	word	[st_out_bit:st_device_io]
+	;	Z	word	[st_out_bit:device_io]
 	; currently no additional logic
 	ret
 
 .macro m_out_bit_set
 	; input parameters:
-	;	@0	word	[st_out_bit:st_device_io]
+	;	@0	word	[st_out_bit:device_io]
 	;	@1	byte 	out_bit_state
 	; save registers
 	m_save_r23_Z_registers
@@ -78,12 +78,12 @@ out_bit_set:
 
 	ldi r23, ST_OUT_BIT_USED_BIT_MASK_OFFSET
 	rcall get_struct_byte
-	rjmp out_bit_set_call_st_device_io_set_port_byte
+	rjmp out_bit_set_call_device_io_set_port_byte
 
 	out_bit_set_off:
 		ldi r23, 0x00
-	out_bit_set_call_st_device_io_set_port_byte:
-		rcall st_device_io_set_port_byte
+	out_bit_set_call_device_io_set_port_byte:
+		rcall device_io_set_port_byte
 
 	out_bit_set_end:
 	m_restore_SREG_registers
@@ -92,7 +92,7 @@ out_bit_set:
 
 .macro m_out_bit_get
 	; input parameters:
-	;	@0	word	[st_out_bit:st_device_io]
+	;	@0	word	[st_out_bit:device_io]
 	; returns:
 	;	@1	register
 	m_save_Z_registers
@@ -109,12 +109,12 @@ out_bit_set:
 
 out_bit_get:
 	; input parameters:
-	;	Z	word	[st_out_bit:st_device_io]
+	;	Z	word	[st_out_bit:device_io]
 	; returns:
 	;	r23	byte	current out_bit state
 	m_save_r22_SREG_registers
-	; call st_device_io_get_pin_byte
-	rcall st_device_io_get_port_byte
+	; call device_io_get_pin_byte
+	rcall device_io_get_port_byte
 	; compare value
 	and r23, r22
 	breq out_bit_get_off
@@ -144,7 +144,7 @@ out_bit_get:
 
 out_bit_toggle:
 	; input parameters:
-	;	Z	word	[st_out_bit:st_device_io]
+	;	Z	word	[st_out_bit:device_io]
 	m_save_r23_SREG_registers
 
 	rcall out_bit_get

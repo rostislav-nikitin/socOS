@@ -13,11 +13,11 @@
 ; inheritance
 ; st_child: st_parent - st_child inherited from the st_parent
 
-; st_device_io: st_device
+; device_io: device
 ; implementation
-.macro m_st_device_io_init
+.macro m_device_io_init
 	; input parameters:
-	;	@0 	Z	word	[dev:st_device_io]
+	;	@0 	Z	word	[dev:device_io]
 	;	@1	Y	word	[DDRx]
 	;	@2	X	word 	[PINx]
 	;	@3	r24,r25	word 	[PORTx]
@@ -25,7 +25,7 @@
 	;	@5	r22	byte	TYPE_BIT_MASK (0 - Input, 1 - Output)
 	; save registers
 	m_save_r22_r23_r24_r25_X_Y_Z_registers
-	; set [dev:st_device_io] to the first Z parameter
+	; set [dev:device_io] to the first Z parameter
 	ldi ZL, low(@0)
 	ldi ZH, high(@0)
 	; set [DDRx] to the second Y parameter
@@ -42,23 +42,23 @@
 	; set TYPE_BIT_MASK to the sixth paramerer r22
 	ldi r22, @5
 
-	rcall st_device_io_init
+	rcall device_io_init
 
 	; restore registers
 	m_restore_r22_r23_r24_r25_X_Y_Z_registers
 .endm
 
-st_device_io_init:
+device_io_init:
 	; input parameters:
-	;	Z	word	[dev:st_device_io]
+	;	Z	word	[dev:device_io]
 	;	Y	word	[DDRx]
 	;	X	word	[PINx]
 	;	r24,r25	word	[PORTx]
 	;	r23	byte 	USED_BIT_MASK
 	;	r22	byte	TYPE_BIT_MASK (0 - Input, 1 - Output)	
-	; set X to the [st_device_io] address
+	; set X to the [device_io] address
 	; call base ctor
-	rcall st_device_init
+	rcall device_init
 
 	m_save_r16_r17_SREG_registers
 	;
@@ -66,20 +66,20 @@ st_device_io_init:
 	; save Z
 	push ZL
 	push ZH
-	; store [DDRx] into the [dev:st_device_io]
+	; store [DDRx] into the [dev:device_io]
 	st Z+, YL
 	st Z+, YH
-	; store [PINx] into the [dev:st_device_io]
+	; store [PINx] into the [dev:device_io]
 	st Z+, XL
 	st Z+, XH
-	; store [PORTx] into the [dev:st_device_io]
+	; store [PORTx] into the [dev:device_io]
 	st Z+, r24
 	st Z+, r25
-	; store [USED_BIT_MASK] into the [dev:st_device_io]
+	; store [USED_BIT_MASK] into the [dev:device_io]
 	st Z+, r23
-	; stotr [TYPE_BIT_MASK] into the [dev:st_device_io]
+	; stotr [TYPE_BIT_MASK] into the [dev:device_io]
 	st Z, r22
-	; check does [DDRx] is NULL_POINTER
+	; check does [DDRx] is POINTER_NULL
 	m_set_Z_to_null_pointer
 	ldi r16, IO_PORTS_OFFSET
 	add ZL, r16
@@ -89,8 +89,8 @@ st_device_io_init:
 	; restore Z
 	pop ZH
 	pop ZL
-	; check does [DDRx] is NULL_POINTER
-	breq st_device_io_init_end
+	; check does [DDRx] is POINTER_NULL
+	breq device_io_init_end
 	; set Z to the [PORTx]
 	mov ZL, r24
 	mov ZH, r25
@@ -127,18 +127,18 @@ st_device_io_init:
 	st Y, r17
 	; check [PORTx] is null pointer
 	; store back to the [PORTx]
-	rcall st_device_io_cp_Z_is_null_pointer
-	breq st_device_io_init_end
+	rcall device_io_cp_Z_is_null_pointer
+	breq device_io_init_end
 	st Z, r16
 	; store to the [PINx] "1" where [PORTx] pulled up to the Vcc
 	st X, r16
 
-	st_device_io_init_end:
+	device_io_init_end:
 		m_restore_r16_r17_SREG_registers
 
 	ret
 
-st_device_io_cp_Z_is_null_pointer:
+device_io_cp_Z_is_null_pointer:
 	push YL
 	push YH
 	push ZL
@@ -159,7 +159,7 @@ st_device_io_cp_Z_is_null_pointer:
 
 .macro m_device_io_get_pin_byte
 	; input parameter:
-	;	@0	Z	word	[dev:st_device_io] or derived
+	;	@0	Z	word	[dev:device_io] or derived
 	; returns:
 	; 	@1	r23	reg	PINx (value)
 	;	@2	r22	reg	USED_BIT_MASK
@@ -178,7 +178,7 @@ st_device_io_cp_Z_is_null_pointer:
 
 .macro m_device_io_get_port_byte
 	; input parameter:
-	;	@0	Z	word	[dev:st_device_io] or derived
+	;	@0	Z	word	[dev:device_io] or derived
 	; returns:
 	; 	@1	r23	reg	PINx (value)
 	;	@2	r22	reg	USED_BIT_MASK
@@ -195,41 +195,41 @@ st_device_io_cp_Z_is_null_pointer:
 	m_restore_Z_registers
 .endm
 
-st_device_io_get_pin_byte:
+device_io_get_pin_byte:
 	; parameters:
-	;	Z	word	[dev:st_device_io] or derived
+	;	Z	word	[dev:device_io] or derived
 	; returns:
 	;	r23	byte	[PINx] (value)
 	;	r22	byte	USED_BIT_MASK
 
 	ldi r23, ST_DEVICE_IO_PINX_ADDRESS_OFFSET
 
-	rcall st_device_io_get_px_byte
+	rcall device_io_get_px_byte
 
 	ret
 
-st_device_io_get_port_byte:
+device_io_get_port_byte:
 	; parameters:
-	;	Z	word	[dev:st_device_io] or derived
+	;	Z	word	[dev:device_io] or derived
 	; returns:
 	;	r23	byte	[PORTx] (value)
 	;	r22	byte	USED_BIT_MASK
 
 	ldi r23, ST_DEVICE_IO_PORTX_ADDRESS_OFFSET
 
-	rcall st_device_io_get_px_byte
+	rcall device_io_get_px_byte
 
 	ret
 
-st_device_io_get_px_byte:
+device_io_get_px_byte:
 	; parameters:
-	;	Z	word	[dev:st_device_io]
+	;	Z	word	[dev:device_io]
 	;	r23	byte	[PINx]/[PORTx] offset
 	; returns:
 	;	r23	byte	PINx/PORTx (value)
 	;	r22	byte	USED_BIT_MASK
 	m_save_r16_Z_SREG_registers
-	; set X to the [st_device_io] or derived
+	; set X to the [device_io] or derived
 	; save PORT/PIN ADDRESS OFFSET
 	mov r16, r23
 	; load USED_BIT_MASK into the r23
@@ -252,15 +252,15 @@ st_device_io_get_px_byte:
 
 .macro m_device_io_set_port_byte
 	; input parameter:
-	;	@0	Z	word	[dev:st_device_io] or derived
+	;	@0	Z	word	[dev:device_io] or derived
 	;	@1	r23	byte	value to set
 
 	rcall device_io_set_port_byte
 .endm
 
-st_device_io_set_port_byte:
+device_io_set_port_byte:
 	; parameters:
-	;	word	[dev:st_device_io]
+	;	word	[dev:device_io]
 	;	byte	value
 	m_save_r16_r17_SREG_registers
 	; save value to set

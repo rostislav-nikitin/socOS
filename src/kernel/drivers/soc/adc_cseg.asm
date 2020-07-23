@@ -17,7 +17,7 @@
 	;	@5	word	ST_ADC_ON_COMPLETED_HANDLER_OFFSET
 	m_save_r20_r21_r22_r23_Y_Z_registers
 	;
-	m_st_device_init
+	m_device_init
 	;
 	ldi ZL, low(adc_static_instance)
 	ldi ZH, high(adc_static_instance)
@@ -307,7 +307,7 @@ adc_complete_handler:
 	in YL, ADCL
 	in YH, ADCH
 	
-	rcall st_device_raise_event
+	rcall device_raise_event
 
 	rcall adc_continuous_measurement_get
 	cpi r23, ADC_CONVERSION_COMPLETED_TRUE

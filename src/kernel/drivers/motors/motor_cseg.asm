@@ -6,7 +6,7 @@
 	; parameters:
 	;	@0	byte            TIMER_W_PWM_DIVIDER
 	;	@1	byte		power [0x00:0xff]
-	m_timer2_init @0, NULL_POINTER, TIMER_W_PWM_MODE_FAST, @1, NULL_POINTER
+	m_timer2_init @0, POINTER_NULL, TIMER_W_PWM_MODE_FAST, @1, POINTER_NULL
 
 	rcall motor_init
 .endm

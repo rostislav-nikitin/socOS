@@ -1375,13 +1375,13 @@ set_struct_word:
 	ret
 
 .macro m_set_Y_to_null_pointer
-	ldi YL, NULL_POINTER_L
-	ldi YH, NULL_POINTER_H
+	ldi YL, POINTER_NULL_LOW
+	ldi YH, POINTER_NULL_HIGH
 .endm
 
 .macro m_set_Z_to_null_pointer
-	ldi ZL, NULL_POINTER_L
-	ldi ZH, NULL_POINTER_H
+	ldi ZL, POINTER_NULL_LOW
+	ldi ZH, POINTER_NULL_HIGH
 .endm
 
 .macro m_set_Z_to_io_ports_offset

@@ -14,7 +14,7 @@
 
 .macro m_led_init
 	; input parameters:
-	;	@0	word [st_led:st_device_io]
+	;	@0	word [st_led:device_io]
 	;	@1	word [DDRx]
 	;	@2	word [PORTx]
 	;	@3	word USED_BIT_MASK
@@ -25,13 +25,13 @@
 
 led_init:
 	; input parameters:
-	;	Z	word	[st_led:st_device_io]
+	;	Z	word	[st_led:device_io]
 	; currently no additional logic
 	ret
 
 .macro m_led_set
 	; input parameters:
-	;	@0	word	[st_led:st_device_io]
+	;	@0	word	[st_led:device_io]
 	;	@1	byte 	led_state
 	m_out_bit_set @0, @1
 .endm
@@ -58,7 +58,7 @@ led_set:
 
 .macro m_led_get
 	; input parameters:
-	;	@0	word	[st_led:st_device_io]
+	;	@0	word	[st_led:device_io]
 	; returns:
 	;	@1	register
 	m_out_bit_get @0, @1
@@ -66,7 +66,7 @@ led_set:
 
 led_get:
 	; input parameters:
-	;	Z	word	[st_led:st_device_io]
+	;	Z	word	[st_led:device_io]
 	; returns:
 	;	r23	byte	current led state
 	rcall out_bit_get
@@ -81,7 +81,7 @@ led_get:
 
 led_toggle:
 	; input parameters:
-	;	Z	word	[st_led:st_device_io]
+	;	Z	word	[st_led:device_io]
 	rcall led_toggle
 
 	ret

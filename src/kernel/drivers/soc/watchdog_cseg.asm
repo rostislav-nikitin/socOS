@@ -3,16 +3,13 @@
 	; input parameters:
 	; 	@0	byte  watchdog_timeout (enumeration)
 	; save registers
-	push r16
+	m_save_r23_registers
 	; push timeout parameter
-	ldi r16, @0
-	push r16
+	ldi r23, @0
 
 	rcall watchdog_init
-	; release stack space from the timeout parameter
-	pop r16
-	; restore registers
-	pop r16
+
+	m_restore_r23_registers
 .endm
 
 .macro m_watchdog_init_default
@@ -22,23 +19,13 @@
 
 watchdog_init:
 	; input parameters:
-	;	byte	watchdog_timeout (enumeration)
-	m_save_r16_X_registers
+	;	r23	byte	watchdog_timeout (enumeration)
+	m_save_r16_r23_SREG_registers
 
-	in XL, SPL
-	in XH, SPH
-	;3 bytes saved registers
-	ldi r16, SZ_R16_X_REGISTERS + SZ_RET_ADDRESS + SZ_STACK_PREVIOUS_OFFSET
+	ori r23, (1 << WDE)
 
-	add XL, r16
-	ldi r16, 0x00
-	adc XH, r16
+	out WDTCR, r23
 
-	ld r16, X
-	ori r16, (1 << WDE)
-
-	out WDTCR, r16
-
-	m_restore_r16_X_registers
+	m_restore_r16_r23_SREG_registers
 
 	ret

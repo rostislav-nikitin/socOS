@@ -7,8 +7,8 @@ rcall main_thread
 ; include components definitions
 .include "../../../../../../src/kernel/kernel_def.asm"
 ;.include "../../../../../../src/kernel/thread_def.asm"
-.include "../../../../../../src/kernel/drivers/st_device_def.asm"
-.include "../../../../../../src/kernel/drivers/io/st_device_io_def.asm"
+.include "../../../../../../src/kernel/drivers/device_def.asm"
+.include "../../../../../../src/kernel/drivers/io/device_io_def.asm"
 .include "../../../../../../src/kernel/drivers/io/out_byte_def.asm"
 .include "../../../../../../src/kernel/drivers/io/hid/ssi_def.asm"
 
@@ -25,8 +25,8 @@ rcall main_thread
 ; include components code segments
 .include "../../../../../../src/kernel/kernel_cseg.asm"
 ;.include "../../../../../../src/kernel/drivers/{drivers_name}_cseg.asm"
-.include "../../../../../../src/kernel/drivers/st_device_cseg.asm"
-.include "../../../../../../src/kernel/drivers/io/st_device_io_cseg.asm"
+.include "../../../../../../src/kernel/drivers/device_cseg.asm"
+.include "../../../../../../src/kernel/drivers/io/device_io_cseg.asm"
 .include "../../../../../../src/kernel/drivers/io/out_byte_cseg.asm"
 .include "../../../../../../src/kernel/drivers/io/hid/ssi_cseg.asm"
 

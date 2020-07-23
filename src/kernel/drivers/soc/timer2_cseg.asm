@@ -228,7 +228,7 @@ timer2_ovf_handler:
 	ldi ZH, high(timer2_static_instance)
 	ldi r23, ST_TIMER2_OVERFLOW_HANDLER_OFFSET
 
-	rcall st_device_raise_event
+	rcall device_raise_event
 
 	m_restore_r23_Z_registers
 
@@ -241,7 +241,7 @@ timer2_comp_handler:
 	ldi ZH, high(timer2_static_instance)
 	ldi r23, ST_TIMER2_COMPARE_HANDLER_OFFSET
 
-	rcall st_device_raise_event
+	rcall device_raise_event
 
 	m_restore_r23_Z_registers
 

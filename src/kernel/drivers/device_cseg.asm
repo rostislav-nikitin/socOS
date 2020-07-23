@@ -1,14 +1,14 @@
-.macro m_st_device_init
+.macro m_device_init
 	; parameters
-	;	@0	word [st_device]
+	;	@0	word [device]
 .endm
 
-st_device_init:
+device_init:
 	ret
 
-st_device_raise_event:
+device_raise_event:
 	; parameters
-	; Z	word	[st_dev: st_device]
+	; Z	word	[st_dev: device]
 	; r23	byte	[event_handler]
 	m_save_r16_Y_Z_SREG_registers
 
@@ -19,10 +19,10 @@ st_device_raise_event:
 	rcall cpw
 	pop YH
 	pop YL
-	breq st_device_raise_event_end
+	breq device_raise_event_end
 	icall
 
-	st_device_raise_event_end:
+	device_raise_event_end:
 
 	m_restore_r16_Y_Z_SREG_registers
 

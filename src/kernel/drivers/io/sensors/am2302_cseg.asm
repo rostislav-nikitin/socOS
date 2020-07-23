@@ -16,7 +16,7 @@
 	; save registers
 	m_save_Y_Z_registers
 
-	; set [st_am2302:st_device_io]
+	; set [st_am2302:device_io]
 	ldi ZL, low(@0)
 	ldi ZH, high(@0)
 	
@@ -30,12 +30,12 @@
 
 .macro m_am2302_init
 	; input parameters:
-	;	@0 	word	[st_am2302:st_device_io]
+	;	@0 	word	[st_am2302:device_io]
 	;	@1	word	[DDRx]
 	;	@2	word 	[PINx]
 	;	@3	byte 	USED_BIT_MASK
 	;	@4	word	[on_completed_handler]
-	m_st_device_io_init @0, @1, @2, NULL_POINTER, @3, 0x00
+	m_device_io_init @0, @1, @2, POINTER_NULL, @3, 0x00
 	m_st_am2302_init @0, @4
 .endm
 

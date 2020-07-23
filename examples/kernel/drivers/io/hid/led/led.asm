@@ -7,7 +7,7 @@ rcall main_thread
 ; include SoC defaults
 ; include components definitions
 .include "../../../../../../src/kernel/kernel_def.asm"
-.include "../../../../../../src/kernel/drivers/io/st_device_io_def.asm"
+.include "../../../../../../src/kernel/drivers/io/device_io_def.asm"
 .include "../../../../../../src/kernel/drivers/io/out_bit_def.asm"
 .include "../../../../../../src/kernel/drivers/io/hid/led_def.asm"
 
@@ -26,8 +26,8 @@ rcall main_thread
 ;.include "../../../../../../src/kernel/drivers/{device_name}_cseg.asm"
 .include "../../../../../../src/extensions/delay_cseg.asm"
 .include "../../../../../../src/kernel/kernel_cseg.asm"
-.include "../../../../../../src/kernel/drivers/st_device_cseg.asm"
-.include "../../../../../../src/kernel/drivers/io/st_device_io_cseg.asm"
+.include "../../../../../../src/kernel/drivers/device_cseg.asm"
+.include "../../../../../../src/kernel/drivers/io/device_io_cseg.asm"
 .include "../../../../../../src/kernel/drivers/io/out_bit_cseg.asm"
 .include "../../../../../../src/kernel/drivers/io/hid/led_cseg.asm"
 

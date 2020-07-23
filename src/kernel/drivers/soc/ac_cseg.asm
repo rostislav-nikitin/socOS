@@ -7,7 +7,7 @@
 	;	@3	word	ST_AC_ON_COMPLETED_HANDLER_OFFSET
 	m_save_r21_r22_r23_Y_Z_registers
 	;
-	m_st_device_init
+	m_device_init
 	;
 	ldi ZL, low(ac_static_instance)
 	ldi ZH, high(ac_static_instance)
@@ -207,7 +207,7 @@ ac_completed_handler:
 	ldi ZH, high(ac_static_instance)
 
 	; raise event
-	rcall st_device_raise_event
+	rcall device_raise_event
 	;
 	m_restore_r23_Y_Z_registers
 	
