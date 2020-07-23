@@ -175,37 +175,38 @@ Currenlty socOS code distributed by the next namespaces (each folder is a namesp
 * **\[kernel/\*]** is a kernel common code namespace
     * kernel		- definitions/procedures used in the most of the drivers
     * thread_pool	- thread pool powered by the timer0. It asldo provides the thread abstraction and the procedures to control thread instances
-    * **\[kernel/drivers/\*\]** namespace that contains drivers for different devices. Where drivers are some low level code that provides some abstraction for the particular device. Thus you can use any device not by reading/writing bits within some control/data registers but throug call some human readable procedures like a led_on, led_off, etc.
+    * **\[kernel/drivers/\*\]** namespace that contains drivers for different devices. Where drivers are low level code that provides abstraction for the particular device. Thus you can use any device not by reading/writing bits within  control/data registers but throug call human readable procedures like a led_on, led_off, etc.
 	* device	- base class (definitions/procedures) for any device driver
     * **\[kernel/drivers/soc/\*\]** the namespace that represents SoC build-in devices
-		* _ac:st_device_	- driver for the analog comparator
-		* _adc:st_device_	- driver for the analog-digital convertor
-		* _timer_base:st_device_ -	 base abstract class (definitions/procedures) for any timer driver
-		* _time0:timer_base_	- driver (timer0 static class (int handler/definitions/static instance data/procedures)) for the timer0
-		* _timer_w_pwm_base:timer_base_ -	base abstract class (definitions/procedures) for any timer driver with a PWM (Pulse Width Modulation) functionality
-		* _timer2:timer_w_pwm_base_	- driver (timer2 static class (int handler/definitions/static instance data/procedures)) for the timer2
-		* _usart:st_device_	- driver (usart static class (int handler/definitions/static instance data/procedures)) for the usart interface
-		* _eeprom:st_device_- driver (eeprom static class (int handler/definitions/static instance data/procedures)) for the eeprom controller
-		* _watchdog:st_device_- driver (watchdog static class (definitions/procedures)) for the watchdog counter    
+		* _ac:st_device_		- the driver for the analog comparator
+		* _adc:st_device_		- the driver for the analog-digital convertor
+		* _timer_base:st_device_ 	- the base abstract class (definitions/procedures) for any timer driver
+		* _time0:timer_base_		- the driver (timer0 static class (int handler/definitions/static instance data/procedures)) for the timer0
+		* _timer_w_pwm_base:timer_base_	- the base abstract class (definitions/procedures) for any timer driver with a PWM (Pulse Width Modulation) functionality
+		* _timer2:timer_w_pwm_base_	- the driver (timer2 static class (int handler/definitions/static instance data/procedures)) for the timer2
+		* _usart:st_device_		- the driver (usart static class (int handler/definitions/static instance data/procedures)) for the usart interface
+		* _eeprom:st_device_		- the driver (eeprom static class (int handler/definitions/static instance data/procedures)) for the eeprom controller
+		* _watchdog:st_device_		- the driver (watchdog static class (definitions/procedures)) for the watchdog counter    
 	* **\[kernel/drivers/io/\*\]** the namespace that contains drivers for the I/O devices like a led, button, etc.
-	    * _device_io:device_		-base class (definitions/procedures) for most of the I/O devices
+	    * _device_io:device_		- the base class (definitions/procedures) for most of the I/O devices
 	    * _in_bit:device_io_		- the driver that can configure port/pin for the input by the specified DDRx/PINx/PORTx/BITx parameters and can read one bit from it
 	    * _out_bit:device_io_		- the driver that can configure port/pin for the ouput by the specified DDRx/PORTx/BITx parameters and can write one bit to it
 	    * _in_byte:device_io_		- (not implemented yet)
-	    * _out_byte:device_io_	- the driver that can configure port for the ouput of the byte by the specified DDRx/PORTx parameters and can write one byte to it
+	    * _out_byte:device_io_		- the driver that can configure port for the ouput of the byte by the specified DDRx/PORTx parameters and can write one byte to it
 	    * _switch:device_io_		- the driver that represents a controlled switch. In derived from the kernel/drivers/io/out_bit and can switch one bit at the specified by the DDRx/PORTx/BITx port
 	    * **\[kernel/drivers/io/hid/\*\]** the namespace that contains drivers for the HID I/O devices	    
 		* _led:out_bit_	- led driver
-		* _button:in_bit_	- button driver
-		* _encoder:device_io_	- 2-bit Gray code encoder driver
-		* _ssi:out_byte_	- seven segment indicator driver
+		* _button:in_bit_	- the button driver
+		* _encoder:device_io_	- the encoder(uses 2-bit Gray code) driver
+		* _ssi:out_byte_	- the seven segment indicator driver
 	    * **\[kernel/drivers/io/sensors/\*\]** the namespace that represents sensors
-		* _am2302:device_io_	- AM2302/DHT22 sensor driver. Is can configure specified DDRx/PINx/BITx for the input. And then communicates with an AM2302/DHT22 sensor through a one wire.
+		* _am2302:device_io_	- the AM2302/DHT22 sensor driver. Is can configure specified DDRx/PINx/BITx for the input. And then communicates with an AM2302/DHT22 sensor through a one wire.
 	* **\[kernel/drivers/motors/\*\]** the namespace that represents motors
-		* _motor:timer2_	- driver (static abstract class (int handler/definitions/static instance data/procedures)) used to control any abstract motor controlled by the PWM
-		* _motor_stepper_bi:device_io_	- driver to control any abstract bi-phase stepper motor controller by the stepper motor controller wich should be connected to the MCU port tetrade. Configured by the specified DDRx/PORTx/TETRADE(L|H)
+		* _motor:timer2_	- the driver (static abstract class (int handler/definitions/static instance data/procedures)) used to control any abstract motor controlled by the PWM
+		* _motor_stepper_bi:device_io_	- the driver to control any abstract bi-phase stepper motor controller wich should be connected to the MCU port's tetrade. Configuring by the specifying DDRx/PORTx/TETRADE(L|H)
 * **\[extensions/\*\]** is a socOS extensions namespace
-    * delay	- extension that provides macro/procedures for delays
+    * delay	- the extension that provides macro/procedures for delays
+    
 ## socOS conventions
 ### Variable naming convention:
 * name:		variable
