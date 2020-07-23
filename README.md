@@ -40,8 +40,8 @@ The main concepts of the socOS are:
 	
     ```
     This kind of files should be included into the "interruprs include block" of the your app.asm file (application entry point) which structure will be discussed later
-    * "{driver\_name}\_def.asm"	- file with a some structures/constants/enumerations definitions.
-    Something like that:
+    * "{driver\_name}\_def.asm"	- file with a some structures/constants/enumerations definitions with a next structure:
+    :
     ```Assembly
     .equ SZ_ST_{DRIVER_NAME}			= 0x05
     .equ ST_{DRIVER_NAME}_PORTX_ADDRESS_OFFSET	= 0x00
@@ -50,15 +50,17 @@ The main concepts of the socOS are:
     .equ PORT_DDRB				= 0x23
     .equ PROT_DDRC				= 0x27
     ...
+    ; constants
+    .equ SOME_CONST				= 0xff
     ```
     This kind of files should be included into the "definitions include block" of the you app.asm file (application entry point) which structure will be discussed later
-    * "{driver_name}_dseg.asm"	- here are data segment static variables, structures, arrays that are used by the component internally
+    * "{driver\_name}\_dseg.asm"	- here are data segment static variables, structures, arrays that are used by the component internally:
     ```Assembly
     .dseg
 	st_{driver_name}:	.BYTE SZ_ST_{DRIVER_NAME}
     ```
     This kind of files should be included into the "data segment include block" of the your main app.asm (application entry point) file which structure will be discussed later
-    * "{driver_name}_cseg.asm"	- this is a code block of the driver with the driver implementation
+    * "{driver\_name}\_cseg.asm"	- this is a code block of the driver with the driver implementation:
     ```Assembly
     .macro m_led_init
 	m_save_Z_registers
@@ -71,6 +73,16 @@ The main concepts of the socOS are:
     
     led_init:
 	; some init code
+	ret
+    .macro m_led_on:
+	; some init code
+	ldi ZL, low(@0)
+	ldi ZH, high(@0)
+	
+	rcall led_init
+    .endm
+    led_on:
+	...
 	ret
     ...
     ```
