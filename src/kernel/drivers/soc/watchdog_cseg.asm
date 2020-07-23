@@ -1,3 +1,18 @@
+;=======================================================================================================================
+;                                                                                                                      ;
+; Name:	socOS (System On Chip Operation System)                                                                        ;
+; 	Year: 		2020                                                                                           ;
+; 	License:	MIT License                                                                                    ;
+;                                                                                                                      ;
+;=======================================================================================================================
+
+; Require:
+;.include "m8def.inc"
+
+;.include "kernel/device_def.asm"
+
+;.include "kernel/device_cseg.asm"
+
 ; code region
 .macro m_watchdog_init
 	; input parameters:
@@ -21,6 +36,8 @@ watchdog_init:
 	; input parameters:
 	;	r23	byte	watchdog_timeout (enumeration)
 	m_save_r16_r23_SREG_registers
+
+	rcall device_init
 
 	ori r23, (1 << WDE)
 

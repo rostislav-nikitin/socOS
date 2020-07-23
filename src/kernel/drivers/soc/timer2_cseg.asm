@@ -1,13 +1,31 @@
+;=======================================================================================================================
+;                                                                                                                      ;
+; Name:	socOS (System On Chip Operation System)                                                                        ;
+; 	Year: 		2020                                                                                           ;
+; 	License:	MIT License                                                                                    ;
+;                                                                                                                      ;
+;=======================================================================================================================
+
+; Require:
 ;.include "m8def.inc"
+
+;.include "kernel/device_def.asm"
+;.include "kernel/soc/timer_base_def.asm"
+;.include "kernel/soc/timer_w_pwm_base_def.asm"
+
+;.include "kernel/device_cseg.asm"
+;.include "kernel/soc/timer_base_cseg.asm"
+;.include "kernel/soc/timer_w_pwm_base_cseg.asm"
+
 ; PWM at PINB[3]
 .macro m_timer2_init
 	m_save_Z_registers
 	; parameters:
-	;	@0	timer_divider	timer divider
-	;	@1	word		overflow handler
-	;	@2	byte		mode
+	;	@0	timer_divider	TIMER_DIVIDER
+	;	@1	word		[on_overflow_handler]
+	;	@2	byte		TIMER_W_PWM_MODE
 	;	@3	byte		compare threshold
-	;	@4	word		compare handler
+	;	@4	word		[on_compare_handler]
 
 	m_timer_w_pwm_base_init timer2_static_instance, TCCR2, TCNT2, OCR2, @0, (1 << TOIE2), @1, DDRB, (1 << BIT3), @2, @3, (1 << OCIE2), @4
 
@@ -18,7 +36,6 @@
 
 	m_restore_Z_registers
 .endm
-
 timer2_init:
 	rcall timer2_init_ports_mode
 
@@ -31,11 +48,13 @@ timer2_init_ports_mode:
 
 .macro m_timer2_compare_threshold_set
 	; parameters:
-	;	@0	byte	threshlod
+	;	@0	byte	compare threshlod
 	m_timer_w_pwm_base_compare_threshold_set timer2_static_instance, @0
 	
 .endm
 timer2_compare_threshold_set:
+	; parameters:
+	;	r23	byte	compare threshlod
 	m_save_Z_registers
 
 	ldi ZL, low(timer2_static_instance)
@@ -76,7 +95,7 @@ timer2_counter_control_register_set_mode:
 	ret
 
 .macro m_timer2_counter_control_register_set_mode_off
-	rcall timer2_pwm_disable
+	rcall timer2_counter_control_register_set_mode_off
 .endm
 timer2_counter_control_register_set_mode_off:
 	m_save_r23_registers
@@ -101,6 +120,8 @@ timer2_counter_control_register_set_mode_off:
 	m_resore_r23_registers
 .endm
 timer2_counter_control_register_set:
+	; parameters:
+	;	r23	byte	TIMER_W_PWM_MODE
 	m_save_r16_r23_Z_SREG_registers
 
 	ldi ZL, low(timer2_static_instance)
@@ -169,45 +190,64 @@ timer2_counter_control_register_set:
 .macro m_timer2_interrupts_enable
 	m_timer_w_pwm_base_interrupts_enable timer2_static_instance
 .endm
-
 timer2_interrupts_enable:
+	m_save_Z_registers
+	ldi ZL, low(timer2_static_instance)
+	ldi ZH, high(timer2_static_instance)
+
 	rcall timer_w_pwm_base_interrupts_enable
+
+	m_restore_Z_registers
 
 	ret
 
 .macro m_timer2_interrupts_disable
 	m_timer_w_pwm_base_interrupts_disable timer2_static_instance
 .endm
-
 timer2_interrupts_disable:
+	m_save_Z_registers
+	ldi ZL, low(timer2_static_instance)
+	ldi ZH, high(timer2_static_instance)
+
 	rcall timer_w_pwm_base_interrupts_disable
+
+	m_restore_Z_registers
 
 	ret
 
 .macro m_timer2_interrupt_overflow_enable
 	m_timer_w_pwm_base_interrupt_overflow_enable timer2_static_instance
 .endm
-
 timer2_interrupt_overflow_enable:
+	m_save_Z_registers
+	ldi ZL, low(timer2_static_instance)
+	ldi ZH, high(timer2_static_instance)
+
 	rcall timer_w_pwm_base_interrupt_overflow_enable	
+
+	m_restore_Z_registers
 
 	ret
 
 .macro m_timer2_interrupt_overflow_disable
 	m_timer_w_pwm_base_interrupt_overflow_disable timer2_static_instance
 .endm
-
 timer2_interrupt_overflow_disable:
+	m_save_Z_registers
+	ldi ZL, low(timer2_static_instance)
+	ldi ZH, high(timer2_static_instance)
+
 	rcall timer_w_pwm_base_interrupt_overflow_disable
+
+	m_restore_Z_registers
 	
 	ret
 
 .macro m_timer2_counter_get_value
 	; returns:
-	;	@0	register	register with current counter value
+	;	@0	reg	register with current counter value
 	m_timer_w_pwm_base_counter_get_value timer2_static_instance, @0
 .endm
-
 timer2_counter_get_value:
 	m_save_Z_registers
 	; returns:

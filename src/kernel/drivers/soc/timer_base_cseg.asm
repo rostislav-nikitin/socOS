@@ -13,15 +13,14 @@
 
 ;.include "kernel/device_cseg.asm"
 
-
 .macro m_timer_base_init
 	; parameters:
 	;	@0	[st_timer]
 	;	@1	[TCCRx]		timer counter control register
 	;	@2	[TCNTx]		timer counter register
-	;	@3	timer_divider	timer divider
+	;	@3	timer_divider	TIMER_DIVIDER
 	;	@4	byte		interrupt_bit_mask
-	;	@5	word		overflow handler
+	;	@5	word		[on_overflow_handler]
 	m_save_r22_r23_r24_r25_X_Y_Z_registers
 
 	ldi ZL, low(@0)
@@ -42,12 +41,12 @@
 
 timer_base_init:
 	; parameters
-	;	Z	[st_timer_base: device]
+	;	Z	[st_timer_base]
 	;	Y	[TCCRx]
 	;	X	[TCNTx]
-	;	r23	timer divider
+	;	r23	TIMER_DIVIDER
 	;	r22	interrupt bit mask
-	;	r24,r25	[overflow handler]
+	;	r24,r25	[on_overflow_handler]
 	rcall device_init
 
 	push r23
@@ -87,12 +86,15 @@ timer_base_init:
 	ret
 
 timer_base_init_ports:
-	; init divider
+	; parameters
+	;	Z	[st_timer_base]
 	rcall timer_base_counter_set_divider
 
 	ret
 
 timer_base_counter_set_divider:
+	; parameters
+	;	Z	[st_timer_base]
 	m_save_r23_registers
 
 	ldi r23, ST_TIMER_BASE_DIVIDER_BIT_MASK_OFFSET
@@ -105,6 +107,8 @@ timer_base_counter_set_divider:
 	ret
 
 timer_base_counter_set_disabled:
+	; parameters
+	;	Z	[st_timer_base]
 	m_save_r23_registers
 
 	ldi r23, TIMER_DIVIDER_CLOCK_DISABLED
@@ -116,6 +120,9 @@ timer_base_counter_set_disabled:
 	ret
 
 timer_base_counter_set:
+	; parameters
+	;	Z	[st_timer_base]
+	;	r23	TIMER_DIVIDER_CLOCK
 	m_save_r23_Z_registers
 
 	push r23
@@ -134,22 +141,26 @@ timer_base_counter_set:
 
 .macro m_timer_base_interrupts_enable
 	; parameters:
-	;	@0	[st_timer]
+	;	@0	[st_timer_base]
 	m_timer_base_interrupt_overflow_enable @0
 .endm
 
 timer_base_interrupts_enable:
+	; parameters
+	;	Z	[st_timer_base]
 	rcall timer_base_interrupt_overflow_enable
 
 	ret
 
 .macro m_timer_base_interrupts_disable
 	; parameters:
-	;	@0	[st_timer]
+	;	@0	[st_timer_base]
 	m_timer_base_interrupt_overflow_disable @0
 .endm
 
 timer_base_interrupts_disable:
+	; parameters
+	;	Z	[st_timer_base]
 	rcall timer_base_interrupt_overflow_disable
 
 	ret
@@ -168,6 +179,8 @@ timer_base_interrupts_disable:
 .endm
 
 timer_base_interrupt_overflow_enable:
+	; parameters
+	;	Z	[st_timer_base]
 	m_save_r16_r23_SREG_registers
 
 	ldi r23, ST_TIMER_BASE_OVERFLOW_INTERRUPT_BIT_MASK_OFFSET
@@ -183,7 +196,7 @@ timer_base_interrupt_overflow_enable:
 
 .macro m_timer_base_interrupt_overflow_disable
 	; parameters:
-	;	@0	[st_timer]
+	;	@0	[st_timer_base]
 	m_save_Z_registers
 
 	ldi ZL, low(@0)
@@ -195,6 +208,8 @@ timer_base_interrupt_overflow_enable:
 .endm
 
 timer_base_interrupt_overflow_disable:
+	; parameters
+	;	Z	[st_timer_base]
 	m_save_r16_r23_SREG_registers
 
 	ldi r23, ST_TIMER_BASE_OVERFLOW_INTERRUPT_BIT_MASK_OFFSET
@@ -211,9 +226,9 @@ timer_base_interrupt_overflow_disable:
 
 .macro m_timer_base_counter_get_value
 	; parameters:
-	;	@0	[st_timer]
+	;	@0	[st_timer_base]
 	; returns
-	;	@1	register	register with current counter value
+	;	@1	reg		register with current counter value
 	m_save_r23_Z_registers
 
 	ldi ZL, low(@0)
@@ -230,7 +245,7 @@ timer_base_counter_get_value:
 	; parameters:
 	;	Z	word	[st_timer_base]
 	; returns:
-	;	r23	counter value
+	;	r23	byte	counter value
 	m_save_Z_registers
 
 	ldi r23, ST_TIMER_BASE_COUNTER_REGISTER_ADDRESS_OFFSET

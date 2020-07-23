@@ -1,4 +1,17 @@
+;=======================================================================================================================
+;                                                                                                                      ;
+; Name:	socOS (System On Chip Operation System)                                                                        ;
+; 	Year: 		2020                                                                                           ;
+; 	License:	MIT License                                                                                    ;
+;                                                                                                                      ;
+;=======================================================================================================================
+
+; Require:
 ;.include "m8def.inc"
+
+;.include "kernel/device_def.asm"
+
+;.include "kernel/device_cseg.asm"
 
 .ifndef MCU_CLOCK_DEFAULT
 	.equ MCU_CLOCK_DEFAULT = 1000000
@@ -23,11 +36,11 @@
 
 .macro m_usart_init
 	; parameters:
-	;	@0	int	mcu_clock
-	;	@1	int	usart_speed
-	;	@2	word	on_rxc_handler
-	;	@3	word	on_udre_handler
-	;	@4	word	on_txc_handler
+	;	@0	word	mcu_clock
+	;	@1	word	usart_speed
+	;	@2	word	[on_rxc_handler]
+	;	@3	word	[on_udre_handler]
+	;	@4	word	[on_txc_handler]
 	m_save_r22_r23_r24_r25_X_Y_Z_registers
 	;
 	.if @0 != 0
@@ -44,7 +57,8 @@
 
 	.equ USART_CLOCK_DIVIDER = ((USART_MCU_CLOCK / (USART_SPEED * 8) - 1))
 
-	m_device_io_init usart_static_instance, POINTER_NULL, POINTER_NULL, POINTER_NULL, MASK_EMPTY, MASK_EMPTY
+	;m_device_io_init usart_static_instance, POINTER_NULL, POINTER_NULL, POINTER_NULL, MASK_EMPTY, MASK_EMPTY
+	m_device_init
 
 	;
 	ldi ZL, low(usart_static_instance)
@@ -65,6 +79,13 @@
 .endm
 
 usart_init:
+	; parameters:
+	;	Z	word	[st_usart]
+	;	Y	word	[on_rxc_handler]
+	;	X	word	[on_udre_handler]
+	;	r24,r25	word	[on_txc_handler]
+	;	r23	byte	USART_CLOCK_DIVIDER LOW
+	;	r22	byte	USART_CLOCK_DIVIDER HIGH
 	m_save_r16_Y_registers
 
 	push r23
@@ -91,6 +112,9 @@ usart_init:
 	ret
 
 usart_init_ports:
+	; parameters:
+	;	r23	byte	USART_CLOCK_DIVIDER LOW
+	;	r22	byte	USART_CLOCK_DIVIDER HIGH
 	; init divider
 	m_save_r16_registers
 	;
@@ -129,8 +153,8 @@ usart_udre_disable:
 usart_rxc_handler:
 	m_save_r16_r23_Y_Z_SREG_registers
 
-	ldi ZL, low(USART_STATIC_INSTANCE)
-	ldi ZH, high(USART_STATIC_INSTANCE)
+	ldi ZL, low(usart_static_instance)
+	ldi ZH, high(usart_static_instance)
 
 	ldi r23, ST_USART_ON_RXC_HANDLER_OFFSET
 
@@ -151,8 +175,8 @@ usart_rxc_handler:
 usart_udre_handler:
 	m_save_r16_r23_Y_Z_SREG_registers
 
-	ldi ZL, low(USART_STATIC_INSTANCE)
-	ldi ZH, high(USART_STATIC_INSTANCE)
+	ldi ZL, low(usart_static_instance)
+	ldi ZH, high(usart_static_instance)
 
 	ldi r23, ST_USART_ON_UDRE_HANDLER_OFFSET
 

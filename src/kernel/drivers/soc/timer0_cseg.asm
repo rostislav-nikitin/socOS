@@ -1,8 +1,24 @@
+;=======================================================================================================================
+;                                                                                                                      ;
+; Name:	socOS (System On Chip Operation System)                                                                        ;
+; 	Year: 		2020                                                                                           ;
+; 	License:	MIT License                                                                                    ;
+;                                                                                                                      ;
+;=======================================================================================================================
+
+; Require:
 ;.include "m8def.inc"
+
+;.include "kernel/device_def.asm"
+;.include "kernel/soc/timer_base_def.asm"
+
+;.include "kernel/device_cseg.asm"
+;.include "kernel/soc/timer_base_cseg.asm"
+
 .macro m_timer0_init
 	; parameters:
-	;	@0	timer_divider	timer divider
-	;	@1	word		overflow handler
+	;	@0	byte	TIMER_DIVIDER
+	;	@1	word	[on_overflow_handler]
 	m_timer_base_init timer0_static_instance, TCCR0, TCNT0, @0, (1 << TOIE0), @1
 	rcall timer0_init
 .endm
@@ -11,8 +27,6 @@ timer0_init:
 	ret
 
 .macro m_timer0_interrupts_enable
-	; parameters:
-	;	@0	[st_timer]
 	m_timer_base_interrupts_enable timer0_static_instance
 .endm
 
@@ -22,8 +36,6 @@ timer0_interrupts_enable:
 	ret
 
 .macro m_timer0_interrupts_disable
-	; parameters:
-	;	@0	[st_timer]
 	m_timer_base_interrupts_disable timer0_static_instance
 .endm
 
@@ -33,8 +45,6 @@ timer0_interrupts_disable:
 	ret
 
 .macro m_timer0_interrupt_overflow_enable
-	; parameters:
-	;	@0	[st_timer]
 	m_timer_base_interrupt_overflow_enable timer0_static_instance
 .endm
 
@@ -44,8 +54,6 @@ timer0_interrupt_overflow_enable:
 	ret
 
 .macro m_timer0_interrupt_overflow_disable
-	; parameters:
-	;	@0	[st_timer]
 	m_timer_base_interrupt_overflow_disable timer0_static_instance
 .endm
 
@@ -57,14 +65,14 @@ timer0_interrupt_overflow_disable:
 
 .macro m_timer0_counter_get_value
 	; returns:
-	;	@0	register	register with current counter value
+	;	@0	reg	register with current counter value
 	m_timer_base_counter_get_value timer0_static_instance, @0
 .endm
 
 timer0_counter_get_value:
 	m_save_Z_registers
 	; returns:
-	;	r23	counter value
+	;	r23	byte	counter value
 	ldi ZL, low(timer0_static_instance)
 	ldi ZH, high(timer0_static_instance)
 
