@@ -169,7 +169,6 @@ timer0_on_overflow_handler:
 
     ret
 ```
-
 ## socOS structure
 Currenlty socOS code distributed by the next namespaces (each folder is a namespace):
 * **\[kernel/\*]** is a kernel common code namespace
@@ -224,7 +223,10 @@ In this case Z register should be used to pass port address and r23 register to 
 #### Event handlers:
 Sometimes required to pass some parameters to the event handler. For this purposes please use register Y. If you need to pass two values or less then please put them into the: YH, YL (in this order). Otherwise some structure should be created and filled with data. And structure address sould be passes to the event handler. For this it's address should be put into the Y (before event handler called). And thus the event handler could access this data.
 ### Constants
-Constants could defined with `.equ CONSTANT_NAME = CONSTANT_VALUE` construction
+Constants could defined with use of a next pattern:
+```Assembly
+.equ CONSTANT_NAME = CONSTANT_VALUE
+```
 ### Enumerations
 Enumerations could be defined with use of a next pattern:
 ```Assembly
@@ -306,7 +308,7 @@ led_init:
 	m_led_set @0, LED_STATE_ON
 .endm
 
-.macro  m_led_off
+.macro  m_led_offFor example:
 	; input parameters:
 	;	@0 	word	[st_led]
 	m_led_set @0, LED_STATE_OFF
@@ -380,7 +382,7 @@ rcall get_struct_byte
 ```
 * \[proc\] get_struct_word(st_{any}, offset) returns the field word value
 Example of use:
-```Assembly
+```AssemblyFor example:
 ldi ZL, low(st_led)
 ldi ZH, low(st_led)
 ldi r23, ST_LED_PORTX_ADDRESS_OFFSET
