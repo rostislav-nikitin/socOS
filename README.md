@@ -1,26 +1,27 @@
 ![picture](https://github.com/rostislav-nikitin/socOS/blob/master/documentation/images/logo_134x80.png?raw=true)
 <!-- # socOS -->
 The acronym socOS stands for the **S**ystem **o**n a **C**hip **O**perating **S**ystem.
-The main idea of the socOS to provie a hardware abstraction layer of the SoC and connected devices for the end users.
+The main idea of the socOS to provie a hardware abstraction layer of the SoC and connected devices for the firmware developer.
 For now supported only the AVR family MCU devices and all the tests was made only at the AVR ATmega8 one.
 
 ## How to use it?
+
 1. Clone this repository
 2. In the src folder you can find three files:
 * app.aps - this is a AVR Studio project file
-* app.asm - this is a main Assembler file of the your firmware application
+* app.asm - this is a main assembly language file of the your firmware application
 * AvrBuild.bat - this is a Windows batch file to build your firmware application outside of the AVR Studio
 3. You can build your own firmware application through:
-* Opening aps.asp in the AVR Studio IDE and writing/debugging your own code there
-* Opening asp.asm in the your favorite text editor and building app with AvrBuild.bat batch
-4. Follow guidelines below to build your own firmware
+* Opening an aps.asp in the AVR Studio IDE for writing/debugging/building your own code
+* Opening an asp.asm in the your favorite text editor for writing code and then by building app through AvrBuild.bat batch
+4. You can follow guidelines below to build your own firmware
 
 ## socOS base blocks
-The main idea is a reusing of the socOS extensions/drivers (from this blocks build socOS) in the you firmware application to avoid direct programming of ports/pins etc. Instead of this socOS providing some human readable abstractions.
-You simply need to include into the AVR Studio project corresponding to the you task components and reuse them.
-But at the beginning let's understand base socOS concepts.
-The main entities of the socOS are:
-* extension	- represented by the "{extension_name}_cseg.asm" assembler file that contains some common procedures, which extends AVR assemler functionality.
+The main idea is a reusing of the socOS kernel/drivers/extensions (from this blocks socOS is build) in the you firmware application to avoid direct programming of ports/pins etc.
+Instead of this socOS providing some human readable abstractions.
+You simply need to include into the AVR Studio project corresponding components and reuse them. But at the beginning let's understand base socOS concepts.
+The main concepts of the socOS are:
+* kernel	- represented by the "kernel/kernel_def.asm" and "kernel/kernel_cseg.asm" assembler files that contains some common socOS basic definitions and procedures used by the most of the socOS components.
 * driver	- represented by the set of the next blocks that compose a virtual class entity. Virtual because Assembly language does not support classes but logically this blocks are the parts of the one entity. All this blocks are distributed by the separate files:
     * "{driver_name}_int.asm"	- file with a next structure:
     ```Assembly
@@ -75,7 +76,7 @@ The main entities of the socOS are:
     ```
     This kind of files should be included in the code segment inclide block of the your appication app.asm file
     
-
+* extension	- represented by the "{extension_name}_cseg.asm" assembler file that contains some common procedures, which extends AVR assemler functionality.
 ## The structure of the app.asm:
 The app.asm in an entry point of the firmware application. In most cased you will start you new firmware application there.
 This is it structure.
