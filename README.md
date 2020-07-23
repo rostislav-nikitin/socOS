@@ -4,7 +4,7 @@ The acronym socOS stands for the **S**ystem **o**n a **C**hip **O**perating **S*
 The main idea of the socOS to provie a hardware abstraction layer of the SoC and connected devices for the end users.
 For now supported only the AVR family MCU devices and all the tests was made only at the AVR ATmega8 one.
 
-##How to use it?
+## How to use it?
 1. Clone this repository
 2. In the src folder you can find three files:
 * app.aps - this is a AVR Studio project file
