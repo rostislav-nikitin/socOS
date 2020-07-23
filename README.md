@@ -231,14 +231,16 @@ Constants could defined with use of a next pattern:
 Enumerations could be defined with use of a next pattern:
 ```Assembly
 ; define ENUMERATION_NAME
-.equ ENUMERATION_NAME_VALUE_1
-.equ ENUMERATION_NAME_VALUE_2
+.equ ENUMERATION_NAME_VALUE_1	= 0x01
+.equ ENUMERATION_NAME_VALUE_2	= 0x02
+; ...
+.equ ENUMERATION_NAME_VALUE_N	= n
 ```
 For example:
 ```Assembly
 ; define LED_STATE
-.equ LED_STATE_ON
-.equ LED_STATE_OFF
+.equ LED_STATE_OFF	= FALSE
+.equ LED_STATE_ON	= TRUE
 ```
 ### Components and classes
 Most of the devices can be represented as components which has a some interrupt handlers, definitions, data and code. According to this each such component could be represented as a viurtual classes. Virtual because Assembly language does not support and OOP/OOD structures. But virtually each class could be represented with:
