@@ -203,7 +203,7 @@ Currenlty socOS code distributed by the next namespaces (each folder is a namesp
 		* _am2302:device_io_	- the AM2302/DHT22 sensor driver. Is can configure specified DDRx/PINx/BITx for the input. And then communicates with an AM2302/DHT22 sensor through a one wire.
 	* **\[kernel/drivers/motors/\*\]** the namespace that represents motors
 		* _motor:timer2_	- the driver (static abstract class (int handler/definitions/static instance data/procedures)) used to control any abstract motor controlled by the PWM
-		* _motor_stepper_bi:device_io_	- the driver to control any abstract bi-phase stepper motor controller wich should be connected to the MCU port's tetrade. Configuring by the specifying DDRx/PORTx/TETRADE(L|H)
+		* _motor_stepper_bi:device_io_	- the driver to control any abstract bi-phase stepper motor controller wich should be connected to the MCU port's tetrade. Configuring by the specifying DDRx/PORTx/TETRADE(LOW|HIGH)
 * **\[extensions/\*\]** is a socOS extensions namespace
     * delay	- the extension that provides macro/procedures for delays
     
