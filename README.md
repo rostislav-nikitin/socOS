@@ -23,7 +23,7 @@ The main entities of the socOS are:
 * extension	- represented by the "{extension_name}_cseg.asm" assembler file that contains some common procedures, which extends AVR assemler functionality.
 * driver	- represented by the set of the next blocks that compose a virtual class entity. Virtual because Assembly language does not support classes but logically this blocks are the parts of the one entity. All this blocks are distributed by the separate files:
     * "{driver_name}_int.asm"	- file with a next structure:
-    ```(asm)
+    ```Assembly
     .cseg
 	.org {address_of_the_interrupt_handler}
 	{driver_name|soc_internal_device_name}_{event_one_name}_handler
@@ -32,7 +32,7 @@ The main entities of the socOS are:
 	
     ```
     For example:
-    ```(asm)
+    ```Assembly
     .cseg
 	.org 0x09
         rjmp timer0_ovf_handler ; timer 0 overflow
@@ -79,7 +79,7 @@ The main entities of the socOS are:
 ## The structure of the app.asm:
 The app.asm in an entry point of the firmware application. In most cased you will start you new firmware application there.
 This is it structure.
-```
+```Assembly
 cseg
 .org 0x00
 rcall main_thread
@@ -222,7 +222,7 @@ The next typing (in the comments) st_child: st_parent means that st_child inheri
 * \[macro\] save_XXX_registers/restore_XXX_registers - set ot two macroses to save/restore registers. It is more useful to type for example: save_r23_Z_SREG_registers instead of set of push commands
 * \[proc\] mem_copy(\[from\], \[to\], lenght) - copyies {lenght} bytes \[from\] \[to\]
 Example of use:
-```assembly
+```Assembly
 ldi ZL, low(buffer_from)
 ldi ZH, high(buffer_to)
 ldi YL, low(buffer_to)
@@ -232,7 +232,7 @@ ldi r23, sz_buffer_to
 	rcall mem_copy
 * \[proc\] get_struct_byte(\[st_{any}\], offset) returns the field byte value
 Example of use:
-```assembly
+```Assembly
 ldi ZL, low(st_led)
 ldi ZH, low(st_led)
 ldi r23, ST_LED_USED_BIT_MASK_OFFSET
@@ -241,7 +241,7 @@ rcall get_struct_byte
 ```
 * \[proc\] get_struct_word(st_{any}, offset) returns the field word value
 Example of use:
-```assembly
+```Assembly
 ldi ZL, low(st_led)
 ldi ZH, low(st_led)
 ldi r23, ST_LED_PORTX_ADDRESS_OFFSET
@@ -250,7 +250,7 @@ rcall get_struct_word
 ```
 * \[proc\] set_struct_byte(\[st_{any}\], offset, value)
 Example of use:
-```assembly
+```Assembly
 ldi ZL, low(st_led)
 ldi ZH, low(st_led)
 ldi r23, ST_LED_USED_BIT_MASK_OFFSET
