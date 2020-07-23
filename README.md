@@ -174,7 +174,7 @@ timer0_on_overflow_handler:
 Currenlty socOS code distributed by the next namespaces (each folder is a namespace):
 * **\[kernel/\*]** is a kernel common code namespace
     * kernel		- definitions/procedures used in the most of the drivers
-    * thread_pool	- thread pool powered by the timer0. It asldo provides the thread abstraction and the procedures to control this abstraction instances
+    * thread_pool	- thread pool powered by the timer0. It asldo provides the thread abstraction and the procedures to control thread instances
     * **\[kernel/drivers/\*\]** namespace that contains drivers for different devices. Where drivers are some low level code that provides some abstraction for the particular device. Thus you can use any device not by reading/writing bits within some control/data registers but throug call some human readable procedures like a led_on, led_off, etc.
 	* device	- base class (definitions/procedures) for any device driver
     * **\[kernel/drivers/soc/\*\]** the namespace that represents SoC build-in devices
