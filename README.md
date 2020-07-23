@@ -41,7 +41,7 @@ The main entities of the socOS are:
     This kind of files should be included in the interruprs include block of the your application app.asm file
     * "{driver_name}_def.asm"	- file with a some structures/constants/enumerations definitions.
     Something like that:
-    ```
+    ```Assembly
     .equ SZ_ST_{DRIVER_NAME}			= 0x05
     .equ ST_{DRIVER_NAME}_PORTX_ADDRESS_OFFSET	= 0x00
     ...
@@ -52,13 +52,13 @@ The main entities of the socOS are:
     ```
     This kind of files should be included in the definitions include block of the you application app.asm file
     * "{driver_name}_dseg.asm"	- here are data segment static variables, structures, arrays that are used by the component internally
-    ```
+    ```Assembly
     .dseg
 	st_{driver_name}:	.BYTE SZ_ST_{DRIVER_NAME}
     ```
     This kind of files should be included in the data segment include block of the your main application app.asm file
     * "{driver_name}_cseg.asm"	- this is a code block of the driver with the driver implementation
-    ```
+    ```Assembly
     .macro m_led_init
 	m_save_Z_registers
 	ldi ZL, low(@0)
@@ -228,14 +228,16 @@ ldi ZH, high(buffer_to)
 ldi YL, low(buffer_to)
 ldi YH, hihg(buffer_to)
 ldi r23, sz_buffer_to
+
+rcall mem_copy
 ```
-	rcall mem_copy
 * \[proc\] get_struct_byte(\[st_{any}\], offset) returns the field byte value
 Example of use:
 ```Assembly
 ldi ZL, low(st_led)
 ldi ZH, low(st_led)
 ldi r23, ST_LED_USED_BIT_MASK_OFFSET
+
 rcall get_struct_byte
 ; after the call the used bit mask will be in the r23 register
 ```
@@ -245,6 +247,7 @@ Example of use:
 ldi ZL, low(st_led)
 ldi ZH, low(st_led)
 ldi r23, ST_LED_PORTX_ADDRESS_OFFSET
+
 rcall get_struct_word
 ; after the call the PORTx address will be in the r23 register.
 ```
@@ -255,6 +258,7 @@ ldi ZL, low(st_led)
 ldi ZH, low(st_led)
 ldi r23, ST_LED_USED_BIT_MASK_OFFSET
 ldi r22, 0b00000001
+
 rcall set_struct_byte
 ; after the call the used bit mask will stored into the st_led::ST_LED_USED_BIT_MASK_OFFSET field.
 ```
@@ -266,6 +270,7 @@ ldi ZH, low(st_led)
 ldi r23, ST_LED_PORTX_ADDRESS_OFFSET
 ldi YL, low(PORTC)
 ldi YH, high(PORTC)
+
 rcall set_struct_word
 ; after the call the PORTx address will be stored into the st_led::ST_LED_PORTX_ADDRESS_OFFSET field.
 ```
