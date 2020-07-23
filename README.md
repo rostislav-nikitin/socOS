@@ -157,16 +157,13 @@ timer0_on_overflow_handler:
 ```
 
 ## socOS structure
-First of all socOS consistis of the:
-* [kernel/kernel_*.asm] - this is a some base macro/procedures
-
 Currenlty socOS code distributed by the next namespaces (each folder is a namespace):
 * **\[kernel/\*]** is a kernel common code namespace
     * kernel		- definitions/procedures used in the most of the drivers
     * thread_pool	- thread pool powered by the timer0. It asldo provides the thread abstraction and the procedures to control this abstraction instances
     * **\[kernel/drivers/\*\]** namespace that contains drivers for different devices. Where drivers are some low level code that provides some abstraction for the particular device. Thus you can use any device not by reading/writing bits within some control/data registers but throug call some human readable procedures like a led_on, led_off, etc.
 	* device	- base class (definitions/procedures) for any device driver
-    * **\[kernel/drivers/soc\]** the namespace that represents SoC build-in devices
+    * **\[kernel/drivers/soc\*\]** the namespace that represents SoC build-in devices
 		* ac:st_device	- driver for the analog comparator
 		* adc:st_device	- driver for the analog-digital convertor
 		* timer_base:st_device -	 base abstract class (definitions/procedures) for any timer driver
@@ -188,7 +185,8 @@ Currenlty socOS code distributed by the next namespaces (each folder is a namesp
 		* button:in_bit
 		* encoder:device_io
 		* seven segment indicator:out_byte
-	    * **\[kernel/drivers/io/sensors\]** the namespace that represents sensors
+	    * **\[kernel/drivers/io/sensors\*\]** the namespace that represents sensors
+		* am2302:device_io	- AM2302/DHT22 sensor driver. Is can configure specified DDRx/PINx/BITx for the input. And then communicates with an AM2302/DHT22 sensor through a one wire.
 	* **\[kernel/drivers/motors\]** the namespace that represents motors
 		* motor:timer2	- driver (static abstract class (int handler/definitions/static instance data/procedures)) used to control any abstract motor controlled by the PWM
 		* bi-phase spepper motor:device_io	- driver to control any abstract bi-phase stepper motor controller by the stepper motor controller wich should be connected to the MCU port tetrade. Configured by the specified DDRx/PORTx/TETRADE(L|H)
