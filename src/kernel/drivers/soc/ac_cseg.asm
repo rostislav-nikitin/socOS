@@ -1,12 +1,25 @@
+;=======================================================================================================================
+;                                                                                                                      ;
+; Name:	socOS (System On Chip Operation System)                                                                        ;
+; 	Year: 		2020                                                                                           ;
+; 	License:	MIT License                                                                                    ;
+;                                                                                                                      ;
+;=======================================================================================================================
+
+; Require:
 ;.include "m8def.inc"
+
+;.include "kernel/device_def.asm"
+
+;.include "kernel/device_cseg.asm"
+
 .macro m_ac_init
 	; parameters:
-	;	@0	byte	ST_AC_INPUT_NEGATIVE
-	;	@1	byte	ST_AC_INPUT_POSITIVE
-	;	@2	byte	ST_AC_INTERRPUT_MODE
-	;	@3	word	ST_AC_ON_COMPLETED_HANDLER_OFFSET
+	;	@0	byte	AC_INPUT_NEGATIVE
+	;	@1	byte	AC_INPUT_POSITIVE
+	;	@2	byte	AC_INTERRPUT_MODE
+	;	@3	word	[on_completed_handler]
 	m_save_r21_r22_r23_Y_Z_registers
-	;
 	m_device_init
 	;
 	ldi ZL, low(ac_static_instance)
@@ -23,6 +36,12 @@
 .endm
 
 ac_init:
+	; parameters:
+	;	Z	word	[st_ac]
+	;	Y	word	[on_completed_handler]
+	;	r23	byte	AC_INPUT_NEGATIVE
+	;	r22	byte	AC_INPUT_POSITIVE
+	;	r21	byte	AC_INTERRPUT_MODE
 	m_save_r22_r23_registers
 	;
 	push r23
@@ -48,6 +67,8 @@ ac_init:
 	ret
 
 ac_init_ports:
+	; parameters:
+	;	Z	word	[st_ac]
 	m_save_r16_SREG_registers
 
 	ldi r23, ST_AC_INPUT_NEGATIVE
@@ -174,14 +195,16 @@ ac_timer1_capture_disable:
 	ret
 
 .macro m_ac_output_value_get	
+	; returns:
+	; 	@0	byte	comparator output value
 	m_save_r23_registers
-	; parameters:
-	; @0	byte	comparator output value
 	rcall ac_output_value_get
 	mov @0, r23
 	m_restore_r23_registers
 .endm
 ac_output_value_get:
+	; returns:
+	; 	r23	byte	comparator output value
 	sbis ACSR, ACO
 	rjmp ac_output_value_get_false
 	ac_output_value_get_true:
@@ -195,6 +218,8 @@ ac_output_value_get:
 	ret
 
 ac_completed_handler:
+	; returns:
+	; 	YL	byte	AC_OUTPUT_VALUE
 	m_save_r23_Y_Z_registers
 
 	; get current value

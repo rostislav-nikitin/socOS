@@ -1,4 +1,18 @@
+;=======================================================================================================================
+;                                                                                                                      ;
+; Name:	socOS (System On Chip Operation System)                                                                        ;
+; 	Year: 		2020                                                                                           ;
+; 	License:	MIT License                                                                                    ;
+;                                                                                                                      ;
+;=======================================================================================================================
+
+; Require:
 ;.include "m8def.inc"
+
+;.include "kernel/device_def.asm"
+
+;.include "kernel/device_cseg.asm"
+
 ;ADCSRA:
 ;	ADEN - enable/disable
 ;	ADFR - continuous measure
@@ -6,15 +20,14 @@
 ;	ADIE - interrupt enable
 ;ADMUX
 
-
 .macro m_adc_init
 	; parameters:
-	;	@0	byte	ST_ADC_INPUT_NEGATIVE
-	;	@1	byte	ST_ADC_INPUT_POSITIVE
-	;	@2	byte	ST_ADC_FREQUENCY
-	;	@3	byte	ST_ADC_OUTPUT_VALUE_ORDER
-	;	@4	byte	ST_ADC_CONTINUOUS_MEASUREMENT
-	;	@5	word	ST_ADC_ON_COMPLETED_HANDLER_OFFSET
+	;	@0	byte	ADC_INPUT_NEGATIVE
+	;	@1	byte	ADC_INPUT_POSITIVE
+	;	@2	byte	ADC_FREQUENCY
+	;	@3	byte	ADC_OUTPUT_VALUE_ORDER
+	;	@4	byte	ADC_CONTINUOUS_MEASUREMENT
+	;	@5	word	[adc_on_completed_handler]
 	m_save_r20_r21_r22_r23_Y_Z_registers
 	;
 	m_device_init
@@ -35,6 +48,14 @@
 .endm
 
 adc_init:
+	; parameters:
+	;	Z	word	[st_adc]
+	;	r23	byte	ADC_INPUT_NEGATIVE
+	;	r22	byte	ADC_INPUT_POSITIVE
+	;	r21	byte	ADC_FREQUENCY
+	;	r20	byte	ADC_OUTPUT_VALUE_ORDER
+	;	r19	byte	ADC_CONTINUOUS_MEASUREMENT
+	;	Y	word	[adc_on_completed_handler]
 	m_save_r22_r23_registers
 	;
 	push r23
@@ -68,6 +89,8 @@ adc_init:
 	ret
 
 adc_init_ports:
+	; parameters:
+	;	Z	word	[st_adc]
 	m_save_r16_r22_r23_SREG_registers
 
 	ldi r23, ST_ADC_INPUT_NEGATIVE
@@ -209,6 +232,8 @@ adc_continuous_measurement_disable:
 	ret
 
 adc_continuous_measurement_get:
+	; returns:
+	;	r23	byte	ADC_CONTINUOUS_MEASUREMENT
 	m_save_Z_registers
 
 	ldi ZL, low(adc_static_instance)
@@ -223,6 +248,8 @@ adc_continuous_measurement_get:
 
 
 adc_continuous_measurement_set:
+	; returns:
+	;	r23	byte	ADC_CONTINUOUS_MEASUREMENT
 	m_save_r16_r23_Z_SREG_registers
 
 	ldi ZL, low(adc_static_instance)
@@ -258,7 +285,7 @@ adc_start_conversion:
 
 .macro m_adc_conversion_completed_get
 	; returns:
-	;	@0	register	completed state
+	;	@0	register	ADC_CONVERSION_COMPLETED
 	m_save_r23_registers
 	
 	rcall adc_conversion_completed_get
@@ -283,22 +310,30 @@ adc_conversion_completed_get:
 
 
 .macro m_adc_output_value_get	
+	; returns:
+	; 	@0	reg	low byte of the ADC conversion result
+	; 	@1	reg	high byte of the ADC conversion result
 	m_save_r22_r23_registers
-	; parameters:
-	; @0	registers	low byte of the ADC conversion result
-	; @1	registers	high byte of the ADC conversion result
+
 	rcall adc_output_value_get
 	mov @0, r23
 	mov @1, r22
+
 	m_restore_r22_r23_registers
 .endm
 adc_output_value_get:
+	; returns:
+	; 	r23	byte	low byte of the ADC conversion result
+	; 	r22	byte	high byte of the ADC conversion result
 	in r23, ADCL
 	in r22, ADCH
 
 	ret
 
 adc_complete_handler:
+	; call parameters:
+	; 	YL	byte	low byte of the ADC conversion result
+	; 	YH	byte	high byte of the ADC conversion result
 	m_save_r23_Y_Z_registers
 	;
 	ldi ZL, low(adc_static_instance)

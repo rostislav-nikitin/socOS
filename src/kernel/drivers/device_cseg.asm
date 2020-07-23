@@ -1,15 +1,13 @@
 .macro m_device_init
-	; parameters
-	;	@0	word [device]
 .endm
 
 device_init:
 	ret
 
 device_raise_event:
-	; parameters
-	; Z	word	[st_dev: device]
-	; r23	byte	[event_handler]
+	; parameters:
+	; 	Z	word	[:st_device]
+	; 	r23	byte	st_device::event_handler_address
 	m_save_r16_Y_Z_SREG_registers
 
 	rcall get_struct_word
