@@ -3,7 +3,7 @@
 The acronym socOS stands for the **S**ystem **o**n a **C**hip **O**perating **S**ystem.
 The main idea of the socOS to provie a hardware abstraction layer of the SoC and connected devices for the end users.
 For now supported only the AVR family MCU devices and all the tests was made only at the AVR ATmega8 one.
-# Overview
+
 ## How to use it?
 1. Clone this repository
 2. In the src folder you can find three files:
@@ -193,7 +193,7 @@ Currenlty socOS code distributed by the next namespaces (each folder is a namesp
 		* motor:timer2	- driver (static abstract class (int handler/definitions/static instance data/procedures)) used to control any abstract motor controlled by the PWM
 		* bi-phase spepper motor:device_io	- driver to control any abstract bi-phase stepper motor controller by the stepper motor controller wich should be connected to the MCU port tetrade. Configured by the specified DDRx/PORTx/TETRADE(L|H)
 
-## Conventions
+## socOS conventions
 ### Variable naming convention:
  	* name:		variable
  	* [name]:	pointer to the variable
@@ -215,7 +215,7 @@ Otherwise some struct should be created, filled with data that sould be passes t
 ### Inheritance
 The next typing (in the comments) st_child: st_parent means that st_child inherited from the st_parent. That measn that st_child has a same sructoure (filelds with a same offsets) but extended with additional fields.
 
-# Kernel procedures/macroses
+## socOS kernel macro/procedures
 * m_init_stack
 * m_init_interrupts
 * \[macro\] save_XXX_registers/restore_XXX_registers - set ot two macroses to save/restore registers. It is more useful to type for example: save_r23_Z_SREG_registers instead of set of push commands
