@@ -119,14 +119,14 @@ rcall main_thread
 ; include kernel code segment
 .include "kernel/kernel_cseg.asm"
 ; include some "{driver_name}_cseg.asm" code segment file
-;.include "../../../../../src/kernel/drivers/{driver_name}_cseg.asm"
+;.include "kernel/drivers/{driver_name}_cseg.asm"
 ; for example:
-.include "../../../../../src/kernel/drivers/st_device_cseg.asm"
-.include "../../../../../src/kernel/drivers/soc/timer_base_cseg.asm"
-.include "../../../../../src/kernel/drivers/soc/timer0_cseg.asm"
-.include "../../../../../src/kernel/drivers/io/st_device_io_cseg.asm"
-.include "../../../../../src/kernel/drivers/io/out_bit_cseg.asm"
-.include "../../../../../src/kernel/drivers/io/hid/led_cseg.asm"
+.include "kernel/drivers/st_device_cseg.asm"
+.include "kernel/drivers/soc/timer_base_cseg.asm"
+.include "kernel/drivers/soc/timer0_cseg.asm"
+.include "kernel/drivers/io/st_device_io_cseg.asm"
+.include "kernel/drivers/io/out_bit_cseg.asm"
+.include "kernel/drivers/io/hid/led_cseg.asm"
 
 ; main thread procedure
 main_thread:
