@@ -91,19 +91,18 @@ The main concepts of the socOS are:
 * extension	- represented by the "{extension\_name}\_cseg.asm" assembler file that contains some common procedures, which extends AVR assemler functionality.
 
 ## The structure of the app.asm:
-The app.asm in an entry point of the firmware application. In most cased you will start you new firmware application there.
-This is it structure.
+The app.asm it is an entry point of the firmware application. In most cased you will start creation of you new firmware application from here. This is it's structure:
 ```Assembly
 cseg
 .org 0x00
 rcall main_thread
-; include components interrupts handlers
+; components interrupts include block
 ; inlcude some "{driver_name}_int.asm" file
 .include "kernel/drivers/{driver_name}_int.asm"
 ; for example:
 .include "kernel/drivers/soc/timer0_int.asm"
 
-; include components definitions
+; components definitions include block
 ; include kernel definitions
 .include "kernel/kernel_def.asm"
 ; include some "{driver_name}_def.asm" file
@@ -116,20 +115,20 @@ rcall main_thread
 .include "kernel/drivers/io/out_bit_def.asm"
 .include "kernel/drivers/io/hid/led_def.asm"
 
-;.include components data segments
+; components data segments include block
 ; include some "{driver_name}_dseg.asm" file
 ;.include "kernel/drivers/{driver_name}_dseg.asm"
 ; for example:
 .include "kernel/drivers/soc/timer0_dseg.asm"
-; custom data & descriptors
+; custom data block
 .dseg
     led1:	.BYTE SZ_ST_LED
 
-; main code segment
+; main code segment lock
 .cseg
 ; skip interrupts vector
 .org 0x14
-; include components code segments
+; components code segments include block
 ; include kernel code segment
 .include "kernel/kernel_cseg.asm"
 ; include some "{driver_name}_cseg.asm" code segment file
@@ -142,10 +141,10 @@ rcall main_thread
 .include "kernel/drivers/io/out_bit_cseg.asm"
 .include "kernel/drivers/io/hid/led_cseg.asm"
 
-; main thread procedure
+; main thread procedure block
 main_thread:
-    ; components/global initializations
-    ; stack initialization
+    ; components/global initializations block
+    ; init stack
     m_init_stack
     ; init leds
     m_led_init led1, DDRC, PORTC, (1 << BIT5)
@@ -156,18 +155,17 @@ main_thread:
     ; init global interrupts
     m_init_interrupts
 
-    ; main thread loop
+    ; main thread loop block
     main_thread_loop:
 	    nop
 	    rjmp main_thread_loop
 
 	ret
 
-; put your custom event handlers there
+; your custom event handlers block
 ; for example:
 timer0_on_overflow_handler:
     m_led_toggle led1
-    m_motor_stepper_bi_handle_io motor_stepper_bi1
 
     ret
 ```
