@@ -189,23 +189,22 @@ Currenlty socOS code distributed by the next namespaces (each folder is a namesp
 		* am2302:device_io	- AM2302/DHT22 sensor driver. Is can configure specified DDRx/PINx/BITx for the input. And then communicates with an AM2302/DHT22 sensor through a one wire.
 	* **\[kernel/drivers/motors\]** the namespace that represents motors
 		* motor:timer2	- driver (static abstract class (int handler/definitions/static instance data/procedures)) used to control any abstract motor controlled by the PWM
-		* bi-phase spepper motor:device_io	- driver to control any abstract bi-phase stepper motor controller by the stepper motor controller wich should be connected to the MCU port tetrade. Configured by the specified DDRx/PORTx/TETRADE(L|H)
+		* motor_stepper_bi:device_io	- driver to control any abstract bi-phase stepper motor controller by the stepper motor controller wich should be connected to the MCU port tetrade. Configured by the specified DDRx/PORTx/TETRADE(L|H)
 
 ## socOS conventions
 ### Variable naming convention:
- 	* name:		variable
- 	* [name]:	pointer to the variable
+* name:		variable
+* [name]:	pointer to the variable
 
 ### Parameter passing convention:
 In most cases parameters are passing through registers. But sometimes (if parameters to much) they could be passed through stack.
 #### Procedures:
-	* The address parameters are passing/returning through next registres in such order: Z, Y, X, r24, r25
-	* The value parameters are passing/returning through next registers in a such order: r23, r22, r21, r20, r19, r18
+* The address parameters are passing/returning through next registres in such order: Z, Y, X, r24, r25
+* The value parameters are passing/returning through next registers in a such order: r23, r22, r21, r20, r19, r18
 Example:
-	Need to pass port addres and bit mask parameters to the st_device_io_init procedure which returns some value.
-	In this case Z register should be used to pass port address and r23 register to pass bit mask value. The result will be passed into the r23 register.
-
-	* The work/temporary registers are: r17, r0. But registers used to pass parameters also could be used in case if they are not used in the particular call or if they was saved with use of the stack or by the some another way.
+Need to pass port addres and bit mask parameters to the st_device_io_init procedure which returns some value.
+In this case Z register should be used to pass port address and r23 register to pass bit mask value. The result will be passed into the r23 register.
+* The work/temporary registers are: r17, r0. But registers used to pass parameters also could be used in case if they are not used in the particular call or if they was saved with use of the stack or by the some another way.
 #### Event handlers:
 Sometimes required to pass some parameters to the event handler. For this purposes please use Y register. If you need to pass two values or then then please put them into the: YH, YL (in this order).
 Otherwise some struct should be created, filled with data that sould be passes to the event handler. And it's address should be put into the Y (before event handler called). And the event hadler could access this data.
@@ -219,46 +218,53 @@ The next typing (in the comments) st_child: st_parent means that st_child inheri
 * \[macro\] save_XXX_registers/restore_XXX_registers - set ot two macroses to save/restore registers. It is more useful to type for example: save_r23_Z_SREG_registers instead of set of push commands
 * \[proc\] mem_copy(\[from\], \[to\], lenght) - copyies {lenght} bytes \[from\] \[to\]
 Example of use:
-	ldi ZL, low(buffer_from)
-	ldi ZH, high(buffer_to)
-	ldi YL, low(buffer_to)
-	ldi YH, hihg(buffer_to)
-	ldi r23, sz_buffer_to
-
+```(assembler)
+ldi ZL, low(buffer_from)
+ldi ZH, high(buffer_to)
+ldi YL, low(buffer_to)
+ldi YH, hihg(buffer_to)
+ldi r23, sz_buffer_to
+```
 	rcall mem_copy
 * \[proc\] get_struct_byte(\[st_{any}\], offset) returns the field byte value
 Example of use:
-		ldi ZL, low(st_led)
-		ldi ZH, low(st_led)
-		ldi r23, ST_LED_USED_BIT_MASK_OFFSET
-		rcall get_struct_byte
-		; after the call the used bit mask will be in the r23 register
+```(assembler)
+ldi ZL, low(st_led)
+ldi ZH, low(st_led)
+ldi r23, ST_LED_USED_BIT_MASK_OFFSET
+rcall get_struct_byte
+; after the call the used bit mask will be in the r23 register
+```
 * \[proc\] get_struct_word(st_{any}, offset) returns the field word value
-Use example:
-	ldi ZL, low(st_led)
-	ldi ZH, low(st_led)
-	ldi r23, ST_LED_PORTX_ADDRESS_OFFSET
-	rcall get_struct_word
-	; after the call the PORTx address will be in the r23 register.
-
+Example of use:
+```(assembler)
+ldi ZL, low(st_led)
+ldi ZH, low(st_led)
+ldi r23, ST_LED_PORTX_ADDRESS_OFFSET
+rcall get_struct_word
+; after the call the PORTx address will be in the r23 register.
+```
 * \[proc\] set_struct_byte(\[st_{any}\], offset, value)
-Use example:
-	ldi ZL, low(st_led)
-	ldi ZH, low(st_led)
-	ldi r23, ST_LED_USED_BIT_MASK_OFFSET
-	ldi r22, 0b00000001
-	rcall set_struct_byte
-	; after the call the used bit mask will stored into the st_led::ST_LED_USED_BIT_MASK_OFFSET field.
-
+Example of use:
+```(assembler)
+ldi ZL, low(st_led)
+ldi ZH, low(st_led)
+ldi r23, ST_LED_USED_BIT_MASK_OFFSET
+ldi r22, 0b00000001
+rcall set_struct_byte
+; after the call the used bit mask will stored into the st_led::ST_LED_USED_BIT_MASK_OFFSET field.
+```
 * \[proc\] get_struct_word(\[st_{any}, offset) returns the field word value.
+```(asembler)
 Use example:
-	ldi ZL, low(st_led)
-	ldi ZH, low(st_led)
-	ldi r23, ST_LED_PORTX_ADDRESS_OFFSET
-	ldi YL, low(PORTC)
-	ldi YH, high(PORTC)
-	rcall set_struct_word
-	; after the call the PORTx address will be stored into the st_led::ST_LED_PORTX_ADDRESS_OFFSET field.
+ldi ZL, low(st_led)
+ldi ZH, low(st_led)
+ldi r23, ST_LED_PORTX_ADDRESS_OFFSET
+ldi YL, low(PORTC)
+ldi YH, high(PORTC)
+rcall set_struct_word
+; after the call the PORTx address will be stored into the st_led::ST_LED_PORTX_ADDRESS_OFFSET field.
+```
 
 * \[macro\] m_set_Y_to_null_pointer - null pointer to the Y
 * \[macro\] m_set_Z_to_null_pointer - set null pointer to the Z
