@@ -9,6 +9,10 @@
 ; Require:
 ;.include "m8def.inc"
 
+;.include "kernel/kernel_def.asm"
+
+;.include "kernel/kernel_cseg.asm"
+
 .macro m_device_init
 .endm
 

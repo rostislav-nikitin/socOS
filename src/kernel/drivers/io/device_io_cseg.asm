@@ -1,23 +1,23 @@
-; naming convention:
-; 	name - any value
-; 	[address] - pointer to the address
-;
-; parameter passing convention:
-; procedures
-; Z, Y, X, r24, r25		- address parameters
-; r23, r22, r21, r20, r19, r18	- value parameters
-; r17, r16			- temporary registers
-; r0 .. r15			- work with data
-; event handlers:
-; Y 				- two values (from YL, to YH) or address depends on handler. If there are more then two parameters, use some memory object and put address to it through Y
-; inheritance
-; st_child: st_parent - st_child inherited from the st_parent
+;=======================================================================================================================
+;                                                                                                                      ;
+; Name:	socOS (System On Chip Operation System)                                                                        ;
+; 	Year: 		2020                                                                                           ;
+; 	License:	MIT License                                                                                    ;
+;                                                                                                                      ;
+;=======================================================================================================================
 
-; device_io: device
-; implementation
+; Require:
+;.include "m8def.inc"
+
+;.include "kernel/kernel_def.asm"
+;.include "kernel/drivers/device_def.asm"
+
+;.include "kernel/kernel_cseg.asm"
+
+
 .macro m_device_io_init
-	; input parameters:
-	;	@0 	Z	word	[dev:device_io]
+	; parameters:
+	;	@0 	Z	word	[st_device_io]
 	;	@1	Y	word	[DDRx]
 	;	@2	X	word 	[PINx]
 	;	@3	r24,r25	word 	[PORTx]
@@ -25,7 +25,7 @@
 	;	@5	r22	byte	TYPE_BIT_MASK (0 - Input, 1 - Output)
 	; save registers
 	m_save_r22_r23_r24_r25_X_Y_Z_registers
-	; set [dev:device_io] to the first Z parameter
+	; set [device_io] to the first Z parameter
 	ldi ZL, low(@0)
 	ldi ZH, high(@0)
 	; set [DDRx] to the second Y parameter
@@ -49,14 +49,13 @@
 .endm
 
 device_io_init:
-	; input parameters:
-	;	Z	word	[dev:device_io]
+	; parameters:
+	;	Z	word	[device_io]
 	;	Y	word	[DDRx]
 	;	X	word	[PINx]
 	;	r24,r25	word	[PORTx]
 	;	r23	byte 	USED_BIT_MASK
 	;	r22	byte	TYPE_BIT_MASK (0 - Input, 1 - Output)	
-	; set X to the [device_io] address
 	; call base ctor
 	rcall device_init
 
@@ -139,6 +138,8 @@ device_io_init:
 	ret
 
 device_io_cp_Z_is_null_pointer:
+	; parameters:
+	;	Z	word	pointer
 	push YL
 	push YH
 	push ZL
@@ -158,8 +159,8 @@ device_io_cp_Z_is_null_pointer:
 	ret
 
 .macro m_device_io_get_pin_byte
-	; input parameter:
-	;	@0	Z	word	[dev:device_io] or derived
+	; parameters:
+	;	@0	Z	word	[device_io] or derived
 	; returns:
 	; 	@1	r23	reg	PINx (value)
 	;	@2	r22	reg	USED_BIT_MASK
@@ -177,8 +178,8 @@ device_io_cp_Z_is_null_pointer:
 .endm
 
 .macro m_device_io_get_port_byte
-	; input parameter:
-	;	@0	Z	word	[dev:device_io] or derived
+	; parameters:
+	;	@0	Z	word	[device_io] or derived
 	; returns:
 	; 	@1	r23	reg	PINx (value)
 	;	@2	r22	reg	USED_BIT_MASK
@@ -197,7 +198,7 @@ device_io_cp_Z_is_null_pointer:
 
 device_io_get_pin_byte:
 	; parameters:
-	;	Z	word	[dev:device_io] or derived
+	;	Z	word	[device_io] or derived
 	; returns:
 	;	r23	byte	[PINx] (value)
 	;	r22	byte	USED_BIT_MASK
@@ -210,7 +211,7 @@ device_io_get_pin_byte:
 
 device_io_get_port_byte:
 	; parameters:
-	;	Z	word	[dev:device_io] or derived
+	;	Z	word	[device_io] or derived
 	; returns:
 	;	r23	byte	[PORTx] (value)
 	;	r22	byte	USED_BIT_MASK
@@ -223,7 +224,7 @@ device_io_get_port_byte:
 
 device_io_get_px_byte:
 	; parameters:
-	;	Z	word	[dev:device_io]
+	;	Z	word	[device_io]
 	;	r23	byte	[PINx]/[PORTx] offset
 	; returns:
 	;	r23	byte	PINx/PORTx (value)
@@ -251,8 +252,8 @@ device_io_get_px_byte:
 	ret
 
 .macro m_device_io_set_port_byte
-	; input parameter:
-	;	@0	Z	word	[dev:device_io] or derived
+	; parameter:
+	;	@0	Z	word	[device_io] or derived
 	;	@1	r23	byte	value to set
 
 	rcall device_io_set_port_byte
@@ -260,8 +261,8 @@ device_io_get_px_byte:
 
 device_io_set_port_byte:
 	; parameters:
-	;	word	[dev:device_io]
-	;	byte	value
+	;	word	[device_io]
+	;	byte	value to set
 	m_save_r16_r17_SREG_registers
 	; save value to set
 	mov r16, r23

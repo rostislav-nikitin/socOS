@@ -9,8 +9,9 @@
 ; Require:
 ;.include "m8def.inc"
 
-;.include "kernel/device_def.asm"
-;.include "kernel/device_io_def.asm"
+;.include "kernel/kernel_def.asm"
+;.include "kernel/drivers/device_def.asm"
+;.include "kernel/drivers/io/device_io_def.asm"
 
 ; st_motor_stepper_bi size
 .equ SZ_ST_MOTOR_STEPPER_BI				= SZ_ST_DEVICE_IO + 0x04

@@ -1,3 +1,24 @@
+;=======================================================================================================================
+;                                                                                                                      ;
+; Name:	socOS (System On Chip Operation System)                                                                        ;
+; 	Year: 		2020                                                                                           ;
+; 	License:	MIT License                                                                                    ;
+;                                                                                                                      ;
+;=======================================================================================================================
+
+; Require:
+;.include "m8def.inc"
+
+;.include "kernel/kernel_def.asm"
+;.include "kernel/drivers/device_def.asm"
+;.include "kernel/drivers/io/device_io_def.asm"
+;.include "kernel/drivers/io/out_bit_def.asm"
+
+;.include "kernel/kernel_cseg.asm"
+;.include "kernel/drivers/device_cseg.asm"
+;.include "kernel/drivers/io/device_io_cseg.asm"
+;.include "kernel/drivers/io/out_bit_cseg.asm"
+
 ; usage:
 ; .dseg
 ;   switch1: .BYTE SZ_ST_SWITCH
@@ -13,8 +34,8 @@
 ;   m_switch_get switch1
 
 .macro m_switch_init
-	; input parameters:
-	;	@0	word [st_switch:device_io]
+	; parameters:
+	;	@0	word [st_switch]
 	;	@1	word [DDRx]
 	;	@2	word [PORTx]
 	;	@3	word USED_BIT_MASK
@@ -24,64 +45,64 @@
 .endm
 
 switch_init:
-	; input parameters:
-	;	Z	word	[st_switch:device_io]
+	; parameters:
+	;	Z	word	[st_switch]
 	; currently no additional logic
 	ret
 
 .macro m_switch_set
-	; input parameters:
-	;	@0	word	[st_switch:device_io]
-	;	@1	byte 	switch_state
+	; parameters:
+	;	@0	word	[st_switch]
+	;	@1	byte 	SWITCH_STATE
 	m_out_bit_set @0, @1
 .endm
 
 .macro  m_switch_on
-	; input parameters:
-	;	@0 	word	st_switch
+	; parameters:
+	;	@0 	word	[st_switch]
 	m_switch_set @0, SWITCH_STATE_ON
 .endm
 
 .macro  m_switch_off
-	; input parameters:
-	;	@0 	word	st_switch
+	; parameters:
+	;	@0 	word	[st_switch]
 	m_switch_set @0, SWITCH_STATE_OFF
 .endm
 
 switch_set:
-	; input parameters:
-	;	word	st_switch
-	;	byte	switch_state
+	; parameters:
+	;	Z	word	[st_switch]
+	;	r23	byte	SWITCH_STATE
 	rcall out_bit_set
 
 	ret
 
 .macro m_switch_get
-	; input parameters:
-	;	@0	word	[st_switch:device_io]
+	; parameters:
+	;	@0	word	[st_switch]
 	; returns:
-	;	@1	register
+	;	@1	reg	SWITCH_STATE
 	m_out_bit_get @0, @1
 .endm
 
 switch_get:
-	; input parameters:
-	;	Z	word	[st_switch:device_io]
+	; parameters:
+	;	Z	word	[st_switch]
 	; returns:
-	;	r23	byte	current switch state
+	;	r23	byte	SWITCH_STATE
 	rcall out_bit_get
 
 	ret
 
 .macro m_switch_toggle
-	; input parameters:
-	; 	@0	word	st_switch
+	; parameters:
+	; 	@0	word	[st_switch]
 	m_out_bit_toggle @0
 .endm
 
 switch_toggle:
-	; input parameters:
-	;	Z	word	[st_switch:device_io]
+	; parameters:
+	;	Z	word	[st_switch]
 	rcall switch_toggle
 
 	ret

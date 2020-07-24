@@ -1,3 +1,25 @@
+;=======================================================================================================================
+;                                                                                                                      ;
+; Name:	socOS (System On Chip Operation System)                                                                        ;
+; 	Year: 		2020                                                                                           ;
+; 	License:	MIT License                                                                                    ;
+;                                                                                                                      ;
+;=======================================================================================================================
+
+; Require:
+;.include "m8def.inc"
+
+;.include "kernel/kernel_def.asm"
+;.include "kernel/drivers/device_def.asm"
+;.include "kernel/drivers/io/device_io_def.asm"
+;.include "kernel/drivers/io/out_byte_def.asm"
+
+;.include "kernel/kernel_cseg.asm"
+;.include "kernel/drivers/device_cseg.asm"
+;.include "kernel/drivers/io/device_io_cseg.asm"
+;.include "kernel/drivers/io/out_byte_cseg.asm"
+
+
 ; usage:
 ; .dseg
 ;   ssi1: .BYTE SZ_ST_OUT_BYTE
@@ -14,8 +36,8 @@
 ssi_digits: .db 0xFC, 0x60, 0xDA, 0xF2, 0x66, 0xB6, 0xBE, 0xE0, 0xFE, 0xF6, 0x0, 0x0
 
 .macro m_ssi_init
-	; input parameters:
-	;	@0	word [st_ssi:device_io]
+	; parameters:
+	;	@0	word [st_ssi]
 	;	@1	word [DDRx]
 	;	@2	word [PORTx]
 	; save registers
@@ -32,8 +54,8 @@ ssi_digits: .db 0xFC, 0x60, 0xDA, 0xF2, 0x66, 0xB6, 0xBE, 0xE0, 0xFE, 0xF6, 0x0,
 .endm
 
 ssi_init:
-	; input parameters:
-	;	Z	word	[st_ssi:device_io]
+	; parameters:
+	;	Z	word	[st_ssi]
 	m_save_r22_r23_registers
 	
 	m_set_struct_byte_by_offset_and_value_wo_save_registers ST_SSI_STATE_OFFSET, SSI_STATE_OFF
@@ -48,9 +70,9 @@ ssi_init:
 	ret
 
 .macro m_ssi_state_set
-	; input parameters:
-	;	@0	word	[st_ssi:device_io]
-	;	@1	byte 	ssi_state
+	; parameters:
+	;	@0	word	[st_ssi]
+	;	@1	byte 	SSI_STATE
 	; save registers
 	m_save_r23_Z_registers
 	; push parameters
@@ -65,30 +87,30 @@ ssi_init:
 .endm
 
 .macro  m_ssi_off
-	; input parameters:
-	;	@0 	word	st_ssi
+	; parameters:
+	;	@0 	word	[st_ssi]
 	m_ssi_state_set @0, SSI_STATE_OFF
 .endm
 
 .macro  m_ssi_on
-	; input parameters:
-	;	@0 	word	st_ssi
+	; parameters:
+	;	@0 	word	[st_ssi]
 	m_ssi_state_set @0, SSI_STATE_ON
 .endm
 
 ssi_state_set:
-	; input parameters:
-	;	word	st_ssi
-	;	byte	ssi_state
+	; parameters:
+	;	Z	word	st_ssi
+	;	r23	byte	ssi_state
 
 	m_set_struct_byte_by_offset_and_register ST_SSI_STATE_OFFSET, r23
 
 	ret
 
 .macro m_ssi_flash_set
-	; input parameters:
-	;	@0	word	st_ssi
-	;	@1	flash
+	; parameters:
+	;	@0	word	[st_ssi]
+	;	@1	byte	ST_SSI_FLASH
 	m_save_r23_Z_registers
 
 	ldi ZL, low(@0)
@@ -102,21 +124,21 @@ ssi_state_set:
 .endm
 
 .macro m_ssi_flash_on
-	; input parameters:
-	;	@0	word	st_ssi
+	; parameters:
+	;	@0	word	[st_ssi]
 	m_ssi_flash_set @0, SSI_FLASH_ON
 .endm
 
 .macro m_ssi_flash_off
-	; input parameters:
-	;	@0	word	st_ssi
+	; parameters:
+	;	@0	word	[st_ssi]
 	m_ssi_flash_set @0, SSI_FLASH_OFF
 .endm
 
 ssi_flash_set:
-	; input parameters:
-	;	word	st_ssi
-	;	byte	ssi_state
+	; parameters:
+	;	Z	word	[st_ssi]
+	;	r23	byte	SSI_STATE
 	; load ssi_state
 	; check state to set
 	m_set_struct_byte_by_offset_and_register ST_SSI_FLASH_OFFSET, r23
@@ -132,8 +154,8 @@ ssi_flash_set:
 
 .macro m_ssi_char_show
 	; parameters:
-	; @0	word	[st_ssi]
-	; @1	byte	char
+	; 	@0	word	[st_ssi]
+	; 	@1	byte	char
 	m_save_r23_Z_registers
 
 	ldi ZL, low(@0)
@@ -181,10 +203,10 @@ ssi_char_show:
 	ret
 
 .macro m_ssi_handle_io
-	m_save_Z_registers
-	;
 	; parameters:
 	;	@0	word	[st_ssi]
+	m_save_Z_registers
+	;
 	ldi ZL, low(@0)
 	ldi ZH, high(@0)
 

@@ -2,10 +2,13 @@
 .org 0x00
 rcall main_thread
 ; include components interrupts
-.include "../../lib/thread_int.asm"
+.include "../../../src/kernel/thread_int.asm"
+
+; include components definitions
+.include "../../../src/kernel/thread_def.asm"
 
 ; include components data segments
-.include "../../lib/thread_dseg.asm"
+.include "../../../src/kernel/thread_dseg.asm"
 
 ; main thread
 .cseg
@@ -14,7 +17,7 @@ rcall main_thread
 ; include SoC defaults
 .include "m8def.inc"
 ; include components code segments
-.include "../../lib/thread_cseg.asm"
+.include "../../../src/kernel/thread_cseg.asm"
 
 ; macros
 .macro m_init_stack

@@ -1,12 +1,10 @@
-; constants
-
 ; extensions
 .macro m_delay_short
 	; parameters:
 	;	@	3 x bytes int	n
 	; description:
 	;	delay time = [3 + 7 + 5 + (5 x n)] clock cycles
-	; delay = 3 clock cycles
+	; 	delay = 3 clock cycles
 	ldi r23, low(@0)
 	ldi r22, high(@0)
 	ldi r21, byte3(@0)
@@ -16,7 +14,12 @@
 .endm
 
 delay_short:
-	; total loop length is [7 + 5 + (5 x n)] clock cycles
+	; parameters:
+	;	r23	byte	low(delay time)
+	;	r22	byte	high(delay time)
+	;	r21	byte	byte3(delay time)
+	; description:
+	; 	total loop length is [7 + 5 + (5 x n)] clock cycles
 	delay_short_loop:
 		subi	r23, 1
 		sbci	r22, 0
@@ -27,7 +30,10 @@ delay_short:
 
 
 .macro m_delay
-	; @0 - ((cycles * 5) + 15|16|17? + 4) to delay
+	; parameters:
+	;	@0	3 x bytes	delay time
+	; description:
+	; 	((cycles * 5) + 15|16|17? + 4) to delay
 	; save registers
 	push r16
 	; prepare parameters
@@ -49,12 +55,13 @@ delay_short:
 .endm
 
 delay:
-	; input parameters through stack:
-	; 	delay (3 bytes):
-	;		byte3
-	;		high
-	;		low
-	; ((delay * 5) + 20 + 4) cycles
+	; parameters (through stack):
+	; delay (3 bytes):
+	;	byte3
+	;	high
+	;	low
+	; description:
+	; 	((delay * 5) + 20 + 4) cycles
 	; save registers
 	push r19
 	push r20
@@ -89,4 +96,3 @@ delay:
 	pop r19
 
 	ret
-

@@ -9,7 +9,8 @@
 ; Require:
 ;.include "m8def.inc"
 
-;.include "kernel/device_def.asm"
+;.include "kernel/kernel_def.asm"
+;.include "kernel/drivers/device_def.asm"
 
 ; st_eeprom size
 .equ SZ_ST_EEPROM 			= SZ_ST_DEVICE + 0x04

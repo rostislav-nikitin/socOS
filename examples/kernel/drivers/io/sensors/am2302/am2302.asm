@@ -2,22 +2,22 @@
 .org 0x00
 rcall main_thread
 ; include components interrupts
-;.include "../../../../../src/kernel/drivers/{driver_name}_int.asm"
-.include "../../../../../src/kernel/drivers/soc/usart_int.asm"
+;.include "../../../../../../src/kernel/drivers/{driver_name}_int.asm"
+.include "../../../../../../src/kernel/drivers/soc/usart_int.asm"
 
 ; include components definitions
-.include "../../../../../src/kernel/kernel_def.asm"
-;.include "../../../../../src/kernel/drivers/{driver_name}_def.asm"
-.include "../../../../../src/kernel/drivers/device_def.asm"
-.include "../../../../../src/kernel/drivers/io/device_io_def.asm"
-.include "../../../../../src/kernel/drivers/io/out_bit_def.asm"
-.include "../../../../../src/kernel/drivers/io/hid/led_def.asm"
-.include "../../../../../src/kernel/drivers/io/sensors/am2302_def.asm"
-.include "../../../../../src/kernel/drivers/soc/usart_def.asm"
+.include "../../../../../../src/kernel/kernel_def.asm"
+;.include "../../../../../../src/kernel/drivers/{driver_name}_def.asm"
+.include "../../../../../../src/kernel/drivers/device_def.asm"
+.include "../../../../../../src/kernel/drivers/io/device_io_def.asm"
+.include "../../../../../../src/kernel/drivers/io/out_bit_def.asm"
+.include "../../../../../../src/kernel/drivers/io/hid/led_def.asm"
+.include "../../../../../../src/kernel/drivers/io/sensors/am2302_def.asm"
+.include "../../../../../../src/kernel/drivers/soc/usart_def.asm"
 
 ;.include components data segments
 ;.include "../../../../../src/kernel/drivers/{driver_name}_dseg.asm"
-.include "../../../../../src/kernel/drivers/soc/usart_dseg.asm"
+.include "../../../../../../src/kernel/drivers/soc/usart_dseg.asm"
 ; custom data & descriptors
 .dseg
 	led1:		.BYTE SZ_ST_LED
@@ -28,15 +28,15 @@ rcall main_thread
 ; skip interrupts vector
 .org 0x14
 ; include components code segments
-.include "../../../../../src/extensions/delay_cseg.asm"
-.include "../../../../../src/kernel/kernel_cseg.asm"
-;.include "../../../../../src/kernel/drivers/{driver_name}_cseg.asm"
-.include "../../../../../src/kernel/drivers/device_cseg.asm"
-.include "../../../../../src/kernel/drivers/io/device_io_cseg.asm"
-.include "../../../../../src/kernel/drivers/io/out_bit_cseg.asm"
-.include "../../../../../src/kernel/drivers/io/hid/led_cseg.asm"
-.include "../../../../../src/kernel/drivers/io/sensors/am2302_cseg.asm"
-.include "../../../../../src/kernel/drivers/soc/usart_cseg.asm"
+.include "../../../../../../src/extensions/delay_cseg.asm"
+.include "../../../../../../src/kernel/kernel_cseg.asm"
+;.include "../../../../../../src/kernel/drivers/{driver_name}_cseg.asm"
+.include "../../../../../../src/kernel/drivers/device_cseg.asm"
+.include "../../../../../../src/kernel/drivers/io/device_io_cseg.asm"
+.include "../../../../../../src/kernel/drivers/io/out_bit_cseg.asm"
+.include "../../../../../../src/kernel/drivers/io/hid/led_cseg.asm"
+.include "../../../../../../src/kernel/drivers/io/sensors/am2302_cseg.asm"
+.include "../../../../../../src/kernel/drivers/soc/usart_cseg.asm"
 
 main_thread:
 	; stack initialization

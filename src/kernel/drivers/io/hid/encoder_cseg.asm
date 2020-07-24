@@ -1,3 +1,22 @@
+;=======================================================================================================================
+;                                                                                                                      ;
+; Name:	socOS (System On Chip Operation System)                                                                        ;
+; 	Year: 		2020                                                                                           ;
+; 	License:	MIT License                                                                                    ;
+;                                                                                                                      ;
+;=======================================================================================================================
+
+; Require:
+;.include "m8def.inc"
+
+;.include "kernel/kernel_def.asm"
+;.include "kernel/drivers/device_def.asm"
+;.include "kernel/drivers/io/device_io_def.asm"
+
+;.include "kernel/kernel_cseg.asm"
+;.include "kernel/drivers/device_cseg.asm"
+;.include "kernel/drivers/io/device_io_cseg.asm"
+
 ; usage:
 ; .dseg
 ;   encoder1: .BYTE SZ_ST_ENCODER
@@ -6,39 +25,12 @@
 ;   m_encoder_init encoder1, DDRB, PINB, PORTB, (1 << BIT1), (1 << BIT2)
 ;   ...
 ;   m_encoder_get encoder1
-;   m_encoder_detect encoder1
+;   m_encoder_handle_io encoder1
 
 ; implementation
 
-.macro m_st_encoder_init
-	; input parameters:
-	;	@0 	word	[st_encoder]
-	;	@1	byte 	BIT1x_MASK
-	;	@2 	byte 	BIT2x_MASK
-	;	@3	word	[on_turn_handler]
-	; save registers
-	m_save_r21_r22_r23_Y_Z_registers
-	; set [st_encoder:device_io]
-	ldi ZL, low(@0)
-	ldi ZH, high(@0)
-	; set BIT1x_MASK
-	ldi r23, @1
-	; set BIT2x_MASK
-	ldi r22, @2
-	; set state
-	ldi r21, (@1|@2)
-
-	ldi YL, low(@3)
-	ldi YH, high(@3)
-
-	rcall st_encoder_init
-
-	; restore registers
-	m_restore_r21_r22_r23_Z_registers
-.endm
-
 .macro m_encoder_init
-	; input parameters:
+	; parameters:
 	;	@0 	word	[st_encoder:device_io]
 	;	@1	word	[DDRx]
 	;	@2	word 	[PINx]
@@ -46,12 +38,33 @@
 	;	@4	byte 	BIT1x_MASK
 	;	@5 	byte 	BIT2x_MASK
 	;	@6	word	[on_turn_handler]
+	m_save_r21_r22_r23_Y_Z_registers
+
 	m_device_io_init @0, @1, @2, @3, (@4|@5), 0x00
-	m_st_encoder_init @0, @4, @5, @6
+	;m_st_encoder_init @0, @4, @5, @6
+
+	; set [st_encoder]
+	ldi ZL, low(@0)
+	ldi ZH, high(@0)
+	; set BIT1x_MASK
+	ldi r23, @4
+	; set BIT2x_MASK
+	ldi r22, @5
+	; set state
+	ldi r21, (@4|@5)
+
+	ldi YL, low(@6)
+	ldi YH, high(@6)
+
+	rcall encoder_init
+
+	; restore registers
+	m_restore_r21_r22_r23_Z_registers
+
 .endm
 
-st_encoder_init:
-	; input parameters:
+encoder_init:
+	; parameters:
 	;	Z	word	[st_encoder]
 	;	r23	byte	BIT1x_MASK
 	;	r22	byte	BIT2x_MASK
@@ -82,10 +95,10 @@ st_encoder_init:
 	ret
 
 .macro m_encoder_handle_io
-	; input parameter:
+	; parameter:
 	;	@0	word	[st_encoder]
 	; returns:
-	; 	@1	register
+	; 	@1	reg	ENCODER_DIRECTION
 	m_save_r23_Z_registers
 	
 	ldi ZL, low(@0)
@@ -103,7 +116,7 @@ encoder_handle_io:
 	; parameters:
 	;	Z	word	[st_encoder]
 	; returns:
-	;	r23	byte	state
+	;	r23	byte	ENCODER_DIRECTION
 	m_save_r1_r2_r16_r17_r22_SREG_registers
 
 	; load BIT1x_MASK into the r17

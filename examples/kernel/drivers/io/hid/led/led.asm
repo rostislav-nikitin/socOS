@@ -7,6 +7,7 @@ rcall main_thread
 ; include SoC defaults
 ; include components definitions
 .include "../../../../../../src/kernel/kernel_def.asm"
+.include "../../../../../../src/kernel/drivers/device_def.asm"
 .include "../../../../../../src/kernel/drivers/io/device_io_def.asm"
 .include "../../../../../../src/kernel/drivers/io/out_bit_def.asm"
 .include "../../../../../../src/kernel/drivers/io/hid/led_def.asm"

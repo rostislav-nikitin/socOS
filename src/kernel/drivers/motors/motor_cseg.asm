@@ -9,19 +9,21 @@
 ; Require:
 ;.include "m8def.inc"
 
-;.include "kernel/soc/timer2_int.asm"
+;.include "kernel/drivers/soc/timer2_int.asm"
 
-;.include "kernel/soc/timer2_dseg.asm"
+;.include "kernel/drivers/soc/timer2_dseg.asm"
 
-;.include "kernel/device_def.asm"
-;.include "kernel/soc/timer_base_def.asm"
-;.include "kernel/soc/timer_w_pwm_base_def.asm"
-;.include "kernel/soc/timer2_def.asm"
+;.include "kernel/kernel_def.asm"
+;.include "kernel/drivers/device_def.asm"
+;.include "kernel/drivers/soc/timer_base_def.asm"
+;.include "kernel/drivers/soc/timer_w_pwm_base_def.asm"
+;.include "kernel/drivers/soc/timer2_def.asm"
 
-;.include "kernel/device_cseg.asm"
-;.include "kernel/soc/timer_base_cseg.asm"
-;.include "kernel/soc/timer_w_pwm_base_cseg.asm"
-;.include "kernel/soc/timer2_cseg.asm"
+;.include "kernel/kernel_cseg.asm"
+;.include "kernel/drivers/device_cseg.asm"
+;.include "kernel/drivers/soc/timer_base_cseg.asm"
+;.include "kernel/drivers/soc/timer_w_pwm_base_cseg.asm"
+;.include "kernel/drivers/soc/timer2_cseg.asm"
 
 ;.include "../soc/timer2_cseg.asm"
 

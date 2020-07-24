@@ -1,3 +1,22 @@
+;=======================================================================================================================
+;                                                                                                                      ;
+; Name:	socOS (System On Chip Operation System)                                                                        ;
+; 	Year: 		2020                                                                                           ;
+; 	License:	MIT License                                                                                    ;
+;                                                                                                                      ;
+;=======================================================================================================================
+
+; Require:
+;.include "m8def.inc"
+
+;.include "kernel/kernel_def.asm"
+;.include "kernel/drivers/device_def.asm"
+;.include "kernel/drivers/io/device_io_def.asm"
+
+;.include "kernel/kernel_cseg.asm"
+;.include "kernel/drivers/device_cseg.asm"
+;.include "kernel/drivers/io/device_io_cseg.asm"
+
 ; usage:
 ; .dseg
 ;   am2302_1: .BYTE SZ_ST_AM2302
@@ -9,42 +28,35 @@
 
 ; implementation
 
-.macro m_st_am2302_init
-	; input parameters:
-	;	@0 	word	[st_am2302]
-	;	@1	word	[on_completed_handler]
-	; save registers
-	m_save_Y_Z_registers
-
-	; set [st_am2302:device_io]
-	ldi ZL, low(@0)
-	ldi ZH, high(@0)
-	
-	ldi YL, low(@1)
-	ldi YH, high(@1)
-
-	rcall st_am2302_init
-	; restore registers
-	m_restore_Y_Z_registers
-.endm
-
 .macro m_am2302_init
-	; input parameters:
-	;	@0 	word	[st_am2302:device_io]
+	; parameters:
+	;	@0 	word	[st_am2302]
 	;	@1	word	[DDRx]
 	;	@2	word 	[PINx]
 	;	@3	byte 	USED_BIT_MASK
 	;	@4	word	[on_completed_handler]
+	m_save_Y_Z_registers
+
 	m_device_io_init @0, @1, @2, POINTER_NULL, @3, 0x00
-	m_st_am2302_init @0, @4
+
+	; set [st_am2302]
+	ldi ZL, low(@0)
+	ldi ZH, high(@0)
+	
+	ldi YL, low(@4)
+	ldi YH, high(@4)
+
+	rcall am2302_init
+	; restore registers
+	m_restore_Y_Z_registers
+
 .endm
 
-st_am2302_init:
-	; input parameters:
+am2302_init:
+	; parameters:
 	;	Z	word	[st_am2302]
 	;	Y	word	[on_completed_handler]
 	; set X to the [st_am2302] address
-	; init st_am2302
 	; init st_am2302
 	m_save_r23_registers
 
@@ -58,6 +70,8 @@ st_am2302_init:
 	ret
 
 am2302_init_ports:
+	; parameters:
+	;	Z	word	[st_am2302]
 	m_save_r22_r23_Z_registers
 	;
 	ldi r23, ST_AM2302_USED_BIT_MASK_OFFSET
@@ -80,7 +94,7 @@ am2302_init_ports:
 	; parameters:
 	;	@0	word	[st_am2302]
 	; returns:
-	;	@1	byte	status
+	;	@1	reg	status
 	m_save_Z_registers
 
 	ldi ZL, low(@0)
@@ -97,7 +111,7 @@ am2302_data_get:
 	; parameters:
 	;	Z	word	[st_sm2302]
 	; returns:
-	;	r23	status
+	;	r23	ST_AM2302_RESULT_STATE
 
 	; check current state
 	;rcall am2302_data_check_state
@@ -119,10 +133,14 @@ am2302_data_get:
 	ret
 
 am2302_data_check_state:
+	; parameters:
+	;	Z	word	[st_sm2302]
 	; Not Implemented
 	ret
 
 am2302_device_init:
+	; parameters:
+	;	Z	word	[st_sm2302]
 	m_save_r16_r17_r18_r21_r22_Y_Z_SREG_registers
 
 	ldi r23, ST_AM2302_USED_BIT_MASK_OFFSET
@@ -186,10 +204,10 @@ am2302_device_init:
 	ret
 
 am2302_device_data_get:
-	; parameters
+	; parameters:
 	;	Z	[st_am2302]
 	; results:
-	;	r23	status
+	;	r23	ST_AM2302_RESULT_STATE
 
 	m_save_r16_r22_Y_Z_SREG_registers
 
@@ -248,12 +266,12 @@ am2302_device_data_get:
 .equ AM2302_THREASHOLD_ONE = 0x04; 4 x 9us + 4us = 40us
 
 am2302_device_io_read_byte:
-	; parameters
+	; parameters:
 	;	Z	[PINx]
 	;	r23	USED_BIT_MASK
 	; returns:
-	;	r23	byte	status
-	;	r22 byte	result
+	;	r23	byte	ST_AM2302_RESULT_STATE
+	;	r22 	byte	result
 
 	m_save_r16_r17_Z_SREG_registers
 	; move USED to the r22
@@ -302,7 +320,7 @@ am2302_device_io_read_byte:
 .equ AM2302_DEVICE_IO_READ_TIMEOUT = 0x0E ; [(9 x 0x0E) + 4] = 130us
 
 am2302_device_io_read_until_low:
-	; parameters
+	; parameters:
 	;	Z	[PINx]
 	;	r23	output value
 	;	r22	USED_BIT_MASK
@@ -356,7 +374,7 @@ am2302_device_data_validate_checksum:
 	; parameters:
 	;	Z	word	[st_am2302]
 	; returns:
-	;	r23	status
+	;	r23	byte	ST_AM2302_RESULT_STATE
 	; set to r16 length of bytes to sum (all except checksum)
 	m_save_r16_r17_r18_Z_SREG_registers
 

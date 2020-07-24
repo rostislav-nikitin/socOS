@@ -1,3 +1,24 @@
+;=======================================================================================================================
+;                                                                                                                      ;
+; Name:	socOS (System On Chip Operation System)                                                                        ;
+; 	Year: 		2020                                                                                           ;
+; 	License:	MIT License                                                                                    ;
+;                                                                                                                      ;
+;=======================================================================================================================
+
+; Require:
+;.include "m8def.inc"
+
+;.include "kernel/kernel_def.asm"
+;.include "kernel/drivers/device_def.asm"
+;.include "kernel/drivers/io/device_io_def.asm"
+;.include "kernel/drivers/io/in_bit_def.asm"
+
+;.include "kernel/kernel_cseg.asm"
+;.include "kernel/drivers/device_cseg.asm"
+;.include "kernel/drivers/io/device_io_cseg.asm"
+;.include "kernel/drivers/io/in_bit_cseg.asm"
+
 ; usage:
 ; .dseg
 ;   button1: .BYTE SZ_ST_BUTTON
@@ -11,15 +32,15 @@
 
 .macro m_button_init
 	m_save_r24_r25_X_Y_Z_registers
-	; input parameters:
-	;	@0 	word	[st_button:device_io]
+	; parameters:
+	;	@0 	word	[st_button]
 	;	@1	word	[DDRx]
 	;	@2	word 	[PINx]
 	;	@3	word 	[PORTx]
 	;	@4	byte 	USED_BIT_MASK
-	;	@5	word	on_button_down_handler
-	;	@6	word	on_button_up_handler
-	;	@7	word	on_button_pressed_handler
+	;	@5	word	[on_button_down_handler]
+	;	@6	word	[on_button_up_handler]
+	;	@7	word	[on_button_pressed_handler]
 	m_in_bit_init @0, @1, @2, @3, @4
 
 	ldi ZL, low(@0)
@@ -40,6 +61,12 @@
 .endm
 
 button_init:
+	; parameters:
+	;	Z 	word	[st_button]
+	;	Y	word	[on_button_down_handler]
+	;	X	word 	[on_button_up_handler]
+	;	r24,r25	word 	[on_button_pressed_handler]
+
 	m_save_r22_r23_Y_registers
 
 	ldi r23, ST_BUTTON_STATE
@@ -64,18 +91,18 @@ button_init:
 	ret
 
 .macro m_button_get
-	; input parameter:
+	; parameter:
 	;	@0	word	[st_button]
 	; returns:
-	; 	@1	reg
+	; 	@1	reg	BUTTON_STATE
 	m_in_bit_get @0, @1
 .endm
 
 button_get:
 	; parameters:
-	;	word	[st_button]
+	;	Z	word	[st_button]
 	; returns:
-	;	byte
+	;	r23	byte	BUTTON_STATE
 
 	rcall in_bit_get
 
@@ -83,7 +110,7 @@ button_get:
 
 .macro m_button_handle_io
 	; parameters:
-	;	@0	word	[st_button:device_io]
+	;	@0	word	[st_button]
 	m_save_Z_registers
 
 	ldi ZL, low(@0)
@@ -96,7 +123,7 @@ button_get:
 
 button_handle_io:
 	; parameters:
-	;	word	[st_button]
+	;	Z	word	[st_button]
 	m_save_r16_r22_r23_Y_Z_SREG_registers
 	;
 	rcall button_get

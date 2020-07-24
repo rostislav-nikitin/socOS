@@ -1,3 +1,22 @@
+;=======================================================================================================================
+;                                                                                                                      ;
+; Name:	socOS (System On Chip Operation System)                                                                        ;
+; 	Year: 		2020                                                                                           ;
+; 	License:	MIT License                                                                                    ;
+;                                                                                                                      ;
+;=======================================================================================================================
+
+; Require:
+;.include "m8def.inc"
+
+;.include "kernel/kernel_def.asm"
+;.include "kernel/drivers/device_def.asm"
+;.include "kernel/drivers/io/device_io_def.asm"
+
+;.include "kernel/kernel_cseg.asm"
+;.include "kernel/drivers/device_cseg.asm"
+;.include "kernel/drivers/io/device_io_cseg.asm"
+
 ; usage:
 ; .dseg
 ;   out_bit1: .BYTE SZ_ST_OUT_BIT
@@ -13,8 +32,8 @@
 ;   m_out_bit_get out_bit1
 
 .macro m_out_bit_init
-	; input parameters:
-	;	@0	word [st_out_bit:device_io]
+	; parameters:
+	;	@0	word [st_out_bit]
 	;	@1	word [DDRx]
 	;	@2	word [PORTx]
 	;	@3	word USED_BIT_MASK
@@ -32,15 +51,15 @@
 .endm
 
 out_bit_init:
-	; input parameters:
-	;	Z	word	[st_out_bit:device_io]
+	; parameters:
+	;	Z	word	[st_out_bit]
 	; currently no additional logic
 	ret
 
 .macro m_out_bit_set
-	; input parameters:
-	;	@0	word	[st_out_bit:device_io]
-	;	@1	byte 	out_bit_state
+	; parameters:
+	;	@0	word	[st_out_bit]
+	;	@1	byte 	OUT_BIT_STATE
 	; save registers
 	m_save_r23_Z_registers
 	; push parameters
@@ -55,21 +74,21 @@ out_bit_init:
 .endm
 
 .macro  m_out_bit_on
-	; input parameters:
+	; parameters:
 	;	@0 	word	st_out_bit
 	m_out_bit_set @0, OUT_BIT_STATE_ON
 .endm
 
 .macro  m_out_bit_off
-	; input parameters:
+	; parameters:
 	;	@0 	word	st_out_bit
 	m_out_bit_set @0, OUT_BIT_STATE_OFF
 .endm
 
 out_bit_set:
-	; input parameters:
-	;	word	st_out_bit
-	;	byte	out_bit_state
+	; parameters:
+	;	Z	word	st_out_bit
+	;	r23	byte	OUT_BIT_STATE
 	m_save_SREG_registers
 	; load out_bit_state
 	; check state to set
@@ -91,10 +110,10 @@ out_bit_set:
 	ret
 
 .macro m_out_bit_get
-	; input parameters:
-	;	@0	word	[st_out_bit:device_io]
+	; parameters:
+	;	@0	word	[st_out_bit]
 	; returns:
-	;	@1	register
+	;	@1	reg	OUT_BIT_STATE
 	m_save_Z_registers
 
 	ldi ZL, low(@0)
@@ -108,10 +127,10 @@ out_bit_set:
 .endm
 
 out_bit_get:
-	; input parameters:
-	;	Z	word	[st_out_bit:device_io]
+	; parameters:
+	;	Z	word	[st_out_bit]
 	; returns:
-	;	r23	byte	current out_bit state
+	;	r23	byte	OUT_BIT_STATE
 	m_save_r22_SREG_registers
 	; call device_io_get_pin_byte
 	rcall device_io_get_port_byte
@@ -130,8 +149,8 @@ out_bit_get:
 	ret
 
 .macro m_out_bit_toggle
-	; input parameters:
-	; 	@0	word	st_out_bit
+	; parameters:
+	; 	@0	word	[st_out_bit]
 	m_save_Z_registers
 
 	ldi ZL, low(@0)
@@ -143,8 +162,8 @@ out_bit_get:
 .endm
 
 out_bit_toggle:
-	; input parameters:
-	;	Z	word	[st_out_bit:device_io]
+	; parameters:
+	;	Z	word	[st_out_bit]
 	m_save_r23_SREG_registers
 
 	rcall out_bit_get

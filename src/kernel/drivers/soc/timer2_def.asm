@@ -9,9 +9,10 @@
 ; Require:
 ;.include "m8def.inc"
 
-;.include "kernel/device_def.asm"
-;.include "kernel/soc/timer_base_def.asm"
-;.include "kernel/soc/timer_w_pwm_base_def.asm"
+;.include "kernel/kernel_def.asm"
+;.include "kernel/drivers/device_def.asm"
+;.include "kernel/drivers/soc/timer_base_def.asm"
+;.include "kernel/drivers/soc/timer_w_pwm_base_def.asm"
 
 ; st_timer2 size
 .equ SZ_ST_TIMER2						= SZ_ST_TIMER_W_PWM_BASE
