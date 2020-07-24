@@ -90,7 +90,7 @@ The main concepts of the socOS are:
     
 * extension	- represented by the "{extension\_name}\_cseg.asm" assembler file that contains some common procedures, which extends AVR assemler functionality.
 
-## The structure of the app.asm:
+## The structure of the app.asm
 The app.asm it is an entry point of the firmware application. In most cased you will start creation of you new firmware application from here. This is it's structure:
 ```Assembly
 cseg
@@ -207,13 +207,13 @@ Currenlty socOS code distributed by the next namespaces (each folder is a namesp
     * delay	- the extension that provides macro/procedures for delays
     
 ## socOS conventions
-### Variable naming convention:
+### Variable naming convention
 * name:		variable
 * [name]:	pointer to the variable
 
-### Parameter passing convention:
+### Parameter passing convention
 In most cases parameters are passing through registers. But sometimes (if parameters to much) they could be passed through stack.
-#### Procedures:
+#### Procedures
 * The address parameters are passing/returning through next registres in such order: **Z, Y, X, r24, r25**
 * The value parameters are passing/returning through next registers in a such order: **r23, r22, r21, r20, r19, r18**
 
@@ -222,7 +222,7 @@ Need to pass port addres and bit mask parameters to the st_device_io_init proced
 In this case Z register should be used to pass port address and r23 register to pass bit mask value. The result will be passed into the r23 register.
 
 * The work/temporary registers are: r17, r0. But registers used to pass parameters also could be used in case if they are not used in the particular call or if they was saved with use of the stack or by the some another way.
-#### Event handlers:
+#### Event handlers
 Sometimes required to pass some parameters to the event handler. For this purposes please use register **Y**. If you need to pass two values or less then please put them into the: **YH, YL** (in this order). Otherwise some structure should be created and filled with data. And structure address sould be passes to the event handler. For this it's address should be put into the **Y** (before event handler called). And thus the event handler could access this data.
 #### Constants
 Constants could defined with use of a next pattern:
