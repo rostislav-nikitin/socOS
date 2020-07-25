@@ -18,7 +18,7 @@
 ;.include "kernel/drivers/io/device_io_cseg.asm"
 
 ; st_encoder size
-.equ SZ_ST_ENCODER				= SZ_ST_DEVICE_IO + 0x03
+.equ SZ_ST_ENCODER				= SZ_ST_DEVICE_IO + 0x05
 ; st_encoder:st_device_io inherited members
 .equ ST_ENCODER_DDRX_ADDRESS_OFFSET             = ST_DEVICE_IO_DDRX_ADDRESS_OFFSET
 .equ ST_ENCODER_PINX_ADDRESS_OFFSET 		= ST_DEVICE_IO_PINX_ADDRESS_OFFSET

@@ -145,31 +145,17 @@ button_handle_io:
 
 	button_handle_io_down:
 		ldi r23, ST_BUTTON_ON_BUTTON_DOWN_HANDLER
-		rcall get_struct_word
-		m_set_Y_to_null_pointer
-		rcall cpw
-		breq button_handle_io_end
-		icall
+		rcall device_raise_event
 		rjmp button_handle_io_end
 	button_handle_io_up:
 		button_handle_io_up_raise_up:
-			push ZL
-			push ZH
+			m_save_Z_registers
 			ldi r23, ST_BUTTON_ON_BUTTON_UP_HANDLER
-			rcall get_struct_word
-			m_set_Y_to_null_pointer
-			rcall cpw
-			breq button_handle_io_up_raise_pressed
-			icall
-			pop ZH
-			pop ZL
+			rcall device_raise_event
+			m_restore_Z_registers
 		button_handle_io_up_raise_pressed:
 			ldi r23, ST_BUTTON_ON_BUTTON_PRESSED_HANDLER
-			rcall get_struct_word
-			m_set_Y_to_null_pointer
-			rcall cpw
-			breq button_handle_io_end
-			icall
+			rcall device_raise_event
 	button_handle_io_end:
 		m_restore_r16_r22_r23_Y_Z_SREG_registers
 	

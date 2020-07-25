@@ -33,31 +33,37 @@
 ;   m_ssi_flash_off ssi1
 ;   m_ssi_char_show ssi1, '0'
 
-ssi_digits: .db 0xFC, 0x60, 0xDA, 0xF2, 0x66, 0xB6, 0xBE, 0xE0, 0xFE, 0xF6, 0x0, 0x0
+;ssi_digits: .db 0xFC, 0x60, 0xDA, 0xF2, 0x66, 0xB6, 0xBE, 0xE0, 0xFE, 0xF6, 0x0, 0x0
+ssi_digits: .db 0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f, 0x0, 0x0
 
 .macro m_ssi_init
 	; parameters:
-	;	@0	word [st_ssi]
-	;	@1	word [DDRx]
-	;	@2	word [PORTx]
+	;	@0	word 	[st_ssi]
+	;	@1	word 	[DDRx]
+	;	@2	word 	[PORTx]
+	;	@3	byte	ST_SSI_CONNECTION_TYPE
 	; save registers
-	m_save_Z_registers
+	m_save_r23_Z_registers
 	; init (device_io)st_ssi
 	m_out_byte_init @0, @1, @2
 	; init ssi
 	ldi ZL, low(@0)
 	ldi ZH, high(@0)
+	ldi r23, @3
 	rcall ssi_init
+
+	ldi r23, SSI_STATE_ON
+	rcall ssi_state_set
 	;release stack from parameters
 	;restore registers
-	m_restore_Z_registers
+	m_restore_r23_Z_registers
 .endm
 
 ssi_init:
 	; parameters:
 	;	Z	word	[st_ssi]
 	m_save_r22_r23_registers
-	
+	m_set_struct_byte_by_offset_and_register_wo_save_registers ST_SSI_CONNECTION_TYPE, r23
 	m_set_struct_byte_by_offset_and_value_wo_save_registers ST_SSI_STATE_OFFSET, SSI_STATE_OFF
 	m_set_struct_byte_by_offset_and_value_wo_save_registers ST_SSI_SHOWN_OFFSET, SSI_SHOWN_FALSE
 	m_set_struct_byte_by_offset_and_value_wo_save_registers ST_SSI_SYMBOL_OFFSET, SSI_SYMBOL_NULL
@@ -172,12 +178,40 @@ ssi_char_show:
 	; parameters
 	;	Z	word	[st_ssi]
 	;	r23	byte	char
+	m_save_r16_r23_SREG_registers
+	; sub first letter from the 
+	subi r23, ASCII_ZERO
+
+	rcall ssi_char_show_by_number
+
+	m_restore_r16_r23_SREG_registers
+
+	ret
+
+.macro m_ssi_char_show_by_number
+	; parameters:
+	; 	@0	word	[st_ssi]
+	; 	@1	reg	number
+	m_save_r23_Z_registers
+
+	ldi ZL, low(@0)
+	ldi ZH, high(@0)
+	mov r23, @1
+	
+	; call proc
+	rcall ssi_char_show_by_number
+
+	m_restore_r23_Z_registers
+.endm
+
+ssi_char_show_by_number:
+	; parameters
+	;	Z	word	[st_ssi]
+	;	r23	byte	char
 	m_save_r16_r22_r23_SREG_registers
 	;
 	push ZL
 	push ZH
-	; sub first letter from the 
-	subi r23, ASCII_ZERO
 	; get digit symbol
 	ldi ZL, low(ssi_digits)
 	ldi ZH, high(ssi_digits)
@@ -223,7 +257,8 @@ ssi_handle_io:
 
 	m_get_struct_byte_by_offset ST_SSI_STATE_OFFSET
 	cpi r23, SSI_STATE_OFF
-	breq ssi_handle_io_end
+	brne ssi_handle_check
+	rjmp ssi_handle_io_end
 
 	ssi_handle_check:
 		m_get_struct_byte_by_offset ST_SSI_SHOWN_OFFSET
@@ -233,7 +268,7 @@ ssi_handle_io:
 		m_set_struct_byte_by_offset_and_value ST_SSI_SHOWN_OFFSET, SSI_SHOWN_TRUE
 		; show symbol
 		m_get_struct_byte_by_offset ST_SSI_SYMBOL_OFFSET
-		rcall out_byte_set
+		rcall symbol_out
 
 	ssi_handle_check_flash:
 		m_get_struct_byte_by_offset ST_SSI_FLASH_OFFSET
@@ -259,17 +294,37 @@ ssi_handle_io:
         	ssi_handle_io_flash_on_timeout_finished_symbol_show:
 				m_set_struct_byte_by_offset_and_value ST_SSI_FLASH_STATE_VISIBLE_OFFSET, SSI_FLASH_STATE_VISIBLE_TRUE	
 				m_get_struct_byte_by_offset ST_SSI_SYMBOL_OFFSET
-				rjmp ssi_handle_io_symbol_out
+				rcall symbol_out
 			ssi_handle_io_flash_on_timeout_finished_symbol_hide:
 				m_set_struct_byte_by_offset_and_value ST_SSI_FLASH_STATE_VISIBLE_OFFSET, SSI_FLASH_STATE_VISIBLE_FALSE
 				ldi r23, SSI_SYMBOL_NULL
-				rjmp ssi_handle_io_symbol_out
+				rcall symbol_out
 
 
-	ssi_handle_io_symbol_out:
-		rcall out_byte_set
 
 	ssi_handle_io_end:
 		m_restore_r23_SREG_registers
+
+	ret
+
+
+symbol_out:
+	; parameters:
+	;	Z	word	[st_ssi]
+	;	r23	byte	symbol
+	m_save_r16_r23_SREG_registers
+
+	push r23
+	m_get_struct_byte_by_offset ST_SSI_CONNECTION_TYPE
+	cpi r23, SSI_CONNECTION_TYPE_COMMON_CATHODE
+	pop r23
+	breq symbol_out_to_port
+
+	symbol_out_invert:
+		com r23
+	symbol_out_to_port:
+		rcall out_byte_set
+
+	m_restore_r16_r23_SREG_registers
 
 	ret
