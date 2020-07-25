@@ -93,7 +93,7 @@ usart_on_rxc_handler:
 usart_on_udre_handler:
 	m_usart_udre_disable
 	; set value to push to UDR
-	ldi r23, 0xA0
+	ldi YL, 0xA0
 	m_led_on led2
 	;m_led_off led3
 	ret

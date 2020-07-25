@@ -51,13 +51,13 @@ main_thread:
 
 encoder1_on_turn_handler:
 	encoder1_on_turn_handler_check_cw:
-		cpi r23, ENCODER_DIRECTION_CW
+		cpi YL, ENCODER_DIRECTION_CW
 		brne encoder1_on_turn_handler_check_ccw
 		m_led_on led1
 		m_led_off led2
 		rjmp  encoder1_on_turn_handler_end
 	encoder1_on_turn_handler_check_ccw:
-		cpi r23, ENCODER_DIRECTION_CCW
+		cpi YL, ENCODER_DIRECTION_CCW
 		m_led_off led1
 		m_led_on led2
 

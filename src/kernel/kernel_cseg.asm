@@ -70,6 +70,30 @@
 	pop r1
 .endm
 
+.macro m_save_r1_r2_r16_r17_r22_Y_SREG_registers
+	push r1
+	push r2
+	push r16
+	in r16, SREG
+	push r16
+	push r17
+	push r22
+	push YL
+	push YH
+.endm
+
+.macro m_restore_r1_r2_r16_r17_r22_Y_SREG_registers
+	pop YH
+	pop YL
+	pop r22
+	pop r17
+	pop r16
+	out SREG, r16
+	pop r16
+	pop r2
+	pop r1
+.endm
+
 .macro m_save_r16_SREG_registers
 	push r16
 	in r16, SREG
@@ -868,8 +892,6 @@
 .endm
 
 .macro m_save_r23_Y_Z_registers
-	push XL
-	push XH
 	push YL
 	push YH
 	push ZL
@@ -883,8 +905,6 @@
 	pop ZL
 	pop YH
 	pop YL
-	pop XH
-	pop XL
 .endm
 
 .macro m_save_r22_r23_r24_r25_X_Y_Z_registers

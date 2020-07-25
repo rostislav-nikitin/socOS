@@ -264,7 +264,7 @@ timer2_counter_get_value:
 	ret
 
 timer2_ovf_handler:
-	m_save_r23_Z_registers
+	m_save_r23_Y_Z_registers
 
 	ldi ZL, low(timer2_static_instance)
 	ldi ZH, high(timer2_static_instance)
@@ -272,12 +272,12 @@ timer2_ovf_handler:
 
 	rcall device_raise_event
 
-	m_restore_r23_Z_registers
+	m_restore_r23_Y_Z_registers
 
 	reti
 
 timer2_comp_handler:
-	m_save_r23_Z_registers
+	m_save_r23_Y_Z_registers
 
 	ldi ZL, low(timer2_static_instance)
 	ldi ZH, high(timer2_static_instance)
@@ -285,6 +285,6 @@ timer2_comp_handler:
 
 	rcall device_raise_event
 
-	m_restore_r23_Z_registers
+	m_restore_r23_Y_Z_registers
 
 	reti

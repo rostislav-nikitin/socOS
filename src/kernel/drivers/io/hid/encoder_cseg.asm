@@ -117,7 +117,7 @@ encoder_handle_io:
 	;	Z	word	[st_encoder]
 	; returns:
 	;	r23	byte	ENCODER_DIRECTION
-	m_save_r1_r2_r16_r17_r22_SREG_registers
+	m_save_r1_r2_r16_r17_r22_Y_SREG_registers
 
 	; load BIT1x_MASK into the r17
 	ldi r23, ST_ENCODER_BIT1_MASK_OFFSET
@@ -184,13 +184,12 @@ encoder_handle_io:
 		push ZL
 		push ZH
 		ldi r23, ST_ENCODER_ON_TURN_HANDLER_OFFSET
-		rcall get_struct_word
-		mov r23, r17
-		icall
+		mov YL, r17
+		rcall device_raise_event
 		pop ZH
 		pop ZL
 	encoder_detect_end:
 		mov r23, r17
-		m_restore_r1_r2_r16_r17_r22_SREG_registers
+		m_restore_r1_r2_r16_r17_r22_Y_SREG_registers
 
 	ret

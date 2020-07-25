@@ -241,7 +241,7 @@ eeprom_wait_ready_sync:
 	ret
 
 eeprom_ready_handler:
-	m_save_r23_Z_registers
+	m_save_r23_Y_Z_registers
 
 	ldi ZL, low(eeprom_static_instance)
 	ldi ZH, high(eeprom_static_instance)
@@ -249,6 +249,6 @@ eeprom_ready_handler:
 
 	rcall device_raise_event
 
-	m_restore_r23_Z_registers
+	m_restore_r23_Y_Z_registers
 
 	reti

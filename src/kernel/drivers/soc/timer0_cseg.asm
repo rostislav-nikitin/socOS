@@ -90,11 +90,7 @@ timer0_ovf_handler:
 	ldi ZL, low(timer0_static_instance)
 	ldi ZH, high(timer0_static_instance)
 	ldi r23, ST_TIMER0_OVERFLOW_HANDLER_OFFSET
-	rcall get_struct_word
-	m_set_Y_to_null_pointer
-	rcall cpw
-	breq timer0_ovf_handler_end
-	icall
+	rcall device_raise_event
 
 	timer0_ovf_handler_end:
 

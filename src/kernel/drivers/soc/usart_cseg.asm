@@ -159,15 +159,8 @@ usart_rxc_handler:
 	ldi ZH, high(usart_static_instance)
 
 	ldi r23, ST_USART_ON_RXC_HANDLER_OFFSET
-
-	rcall get_struct_word
-
-	m_set_Y_to_null_pointer
-
-	rcall cpw
-	breq usart_rxc_handler_end
-	in r23, UDR
-	icall
+	in YL, UDR
+	rcall device_raise_event
 
 	usart_rxc_handler_end:
 		m_restore_r16_r23_Y_Z_SREG_registers
@@ -181,15 +174,8 @@ usart_udre_handler:
 	ldi ZH, high(usart_static_instance)
 
 	ldi r23, ST_USART_ON_UDRE_HANDLER_OFFSET
-
-	rcall get_struct_word
-
-	m_set_Y_to_null_pointer
-
-	rcall cpw
-	breq usart_udre_handler_end
-	icall
-	out UDR, r23
+	rcall device_raise_event
+	out UDR, YL
 
 	usart_udre_handler_end:
 		m_restore_r16_r23_Y_Z_SREG_registers
