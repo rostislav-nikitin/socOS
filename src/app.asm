@@ -35,8 +35,11 @@ rcall main_thread
 .include "kernel/drivers/io/hid/led_cseg.asm"
 .include "kernel/drivers/soc/timer_base_cseg.asm"
 .include "kernel/drivers/soc/timer0_cseg.asm"
+;.include "extensions/delay_cseg.asm"
 
 main_thread:
+	; definition of the delay time
+	; .equ DELAY_TIME = 200000 ;~1 sec
 	; stack initialization
 	m_init_stack
 	; init leds
@@ -48,10 +51,6 @@ main_thread:
 
 	main_thread_loop:
 		main_thread_loop_end:
-			;m_delay DELAY_TIME
-			push r16
-			m_timer0_counter_get_value r16
-			pop r16
 			nop
 			rjmp main_thread_loop
 
@@ -59,5 +58,6 @@ main_thread:
 
 
 timer0_on_overflow_handler:
+	;m_delay DELAY_TIME
 	m_led_toggle led1
 	ret
