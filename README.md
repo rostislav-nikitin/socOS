@@ -437,3 +437,9 @@ rcall set_struct_word
 * \[proc\] int_to_mask({byte}) - converts some integer value into the bit mask. It simple making right shift of the 0x01 to the {byte} positions
 * \[macro\] m_lshift(@0, @1) returns @3 where @0 is a value to shift, @1 is a positions to shift
 * \[proc\] lshift(value, positions) returns byte {shifted_value}.
+
+## Links
+socOS intro and tutorials on my YouTube channel:
+
+[![socOS. Intro](http://img.youtube.com/vi/qjYBGFnrFOE/0.jpg)](https://www.youtube.com/watch?v=qjYBGFnrFOE&list=PLeO-sYwJtKn6otDci4PyIN-OZliOOF6w4 "socOS. Intro")
+
