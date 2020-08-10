@@ -443,3 +443,5 @@ socOS intro and tutorials on my YouTube channel:
 
 [![socOS. Intro](http://img.youtube.com/vi/qjYBGFnrFOE/0.jpg)](https://www.youtube.com/watch?v=qjYBGFnrFOE&list=PLeO-sYwJtKn6otDci4PyIN-OZliOOF6w4 "socOS. Intro")
 
+## Contacts
+e-mail: rostislav.nikitin@gmail.com
